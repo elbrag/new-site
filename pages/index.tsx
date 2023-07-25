@@ -1,15 +1,12 @@
-import '../styles/globals.css'
-import Footer from '@/components/Footer'
-import Navigation from '@/components/Navigation'
+import React from 'react';
+import Hero from '@/components/Hero';
 
-export default function Home() {
+const Home: React.FC = () => {
   return (
-    <main className="p-12 min-h-screen flex flex-col">
-      <Navigation />
-    <div className="page-content flex-grow">
-      hello
+    <div>
+      <Hero />
     </div>
-      <Footer />
-    </main>
-  )
-}
+  );
+};
+
+export default Home;
