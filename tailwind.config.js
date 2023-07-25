@@ -6,6 +6,16 @@ module.exports = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    fontFamily: {
+      blaka: 'var(--font-blaka), sans-serif',
+      mySoul: 'var(--font-mySoul), sans-serif',
+      rock3D: 'var(--font-rock3D), sans-serif',
+      rubikBeastly: 'var(--font-rubikBeastly), sans-serif',
+      rubikBubbles: 'var(--font-rubikBubbles), sans-serif',
+      rubikDistressed: 'var(--font-rubikDistressed), sans-serif',
+      rubikGlitch: 'var(--font-rubikGlitch), sans-serif',
+      rubikMicrobe: 'var(--font-rubikMicrobe), sans-serif',
+    },
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -15,4 +25,5 @@ module.exports = {
     },
   },
   plugins: [],
+  safelist: [{ pattern: /font-/ }]
 }

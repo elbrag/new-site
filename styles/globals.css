@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+  @import url('https://fonts.googleapis.com/css2?family=Blaka&family=My+Soul&family=Rock+3D&family=Rubik+Beastly&family=Rubik+Bubbles&family=Rubik+Distressed&family=Rubik+Glitch&family=Rubik+Microbe&display=swap');
 
 :root {
   --foreground-rgb: 0, 0, 0;
