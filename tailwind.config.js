@@ -18,7 +18,8 @@ module.exports = {
     },
     colors: {
       military: '#3c4d39',
-      yellow: '#fff267'
+      yellow: '#fff267',
+      black: '#000',
     },
     extend: {
       backgroundImage: {
@@ -29,5 +30,5 @@ module.exports = {
     },
   },
   plugins: [],
-  safelist: [{ pattern: /font-/ }]
+  safelist: [{ pattern: /font-/ }, { pattern: /scale-/, variants: ['md','lg'] }, { pattern: /text-/ }]
 }
