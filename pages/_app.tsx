@@ -73,7 +73,7 @@ const fonts = Object.keys(FontList).map(key => FontList[key]);
           <style jsx global>{`
           
           `}</style>
-          <main className={`min-h-screen flex flex-col ${fonts.join(' ')}`}>
+          <main className={`min-h-screen flex flex-col bg-military text-yellow ${fonts.join(' ')}`}>
           <Navigation />
           <div className="page-content flex-grow h-full flex flex-col">
             <Component {...pageProps} />

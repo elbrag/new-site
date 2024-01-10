@@ -16,6 +16,10 @@ module.exports = {
       rubikGlitch: 'var(--font-rubikGlitch), sans-serif',
       rubikMicrobe: 'var(--font-rubikMicrobe), sans-serif',
     },
+    colors: {
+      military: '#3c4d39',
+      yellow: '#fff267'
+    },
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
