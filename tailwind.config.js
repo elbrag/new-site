@@ -8,13 +8,6 @@ module.exports = {
   theme: {
     fontFamily: {
       blaka: 'var(--font-blaka), sans-serif',
-      mySoul: 'var(--font-mySoul), sans-serif',
-      rock3D: 'var(--font-rock3D), sans-serif',
-      rubikBeastly: 'var(--font-rubikBeastly), sans-serif',
-      rubikBubbles: 'var(--font-rubikBubbles), sans-serif',
-      rubikDistressed: 'var(--font-rubikDistressed), sans-serif',
-      rubikGlitch: 'var(--font-rubikGlitch), sans-serif',
-      rubikMicrobe: 'var(--font-rubikMicrobe), sans-serif',
     },
     colors: {
       military: '#3c4d39',
