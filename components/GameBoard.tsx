@@ -1,7 +1,7 @@
 import React from "react";
 
 const GameBoard: React.FC = ({}) => {
-	const brickClasses = "border border-yellow rounded-lg";
+	const brickClasses = "border border-military bg-lime border-2 rounded-lg";
 
 	return (
 		<div className="game-board h-full w-full flex flex-grow">

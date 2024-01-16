@@ -15,7 +15,7 @@ export default function Navigation() {
 						smallScaleFactor={1.5}
 					/>
 				</Link>
-				<h1 className="text-5xl lg:text-6xl leading-none">
+				<h1 className="text-5xl lg:text-6xl leading-none text-border uppercase">
 					The get to know me game
 				</h1>
 			</nav>

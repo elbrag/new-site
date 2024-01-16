@@ -14,6 +14,7 @@ module.exports = {
 	theme: {
 		fontFamily: {
 			blaka: "var(--font-blaka), sans-serif",
+			dela: "var(--font-dela), sans-serif",
 		},
 		colors: {
 			military: "#3c4d39",
@@ -23,8 +24,8 @@ module.exports = {
 			cream: "#F7EBDB",
 		},
 		fontSize: {
-			"6xl": "7vw",
-			"5xl": "6.5vw",
+			"6xl": "4.25vw",
+			"5xl": "4vw",
 			"4xl": "2.5rem",
 			"3xl": "2rem",
 			"2xl": "1.75rem",
