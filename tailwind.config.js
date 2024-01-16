@@ -1,4 +1,10 @@
 /** @type {import('tailwindcss').Config} */
+
+let vwSizes = [];
+for (var i = 0; i < 25; i++) {
+	vwSizes[i] = `${i}vw`;
+}
+
 module.exports = {
 	content: [
 		"./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -13,6 +19,17 @@ module.exports = {
 			military: "#3c4d39",
 			yellow: "#fff267",
 			black: "#000",
+			lime: "#5EFC5B",
+			cream: "#F7EBDB",
+		},
+		fontSize: {
+			"6xl": "7vw",
+			"5xl": "6.5vw",
+			"4xl": "2.5rem",
+			"3xl": "2rem",
+			"2xl": "1.75rem",
+			xl: "1.5rem",
+			lg: "1.25rem",
 		},
 		extend: {
 			backgroundImage: {
@@ -30,5 +47,7 @@ module.exports = {
 		{ pattern: /font-/ },
 		{ pattern: /scale-/, variants: ["md", "lg"] },
 		{ pattern: /text-/ },
+		{ pattern: /w-/, variants: ["md", "lg"] },
+		{ pattern: /h-/, variants: ["md", "lg"] },
 	],
 };

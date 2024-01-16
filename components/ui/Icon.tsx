@@ -1,6 +1,7 @@
 import React from "react";
-
 import Logo from "../../public/static/images/logo.svg";
+import styled from "styled-components";
+import tailwindConfig from "../../tailwindSettings";
 
 const icons = {
 	logo: Logo,
@@ -12,6 +13,7 @@ export enum IconTypes {
 
 export enum IconColors {
 	Black = "black",
+	Lime = "lime",
 }
 
 interface IconProps {
@@ -21,6 +23,7 @@ interface IconProps {
 	height?: number;
 	smallScaleFactor?: number;
 	mediumScaleFactor?: number;
+	inVw?: boolean;
 }
 
 const Icon: React.FC<IconProps> = ({
@@ -30,18 +33,48 @@ const Icon: React.FC<IconProps> = ({
 	height = 24,
 	smallScaleFactor,
 	mediumScaleFactor,
+	inVw = false,
 }) => {
 	const IconElement = icons[icon];
+	const suffix = inVw ? "vw" : "px";
+
 	return (
-		<div
-			className="icon flex items-center justify-center"
-			style={{ width: `${width}px`, height: `${height}px` }}
+		<StyledIcon
+			$width={width}
+			$height={height}
+			$suffix={suffix}
+			$smallScaleFactor={smallScaleFactor}
+			$mediumScaleFactor={mediumScaleFactor}
+			className={`icon flex items-center justify-center`}
 		>
 			<IconElement
-				className={`text-${color} scale-${smallScaleFactor} md:scale-${mediumScaleFactor} lg:scale-100 transition-transform duration-500 ease-bouncy-1`}
+				className={`text-${color} duration-500 ease-bouncy-1 w-full h-full`}
 			/>
-		</div>
+		</StyledIcon>
 	);
 };
 
 export default Icon;
+
+const StyledIcon = styled.div<{
+	$width: number;
+	$height: number;
+	$suffix: string;
+	$smallScaleFactor?: number;
+	$mediumScaleFactor?: number;
+}>`
+	width: ${(props) => `${props.$width}${props.$suffix}`};
+	height: ${(props) => `${props.$height}${props.$suffix}`};
+	@media (max-width: ${tailwindConfig.theme.screens.md}) {
+		width: ${(props) =>
+			`${props.$width * (props.$mediumScaleFactor || 1)}${props.$suffix}`};
+		height: ${(props) =>
+			`${props.$height * (props.$mediumScaleFactor || 1)}${props.$suffix}`};
+	}
+	@media (max-width: ${tailwindConfig.theme.screens.sm}) {
+		width: ${(props) =>
+			`${props.$width * (props.$smallScaleFactor || 1)}${props.$suffix}`};
+		height: ${(props) =>
+			`${props.$height * (props.$smallScaleFactor || 1)}${props.$suffix}`};
+	}
+`;
