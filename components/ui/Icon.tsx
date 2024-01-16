@@ -45,11 +45,9 @@ const Icon: React.FC<IconProps> = ({
 			$suffix={suffix}
 			$smallScaleFactor={smallScaleFactor}
 			$mediumScaleFactor={mediumScaleFactor}
-			className={`icon flex items-center justify-center`}
+			className={`icon flex items-center justify-center transition-size duration-500 ease-bouncy-1 `}
 		>
-			<IconElement
-				className={`text-${color} duration-500 ease-bouncy-1 w-full h-full`}
-			/>
+			<IconElement className={`text-${color} w-full h-full`} />
 		</StyledIcon>
 	);
 };

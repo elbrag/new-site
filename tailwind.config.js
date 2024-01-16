@@ -40,6 +40,11 @@ module.exports = {
 			transitionTimingFunction: {
 				"bouncy-1": "cubic-bezier(0.68, -0.55, 0.27, 1.55)",
 			},
+			transitionProperty: {
+				height: "height",
+				width: "width",
+				size: "width, height",
+			},
 		},
 	},
 	plugins: [],
