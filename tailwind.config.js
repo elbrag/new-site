@@ -1,9 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 
-let vwSizes = [];
-for (var i = 0; i < 25; i++) {
-	vwSizes[i] = `${i}vw`;
-}
+const distances = {
+	"0125vw": "0.125vw",
+	"015vw": "0.15vw",
+	"1vw": "1vw",
+	"2vw": "2vw",
+};
 
 module.exports = {
 	content: [
@@ -45,6 +47,12 @@ module.exports = {
 				height: "height",
 				width: "width",
 				size: "width, height",
+			},
+			borderWidth: {
+				...distances,
+			},
+			margin: {
+				...distances,
 			},
 		},
 	},
