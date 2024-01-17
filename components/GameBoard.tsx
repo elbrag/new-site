@@ -1,17 +1,18 @@
-import React from "react";
+import { GameContext } from "@/context/GameContext";
+import React, { useContext } from "react";
+import GameCard from "./GameCard";
 
 const GameBoard: React.FC = ({}) => {
-	const brickClasses = "border border-military bg-lime border-015vw rounded-lg";
+	const { gameUrls } = useContext(GameContext);
 
 	return (
 		<div className="game-board h-full w-full flex flex-grow">
 			<div className="grid lg:grid-cols-3 lg:grid-rows-2 gap-4 p-4 h-full w-full">
-				<div className={brickClasses}></div>
-				<div className={brickClasses}></div>
-				<div className={brickClasses}></div>
-				<div className={brickClasses}></div>
-				<div className={brickClasses}></div>
-				<div className={brickClasses}></div>
+				{gameUrls.map((gameUrl, i) => (
+					<li key={i}>
+						<GameCard url={gameUrl} locked={gameUrl === "/"} />
+					</li>
+				))}
 			</div>
 		</div>
 	);

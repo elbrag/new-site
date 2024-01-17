@@ -17,7 +17,7 @@ export default function Navigation() {
 					/>
 				</Link>
 				<h1
-					className="text-5xl lg:text-6xl leading-none text-border uppercase tracking-wide"
+					className="text-5xl lg:text-6xl leading-none text-border uppercase tracking-wide drop-shadow-text"
 					style={{ WebkitTextStroke: "0.125vw black" }}
 				>
 					The get to know me game

@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 
 import { Blaka } from "next/font/google";
 import { Dela_Gothic_One } from "next/font/google";
+import GameContextProvider from "@/context/GameContext";
 
 const blaka = Blaka({
 	weight: "400",
@@ -35,9 +36,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 				)}`}
 			>
 				<Navigation />
-				<div className="page-content flex-grow h-full flex flex-col">
-					<Component {...pageProps} />
-				</div>
+				<GameContextProvider>
+					<div className="page-content flex-grow h-full flex flex-col">
+						<Component {...pageProps} />
+					</div>
+				</GameContextProvider>
 				<Footer />
 			</main>
 		</>

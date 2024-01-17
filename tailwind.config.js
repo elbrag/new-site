@@ -6,6 +6,11 @@ const distances = {
 	"1vw": "1vw",
 	"2vw": "2vw",
 };
+const shadows = {
+	text: "0 3px 3px 0px rgba(0, 0, 0, 0.3)",
+	card: "4px 4px 8px 0 rgba(0, 0, 0, 0.3)",
+	"inside-card": "2px 4px 6px 0 rgba(0, 0, 0, 0.3)",
+};
 
 module.exports = {
 	content: [
@@ -53,6 +58,12 @@ module.exports = {
 			},
 			margin: {
 				...distances,
+			},
+			boxShadow: {
+				...shadows,
+			},
+			dropShadow: {
+				...shadows,
 			},
 		},
 	},

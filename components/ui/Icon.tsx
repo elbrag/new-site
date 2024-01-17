@@ -1,19 +1,23 @@
 import React from "react";
 import Logo from "../../public/static/images/logo.svg";
+import ComingSoon from "../../public/static/images/comingsoon.svg";
 import styled from "styled-components";
 import tailwindConfig from "../../tailwindSettings";
 
 const icons = {
 	logo: Logo,
+	comingSoon: ComingSoon,
 };
 
 export enum IconTypes {
 	Logo = "logo",
+	ComingSoon = "comingSoon",
 }
 
 export enum IconColors {
 	Black = "black",
 	Lime = "lime",
+	ComingSoon = "comingSoon",
 }
 
 interface IconProps {
