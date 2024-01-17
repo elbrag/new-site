@@ -24,6 +24,7 @@
     "typescript": "5.3.3"
   },
   "devDependencies": {
-    "@svgr/webpack": "^8.1.0"
+    "@svgr/webpack": "^8.1.0",
+    "babel-plugin-styled-components": "^2.1.4"
   }
 }
