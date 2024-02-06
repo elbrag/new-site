@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import gamesData from "../lib/db/gamesData.json";
+import gamesData from "../lib/data/gamesData.json";
 import { GameProps } from "@/lib/types/game";
 import useScore from "@/hooks/useScore";
 import useUser from "@/hooks/useUser";

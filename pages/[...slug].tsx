@@ -1,4 +1,4 @@
-import gamesData from "../lib/db/gamesData.json";
+import gamesData from "../lib/data/gamesData.json";
 import { useRouter } from "next/router";
 import { GameContext } from "@/context/GameContext";
 import { Component, useContext } from "react";
