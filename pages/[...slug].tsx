@@ -24,7 +24,7 @@ const GamePage = () => {
 	const GameComponent = dynamic(
 		() =>
 			import(
-				`../components/games/${kebabToPascal(gameUrl)}/${kebabToCamel(
+				`../components/games/${kebabToPascal(gameUrl)}/_${kebabToCamel(
 					gameUrl
 				)}.tsx`
 			),
