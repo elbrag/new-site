@@ -1,9 +1,13 @@
 /**
- * Fetch answers
+ * Fetch game data wrapper
  */
-export const fetchAnswers = (endpoint: string, bodyData?: string) => {
+export const fetchGameData = async (
+	endpoint: string,
+	method: "POST" | "GET" = "POST",
+	bodyData?: string
+): Promise<any> => {
 	let data = {
-		method: "POST",
+		method,
 		headers: {
 			"Content-Type": "application/json",
 		},
@@ -11,12 +15,12 @@ export const fetchAnswers = (endpoint: string, bodyData?: string) => {
 
 	if (bodyData) data = { ...data, ...{ body: JSON.stringify(bodyData) } };
 
-	fetch(`/api/games/${endpoint}`, data)
-		.then((response) => response.json())
-		.then((_data) => {
-			console.log(_data);
-		})
-		.catch((error) => {
-			console.error(error);
-		});
+	try {
+		const response = await fetch(`/api/games/${endpoint}`, data);
+		const jsonData = await response.json();
+		return jsonData;
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
 };
