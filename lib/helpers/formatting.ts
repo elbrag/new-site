@@ -1,8 +1,7 @@
-export const kebabToCamel = (kebabCaseString: string): string => {
-	return (
-		kebabCaseString[0].toUpperCase() +
-		kebabCaseString
-			.slice(1, kebabCaseString.length)
-			.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
-	);
+export const kebabToCamel = (text: string): string => {
+	return text[0].toUpperCase() + kebabToPascal(text.slice(1, text.length));
+};
+
+export const kebabToPascal = (text: string): string => {
+	return text.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
 };

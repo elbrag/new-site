@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { GameContext } from "@/context/GameContext";
 import { Component, useContext } from "react";
 import dynamic from "next/dynamic";
-import { kebabToCamel } from "@/lib/helpers/formatting";
+import { kebabToCamel, kebabToPascal } from "@/lib/helpers/formatting";
 
 const GamePage = () => {
 	const router = useRouter();
@@ -21,8 +21,13 @@ const GamePage = () => {
 		return <div>Game not found</div>;
 	}
 
-	const Component = dynamic(
-		() => import(`../components/games/${kebabToCamel(gameUrl)}.tsx`),
+	const GameComponent = dynamic(
+		() =>
+			import(
+				`../components/games/${kebabToPascal(gameUrl)}/${kebabToCamel(
+					gameUrl
+				)}.tsx`
+			),
 		{
 			loading: () => <p>Loading...</p>,
 		}
@@ -30,10 +35,13 @@ const GamePage = () => {
 
 	return (
 		<div>
-			<h1>{selectedGame.title}</h1>
-			<Component />
-			<button onClick={() => updateScore(1)}>Add point</button>
-			{currentScore}
+			<div className="px-6 lg:px-12">
+				<h1>{selectedGame.title}</h1>
+				<GameComponent />
+			</div>
+
+			{/* <button onClick={() => updateScore(1)}>Add point</button>
+			{currentScore} */}
 		</div>
 	);
 };
