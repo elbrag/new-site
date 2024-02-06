@@ -6,6 +6,7 @@ import Navigation from "@/components/Navigation";
 import { Blaka } from "next/font/google";
 import { Dela_Gothic_One } from "next/font/google";
 import GameContextProvider from "@/context/GameContext";
+import useFirebase from "@/hooks/useFirebase";
 
 const blaka = Blaka({
 	weight: "400",
@@ -24,6 +25,7 @@ export const FontList = {
 };
 
 function MyApp({ Component, pageProps }: AppProps) {
+	useFirebase();
 	//@ts-ignore
 	const fonts = Object.keys(FontList).map((key) => FontList[key]);
 
