@@ -40,8 +40,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 					<div className="page-content flex-grow h-full flex flex-col">
 						<Component {...pageProps} />
 					</div>
+					<Footer />
 				</GameContextProvider>
-				<Footer />
 			</main>
 		</>
 	);
