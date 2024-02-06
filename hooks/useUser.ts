@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ref, set, get } from "firebase/database";
 import useFirebase from "./useFirebase";
 
@@ -7,7 +7,7 @@ const useUser = () => {
 	const { database, userId } = useFirebase();
 
 	// Get username
-	useEffect(() => {
+	const getUsername = useCallback(() => {
 		if (userId) {
 			const userRef = ref(database, `users/${userId}/username`);
 			get(userRef)
@@ -20,6 +20,10 @@ const useUser = () => {
 				});
 		}
 	}, [database, userId]);
+
+	useEffect(() => {
+		getUsername();
+	}, [database, getUsername, userId]);
 
 	// Update username in Firebase + set state
 	const updateUsername = (username: string) => {
