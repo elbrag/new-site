@@ -1,0 +1,26 @@
+[
+    {
+        "url": "puzzle",
+        "title": "Puzzle"
+    },
+    {
+        "url": "memory",
+        "title": "Memory"
+    },
+    {
+        "url": "hangman",
+        "title": "Hangman"
+    },
+    {
+        "url": "/",
+        "title": "Coming soon"
+    },
+    {
+        "url": "/",
+        "title": "Coming soon"
+    },
+    {
+        "url": "send-results",
+        "title": "Send results"
+    }
+]

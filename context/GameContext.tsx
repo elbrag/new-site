@@ -1,5 +1,6 @@
 import { createContext } from "react";
-
+import gamesData from "../lib/db/gamesData.json";
+import { GameProps } from "@/lib/types/game";
 interface GameContextProps {
 	gameUrls: string[];
 }
@@ -11,7 +12,7 @@ interface CategoryPageProviderProps {
 }
 
 const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
-	const gameUrls = ["puzzle", "memory", "hangman", "/", "/", "send-results"];
+	const gameUrls = gamesData.map((game: GameProps) => game.url);
 
 	return (
 		<GameContext.Provider value={{ gameUrls }}>{children}</GameContext.Provider>
