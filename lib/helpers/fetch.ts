@@ -4,7 +4,7 @@
 export const fetchGameData = async (
 	endpoint: string,
 	method: "POST" | "GET" = "POST",
-	bodyData?: string
+	bodyData?: any
 ): Promise<any> => {
 	let data = {
 		method,

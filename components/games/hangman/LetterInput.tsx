@@ -11,7 +11,8 @@ const LetterInput: React.FC<LetterInputProps> = ({ onClick }) => {
 		<div className="letter-input flex items-center gap-4">
 			<input
 				type="text"
-				className="text-3xl"
+				className="text-3xl text-center p-3 focus:outline-none active:outline-none w-24 uppercase"
+				maxLength={1}
 				onKeyUp={(e) => {
 					setInputValue(e.currentTarget.value);
 				}}

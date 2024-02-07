@@ -13,15 +13,20 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	);
 	const [currentWordIndex, setCurrentWordIndex] = useState(0);
 
+	/**
+	 * Fetch masked words
+	 */
 	useEffect(() => {
 		const fetchData = async () => {
 			const maskedWords = await fetchGameData("hangman", "GET");
 			setMaskedWords(maskedWords);
 		};
-
 		fetchData();
 	}, []);
 
+	/**
+	 * Generate letters
+	 */
 	const makeDashedLetters = (wordCount: number) => {
 		let components = [];
 		for (let i = 0; i < wordCount; i++) {
@@ -33,6 +38,19 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 			);
 		}
 		return components;
+	};
+
+	/**
+	 * Check letter
+	 */
+	const checkLetter = async (letter: string) => {
+		if (maskedWords[currentWordIndex]?.questionId) {
+			const isLetterInWords = await fetchGameData("hangman", "POST", {
+				letter,
+				questionId: maskedWords[currentWordIndex]?.questionId,
+			});
+			console.log(isLetterInWords);
+		}
 	};
 
 	return (
@@ -51,7 +69,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 			)}
 			<LetterInput
 				onClick={(value) => {
-					console.log(value);
+					checkLetter(value);
 				}}
 			/>
 		</div>
