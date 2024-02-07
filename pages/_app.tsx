@@ -33,13 +33,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<>
 			<style jsx global>{``}</style>
 			<main
-				className={`h-screen min-h-screen flex flex-col bg-cream text-lime font-dela ${fonts.join(
+				className={`h-screen min-h-screen flex flex-col bg-cream text-black font-dela ${fonts.join(
 					" "
 				)}`}
 			>
 				<Navigation />
 				<GameContextProvider>
-					<div className="page-content flex-grow h-full flex flex-col">
+					<div className="page-content flex-grow h-full flex flex-col  justify-center">
 						<Component {...pageProps} />
 					</div>
 					<Footer />

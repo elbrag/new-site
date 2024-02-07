@@ -10,6 +10,10 @@ const shadows = {
 	text: "0 3px 3px 0px rgba(0, 0, 0, 0.3)",
 	card: "4px 4px 8px 0 rgba(0, 0, 0, 0.3)",
 	"inside-card": "2px 4px 6px 0 rgba(0, 0, 0, 0.3)",
+	button: "2px 3px 0 0 #000, 1px 2px 0 0 #000",
+	"button-hover":
+		"4px 5px 0 0 #000, 3px 4px 0 0 #000, 2px 3px 0 0 #000, 1px 2px 0 0 #000, 0 1px 0 0 #000",
+	"button-click": "1px 2px 0 0 #000",
 };
 
 module.exports = {

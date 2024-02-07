@@ -35,9 +35,11 @@ const GamePage = () => {
 
 	return (
 		<div>
-			<div className="px-6 lg:px-12">
-				<h1>{selectedGame.title}</h1>
-				<GameComponent />
+			<div className="px-6 lg:px-12 min-h-full flex flex-col items-center">
+				<div>
+					<h1 className="text-2xl mb-10">{selectedGame.title}</h1>
+					<GameComponent />
+				</div>
 			</div>
 
 			{/* <button onClick={() => updateScore(1)}>Add point</button>
