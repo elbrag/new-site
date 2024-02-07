@@ -1,9 +1,10 @@
 import { fetchGameData } from "@/lib/helpers/fetch";
 import { HangmanQuestionProps } from "@/lib/types/questions";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import LetterSlot from "./LetterSlot";
 import Lodash from "./Lodash";
 import LetterInput from "./LetterInput";
+import { GameContext } from "@/context/GameContext";
 
 interface HangmanProps {}
 
@@ -12,6 +13,8 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		[]
 	);
 	const [currentWordIndex, setCurrentWordIndex] = useState(0);
+	const { progress, updateProgress } = useContext(GameContext);
+	const questionId = maskedWords[currentWordIndex]?.questionId;
 
 	/**
 	 * Fetch masked words
@@ -25,48 +28,109 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	}, []);
 
 	/**
+	 * Check letter
+	 */
+	const checkLetter = async (letter: string) => {
+		if (questionId) {
+			const getLetterFromWords = await fetchGameData("hangman", "POST", {
+				letter,
+				questionId,
+			});
+
+			if (getLetterFromWords) {
+				// Make more dry
+				const existingProgress = progress.find(
+					(p: any) => p.game === "hangman"
+				);
+				const currentQuestionProgress =
+					existingProgress?.progress.find(
+						(p: any) => p.questionId === questionId
+					)?.progress ?? [];
+
+				const progressObj = {
+					game: "hangman",
+					progress: [
+						{
+							questionId: questionId,
+							completed: [...currentQuestionProgress, getLetterFromWords],
+						},
+					],
+				};
+				updateProgress(progressObj);
+			}
+		}
+	};
+
+	/**
+	 * Get letter to show in slot
+	 */
+	const letterToShow = (index: number) => {
+		const gameProgress = progress.find(
+			(p: any) => p.game === "hangman"
+		)?.progress;
+		const currentQuestionProgress = gameProgress?.find(
+			(p: any) => p.questionId === questionId
+		);
+		const match = currentQuestionProgress?.completed.find(
+			(c: any) => c.index === index
+		);
+		return match?.letter ?? null;
+	};
+
+	/**
 	 * Generate letters
 	 */
-	const makeDashedLetters = (wordCount: number) => {
+	const makeDashedLetters = (wordCount: number, indexOutOfTotal: number) => {
 		let components = [];
 		for (let i = 0; i < wordCount; i++) {
 			components.push(
 				<div className="letter flex flex-col">
-					<LetterSlot />
+					{indexOutOfTotal}
+					<LetterSlot letter={letterToShow(i)} />
 					<Lodash />
 				</div>
 			);
 		}
 		return components;
 	};
-
-	/**
-	 * Check letter
-	 */
-	const checkLetter = async (letter: string) => {
-		if (maskedWords[currentWordIndex]?.questionId) {
-			const isLetterInWords = await fetchGameData("hangman", "POST", {
-				letter,
-				questionId: maskedWords[currentWordIndex]?.questionId,
-			});
-			console.log(isLetterInWords);
-		}
-	};
-
 	return (
+		// const totalNrOfLetters = maskedWords[currentWordIndex].maskedWord.reduce(
+		// 	(acc, word) => acc + word
+		// );
+		// let indexOutOfTotal = 0;
 		<div className="hangman flex flex-col items-center">
 			{maskedWords?.length && (
 				<div className="words flex gap-6 mb-12">
-					{maskedWords[currentWordIndex].maskedWord.map((wordCount, i) => (
-						<div
-							className="word flex gap-1"
-							key={`word-${currentWordIndex}-${i}`}
-						>
-							{makeDashedLetters(wordCount)}
-						</div>
-					))}
+					{(() => {
+						let indexOutOfTotal = 0; // Initialize indexOutOfTotal outside the map function
+
+						return maskedWords[currentWordIndex].maskedWord.map(
+							(wordCount, i) => {
+								return (
+									<div
+										className="word flex gap-1"
+										key={`word-${currentWordIndex}-${i}`}
+									>
+										{Array.from({ length: wordCount }).map((_, index) => {
+											indexOutOfTotal++;
+											return (
+												<div
+													className="letter flex flex-col"
+													key={`letter-${currentWordIndex}-${index}`}
+												>
+													<LetterSlot letter={letterToShow(indexOutOfTotal)} />
+													<Lodash />
+												</div>
+											);
+										})}
+									</div>
+								);
+							}
+						);
+					})()}
 				</div>
 			)}
+
 			<LetterInput
 				onClick={(value) => {
 					checkLetter(value);

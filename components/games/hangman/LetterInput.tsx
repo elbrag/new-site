@@ -7,6 +7,7 @@ interface LetterInputProps {
 
 const LetterInput: React.FC<LetterInputProps> = ({ onClick }) => {
 	const [inputValue, setInputValue] = useState("");
+	//TODO: Validation
 	return (
 		<div className="letter-input flex items-center gap-4">
 			<input

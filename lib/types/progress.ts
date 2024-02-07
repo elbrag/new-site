@@ -1,4 +1,7 @@
 export interface ProgressProps {
 	game: string;
-	completedQuestionIds: number[];
+	progress: {
+		questionId: number;
+		completed: any;
+	};
 }
