@@ -2,8 +2,6 @@ import { FontList } from "@/pages/_app";
 
 export default function Hero() {
 	const fontNames = Object.keys(FontList);
-	console.log(fontNames);
-
 	const text = "Ellen Brage";
 	const splitText = text.split("").map((l, i) => (
 		<span className={`font-${fontNames[i]}`} key={`hero-text-${i}`}>

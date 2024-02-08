@@ -14,8 +14,13 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		[]
 	);
 	const [currentWordIndex, setCurrentWordIndex] = useState(0);
-	const { updateProgress, getGameProgress, getQuestionStatus, updateErrors } =
-		useContext(GameContext);
+	const {
+		updateProgress,
+		getGameProgress,
+		getQuestionStatus,
+		updateErrors,
+		getGameErrors,
+	} = useContext(GameContext);
 	const questionId = parseInt(maskedWords[currentWordIndex]?.questionId);
 
 	/**
@@ -110,6 +115,18 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 					checkLetter(value);
 				}}
 			/>
+			{getGameErrors(GameName.Hangman).length && (
+				<div className="errors my-10">
+					<p>You have already guessed:</p>
+					<ul className="flex gap-2">
+						{getGameErrors(GameName.Hangman).map((err: string, i: number) => (
+							<li className="uppercase text-lg" key={`error-${i}`}>
+								{err}
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
 		</div>
 	);
 };
