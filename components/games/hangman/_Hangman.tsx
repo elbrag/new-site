@@ -6,6 +6,8 @@ import Lodash from "./Lodash";
 import LetterInput from "./LetterInput";
 import { GameContext } from "@/context/GameContext";
 import { GameName } from "@/lib/types/game";
+import useInfoMessage from "@/hooks/useInfoMessage";
+import InfoMessage from "@/components/ui/InfoMessage";
 
 interface HangmanProps {}
 
@@ -21,6 +23,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		updateErrors,
 		getGameErrors,
 	} = useContext(GameContext);
+	const { infoMessage, setInfoMessage } = useInfoMessage();
 	const questionId = parseInt(maskedWords[currentWordIndex]?.questionId);
 
 	/**
@@ -38,20 +41,34 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 * Check letter
 	 */
 	const checkLetter = async (letter: string) => {
+		const currentQuestionCompleted =
+			getQuestionStatus(GameName.Hangman, questionId)?.completed || [];
+		// Check if letter already has been tried
+		const alreadyFound = currentQuestionCompleted.some(
+			(question: any) => question.letter === letter
+		);
+		const alreadyErrored = getGameErrors(GameName.Hangman).includes(letter);
+		if (alreadyFound || alreadyErrored) {
+			setInfoMessage(
+				alreadyErrored
+					? "You've already tried this one :("
+					: "You've already found this one! :)"
+			);
+			return;
+		}
 		if (questionId) {
+			// Check for match
 			const letterMatches = await fetchGameData("hangman", "POST", {
 				letter,
 				questionId,
 			});
 			if (letterMatches) {
-				const currentQuestionProgress =
-					getQuestionStatus(GameName.Hangman, questionId)?.progress || [];
 				const progressObj = {
 					game: "hangman",
 					progress: [
 						{
 							questionId: questionId,
-							completed: [...currentQuestionProgress, ...letterMatches],
+							completed: letterMatches,
 						},
 					],
 				};
@@ -115,6 +132,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 					checkLetter(value);
 				}}
 			/>
+			{infoMessage && <InfoMessage text={infoMessage} />}
 			{getGameErrors(GameName.Hangman).length && (
 				<div className="errors my-10">
 					<p>You have already guessed:</p>
