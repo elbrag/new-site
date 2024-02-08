@@ -5,17 +5,15 @@ const useProgress = () => {
 	const [progress, setProgress] = useState<any[]>([]);
 
 	useEffect(() => {
+		// Keep state synced with local storage values
 		const storedProgress = localStorage.getItem("progress");
 		if (storedProgress) setProgress(JSON.parse(storedProgress));
 	}, []);
 
 	const updateProgress = async (incoming: any) => {
 		setProgress((prevProgress) => {
-			// If prevProgress is not an array, initialize it as an empty array
-			const prevArray = Array.isArray(prevProgress) ? prevProgress : [];
-
-			// Check if an object with the same questionId exists in prevArray
-			const existingIndex = prevArray.findIndex(
+			// Check if an object with the same questionId exists in prevProgress
+			const existingIndex = prevProgress.findIndex(
 				(item) =>
 					item.game === incoming.game &&
 					item.progress.some(
@@ -26,7 +24,7 @@ const useProgress = () => {
 
 			// If an object with the same questionId exists, update its completed data
 			if (existingIndex !== -1) {
-				const updatedProgress = prevArray.map((item, index) => {
+				const updatedProgress = prevProgress.map((item, index) => {
 					if (index === existingIndex) {
 						return {
 							...item,
@@ -48,13 +46,12 @@ const useProgress = () => {
 					}
 					return item;
 				});
-				localStorage.setItem("progress", JSON.stringify(updatedProgress)); // Update local storage
+				localStorage.setItem("progress", JSON.stringify(updatedProgress));
 				return updatedProgress;
 			}
-
-			// If no object with the same questionId exists, add the incoming object to prevArray
-			const newProgress = [...prevArray, incoming];
-			localStorage.setItem("progress", JSON.stringify(newProgress)); // Update local storage
+			// If no object with the same questionId exists, add the incoming object to progress
+			const newProgress = [...prevProgress, incoming];
+			localStorage.setItem("progress", JSON.stringify(newProgress));
 			return newProgress;
 		});
 	};
