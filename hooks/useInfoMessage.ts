@@ -1,26 +1,30 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const useInfoMessage = () => {
 	const [infoMessage, setInfoMessage] = useState<string | null>(null);
+	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-	// Reset info message on routing
 	useEffect(() => {
-		setInfoMessage(null);
+		return () => {
+			if (timeoutRef.current !== null) {
+				clearTimeout(timeoutRef.current);
+			}
+		};
 	}, []);
 
-	useEffect(() => {
-		let timeout: any;
-		if (infoMessage != null) {
-			timeout = setTimeout(() => {
+	const updateInfoMessage = (message: string | null) => {
+		if (timeoutRef.current !== null) {
+			clearTimeout(timeoutRef.current);
+		}
+		setInfoMessage(message);
+		if (message !== null) {
+			timeoutRef.current = setTimeout(() => {
 				setInfoMessage(null);
 			}, 5000);
 		}
-		return () => {
-			clearTimeout(timeout);
-		};
-	}, [infoMessage]);
+	};
 
-	return { infoMessage, setInfoMessage };
+	return { infoMessage, updateInfoMessage };
 };
 
 export default useInfoMessage;

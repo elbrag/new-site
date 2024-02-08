@@ -8,6 +8,7 @@ import { GameContext } from "@/context/GameContext";
 import { GameName } from "@/lib/types/game";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import InfoMessage from "@/components/ui/InfoMessage";
+import { AnimatePresence } from "framer-motion";
 
 interface HangmanProps {}
 
@@ -16,15 +17,11 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		[]
 	);
 	const [currentWordIndex, setCurrentWordIndex] = useState(0);
-	const {
-		updateProgress,
-		getGameProgress,
-		getQuestionStatus,
-		updateErrors,
-		getGameErrors,
-	} = useContext(GameContext);
-	const { infoMessage, setInfoMessage } = useInfoMessage();
+	const { updateProgress, getQuestionStatus, updateErrors, getGameErrors } =
+		useContext(GameContext);
 	const questionId = parseInt(maskedWords[currentWordIndex]?.questionId);
+
+	const { infoMessage, updateInfoMessage } = useInfoMessage();
 
 	/**
 	 * Fetch masked words
@@ -41,6 +38,11 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 * Check letter
 	 */
 	const checkLetter = async (letter: string) => {
+		updateInfoMessage(null);
+		if (!letter.length) {
+			updateInfoMessage("Please enter a letter");
+			return;
+		}
 		const currentQuestionCompleted =
 			getQuestionStatus(GameName.Hangman, questionId)?.completed || [];
 		// Check if letter already has been tried
@@ -49,7 +51,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		);
 		const alreadyErrored = getGameErrors(GameName.Hangman).includes(letter);
 		if (alreadyFound || alreadyErrored) {
-			setInfoMessage(
+			updateInfoMessage(
 				alreadyErrored
 					? "You've already tried this one :("
 					: "You've already found this one! :)"
@@ -127,12 +129,20 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 				</div>
 			)}
 
-			<LetterInput
-				onClick={(value) => {
-					checkLetter(value);
-				}}
-			/>
-			{infoMessage && <InfoMessage text={infoMessage} />}
+			<div className="relative">
+				<LetterInput
+					onClick={(value) => {
+						checkLetter(value);
+					}}
+				/>
+				<AnimatePresence>
+					{infoMessage && (
+						<div className="absolute right-0 top-0 translate-x-full">
+							<InfoMessage text={infoMessage} />
+						</div>
+					)}
+				</AnimatePresence>
+			</div>
 			{getGameErrors(GameName.Hangman).length && (
 				<div className="errors my-10">
 					<p>You have already guessed:</p>
