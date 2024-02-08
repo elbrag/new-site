@@ -52,7 +52,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 					progress: [
 						{
 							questionId: questionId,
-							completed: [...currentQuestionProgress, getLetterFromWords],
+							completed: [...currentQuestionProgress, ...getLetterFromWords],
 						},
 					],
 				};

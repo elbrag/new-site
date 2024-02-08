@@ -33,7 +33,7 @@ const getMaskedWords = () => {
 
 /**
  * Get letter from words
- * returns the letter if it is in words, otherwise false
+ * returns the letter(s) if it is in words, otherwise false
  */
 const getLetterFromWords = (reqBody: any) => {
 	const { questionId, letter } = reqBody;
@@ -43,7 +43,14 @@ const getLetterFromWords = (reqBody: any) => {
 	const currentQuestion = hangman.find(
 		(question) => question.questionId === questionId
 	);
-	return currentQuestion?.answer.toLowerCase().includes(letter.toLowerCase())
-		? { letter, index: currentQuestion?.answer.indexOf(letter) }
-		: false;
+	if (currentQuestion?.answer.toLowerCase().includes(letter.toLowerCase())) {
+		const matches = currentQuestion?.answer
+			.split("")
+			.map((char, index) => ({ char, index }))
+			.filter(({ char }) => char.toLowerCase() === letter.toLowerCase())
+			.map(({ char, index }) => ({ letter: char.toLowerCase(), index }));
+		return matches;
+	}
+
+	return false;
 };
