@@ -24,6 +24,8 @@ const useInfoMessage = () => {
 		}
 	};
 
+	// Nice to have: re-animate message even if it's the same message
+
 	return { infoMessage, updateInfoMessage };
 };
 
