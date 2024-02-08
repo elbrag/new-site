@@ -1,4 +1,3 @@
-import { HangmanAnswerProps } from "@/lib/types/answers";
 import { NextApiRequest, NextApiResponse } from "next";
 import hangman from "../../../lib/data/answers/hangman.json";
 import { HangmanQuestionProps } from "@/lib/types/questions";

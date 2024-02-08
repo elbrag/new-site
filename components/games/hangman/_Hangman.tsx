@@ -96,17 +96,17 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	};
 
 	return (
-		<div className="hangman flex flex-col lg:flex-row">
+		<div className="hangman flex flex-col lg:flex-row min-h-screen">
 			{/* Game  */}
 			<div className="flex flex-col items-center">
-				{maskedWords?.length && (
+				{maskedWords?.length ? (
 					<div className="words flex gap-6 mb-12">
 						{(() => {
 							let indexOutOfTotal = 0;
 							return maskedWords[currentWordIndex].maskedWord.map(
 								(wordCount, i) => {
 									return (
-										<div className="word flex gap-1" key={`word--`}>
+										<div className="word flex gap-1" key={`word-${i}`}>
 											{Array.from({
 												length: wordCount,
 											}).map((_, index) => {
@@ -115,7 +115,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 												return (
 													<div
 														className="letter flex flex-col"
-														key={`letter--`}
+														key={`letter-${curIndex}`}
 													>
 														<LetterSlot letter={letterToShow(curIndex)} />
 														<Lodash />
@@ -128,6 +128,8 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 							);
 						})()}
 					</div>
+				) : (
+					<div className="h-16"></div>
 				)}
 
 				<div className="relative">
@@ -149,7 +151,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 						<p>You have already guessed:</p>
 						<ul className="flex gap-2">
 							{getGameErrors(GameName.Hangman).map((err: string, i: number) => (
-								<li className="uppercase text-lg" key={`error-`}>
+								<li className="uppercase text-lg" key={`error-${i}`}>
 									{err}
 								</li>
 							))}
@@ -158,7 +160,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 				)}
 			</div>
 			{/* Man  */}
-			<div>
+			<div className="h-[408px]">
 				<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
 			</div>
 		</div>

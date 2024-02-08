@@ -33,7 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<>
 			<style jsx global>{``}</style>
 			<main
-				className={`h-screen min-h-screen flex flex-col bg-cream text-black font-dela ${fonts.join(
+				className={`min-h-screen flex flex-col bg-cream text-black font-dela ${fonts.join(
 					" "
 				)}`}
 			>

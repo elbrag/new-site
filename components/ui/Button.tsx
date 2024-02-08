@@ -19,10 +19,19 @@ const Button: React.FC<ButtonProps> = ({ label, onClick, href }) => {
 				<a className={buttonClasses} href={href}>
 					{label}
 				</a>
-			) : (
-				<button onClick={onClick} className={buttonClasses}>
+			) : onClick ? (
+				<button
+					type="button"
+					onClick={(e) => {
+						e.preventDefault();
+						onClick(e);
+					}}
+					className={buttonClasses}
+				>
 					{label}
 				</button>
+			) : (
+				<></>
 			)}
 		</>
 	);
