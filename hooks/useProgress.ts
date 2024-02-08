@@ -10,6 +10,9 @@ const useProgress = () => {
 		if (storedProgress) setProgress(JSON.parse(storedProgress));
 	}, []);
 
+	/**
+	 * Update progress
+	 */
 	const updateProgress = async (incoming: any) => {
 		setProgress((prevProgress) => {
 			// Check if an object with the same questionId exists in prevProgress
@@ -56,12 +59,16 @@ const useProgress = () => {
 		});
 	};
 
-	// Game specific progress
+	/**
+	 * Get game specific progress
+	 */
 	const getGameProgress = (game: GameName) => {
 		return progress.find((p: any) => p.game === game)?.progress ?? [];
 	};
 
-	// Get question progress
+	/**
+	 * Get question specific current status
+	 */
 	const getQuestionStatus = (game: GameName, questionId: number) => {
 		return (
 			getGameProgress(game)?.find((p: any) => p.questionId === questionId) ??

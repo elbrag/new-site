@@ -14,7 +14,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		[]
 	);
 	const [currentWordIndex, setCurrentWordIndex] = useState(0);
-	const { updateProgress, getGameProgress, getQuestionStatus } =
+	const { updateProgress, getGameProgress, getQuestionStatus, updateErrors } =
 		useContext(GameContext);
 	const questionId = parseInt(maskedWords[currentWordIndex]?.questionId);
 
@@ -51,6 +51,8 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 					],
 				};
 				updateProgress(progressObj);
+			} else {
+				updateErrors({ game: GameName.Hangman, error: letter }, true);
 			}
 		}
 	};
