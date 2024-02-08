@@ -1,6 +1,6 @@
 import { createContext } from "react";
 import gamesData from "../lib/data/gamesData.json";
-import { GameProps } from "@/lib/types/game";
+import { GameName, GameProps } from "@/lib/types/game";
 import useScore from "@/hooks/useScore";
 import useUser from "@/hooks/useUser";
 import useProgress from "@/hooks/useProgress";
@@ -13,6 +13,8 @@ interface GameContextProps {
 	//TODO: type
 	progress: any;
 	updateProgress: (_progress: any) => void;
+	getGameProgress: (_game: GameName) => any;
+	getQuestionStatus: (_game: GameName, questionId: number) => any;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -23,6 +25,8 @@ export const GameContext = createContext<GameContextProps>({
 	updateUsername: () => {},
 	progress: {},
 	updateProgress: () => {},
+	getGameProgress: () => {},
+	getQuestionStatus: () => {},
 });
 
 interface CategoryPageProviderProps {
@@ -42,7 +46,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	 */
 	const { currentScore, updateScore } = useScore();
 	const { username, updateUsername } = useUser();
-	const { progress, updateProgress } = useProgress();
+	const { progress, updateProgress, getGameProgress, getQuestionStatus } =
+		useProgress();
 
 	return (
 		<GameContext.Provider
@@ -54,6 +59,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 				updateUsername,
 				progress,
 				updateProgress,
+				getGameProgress,
+				getQuestionStatus,
 			}}
 		>
 			{children}

@@ -5,6 +5,7 @@ import LetterSlot from "./LetterSlot";
 import Lodash from "./Lodash";
 import LetterInput from "./LetterInput";
 import { GameContext } from "@/context/GameContext";
+import { GameName } from "@/lib/types/game";
 
 interface HangmanProps {}
 
@@ -13,8 +14,9 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		[]
 	);
 	const [currentWordIndex, setCurrentWordIndex] = useState(0);
-	const { progress, updateProgress } = useContext(GameContext);
-	const questionId = maskedWords[currentWordIndex]?.questionId;
+	const { updateProgress, getGameProgress, getQuestionStatus } =
+		useContext(GameContext);
+	const questionId = parseInt(maskedWords[currentWordIndex]?.questionId);
 
 	/**
 	 * Fetch masked words
@@ -32,27 +34,19 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 */
 	const checkLetter = async (letter: string) => {
 		if (questionId) {
-			const getLetterFromWords = await fetchGameData("hangman", "POST", {
+			const letterMatches = await fetchGameData("hangman", "POST", {
 				letter,
 				questionId,
 			});
-
-			if (getLetterFromWords) {
-				// Make more dry
-				const existingProgress = progress.find(
-					(p: any) => p.game === "hangman"
-				);
+			if (letterMatches) {
 				const currentQuestionProgress =
-					existingProgress?.progress.find(
-						(p: any) => p.questionId === questionId
-					)?.progress ?? [];
-
+					getQuestionStatus(GameName.Hangman, questionId)?.progress || [];
 				const progressObj = {
 					game: "hangman",
 					progress: [
 						{
 							questionId: questionId,
-							completed: [...currentQuestionProgress, ...getLetterFromWords],
+							completed: [...currentQuestionProgress, ...letterMatches],
 						},
 					],
 				};
@@ -65,13 +59,11 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 * Get letter to show in slot
 	 */
 	const letterToShow = (index: number) => {
-		const gameProgress = progress.find(
-			(p: any) => p.game === "hangman"
-		)?.progress;
-		const currentQuestionProgress = gameProgress?.find(
-			(p: any) => p.questionId === questionId
+		const currentQuestionStatus = getQuestionStatus(
+			GameName.Hangman,
+			questionId
 		);
-		const match = currentQuestionProgress?.completed.find(
+		const match = currentQuestionStatus?.completed.find(
 			(c: any) => c.index === index
 		);
 		return match?.letter ?? null;

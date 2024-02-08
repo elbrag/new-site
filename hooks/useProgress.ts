@@ -1,3 +1,4 @@
+import { GameName } from "@/lib/types/game";
 import { useEffect, useState } from "react";
 
 const useProgress = () => {
@@ -58,7 +59,20 @@ const useProgress = () => {
 		});
 	};
 
-	return { progress, updateProgress };
+	// Game specific progress
+	const getGameProgress = (game: GameName) => {
+		return progress.find((p: any) => p.game === game)?.progress ?? [];
+	};
+
+	// Get question progress
+	const getQuestionStatus = (game: GameName, questionId: number) => {
+		return (
+			getGameProgress(game)?.find((p: any) => p.questionId === questionId) ??
+			null
+		);
+	};
+
+	return { progress, updateProgress, getGameProgress, getQuestionStatus };
 };
 
 export default useProgress;
