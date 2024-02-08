@@ -46,6 +46,7 @@ const getLetterFromWords = (reqBody: any) => {
 	if (currentQuestion?.answer.toLowerCase().includes(letter.toLowerCase())) {
 		const matches = currentQuestion?.answer
 			.split("")
+			.filter((char) => char != " ")
 			.map((char, index) => ({ char, index }))
 			.filter(({ char }) => char.toLowerCase() === letter.toLowerCase())
 			.map(({ char, index }) => ({ letter: char.toLowerCase(), index }));

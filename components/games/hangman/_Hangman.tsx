@@ -77,33 +77,12 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		return match?.letter ?? null;
 	};
 
-	/**
-	 * Generate letters
-	 */
-	const makeDashedLetters = (wordCount: number, indexOutOfTotal: number) => {
-		let components = [];
-		for (let i = 0; i < wordCount; i++) {
-			components.push(
-				<div className="letter flex flex-col">
-					{indexOutOfTotal}
-					<LetterSlot letter={letterToShow(i)} />
-					<Lodash />
-				</div>
-			);
-		}
-		return components;
-	};
 	return (
-		// const totalNrOfLetters = maskedWords[currentWordIndex].maskedWord.reduce(
-		// 	(acc, word) => acc + word
-		// );
-		// let indexOutOfTotal = 0;
 		<div className="hangman flex flex-col items-center">
 			{maskedWords?.length && (
 				<div className="words flex gap-6 mb-12">
 					{(() => {
-						let indexOutOfTotal = 0; // Initialize indexOutOfTotal outside the map function
-
+						let indexOutOfTotal = 0;
 						return maskedWords[currentWordIndex].maskedWord.map(
 							(wordCount, i) => {
 								return (
@@ -112,13 +91,14 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 										key={`word-${currentWordIndex}-${i}`}
 									>
 										{Array.from({ length: wordCount }).map((_, index) => {
+											const curIndex = indexOutOfTotal;
 											indexOutOfTotal++;
 											return (
 												<div
 													className="letter flex flex-col"
 													key={`letter-${currentWordIndex}-${index}`}
 												>
-													<LetterSlot letter={letterToShow(indexOutOfTotal)} />
+													<LetterSlot letter={letterToShow(curIndex)} />
 													<Lodash />
 												</div>
 											);
