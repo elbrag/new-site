@@ -1,6 +1,5 @@
 import { GameName } from "@/lib/types/game";
-import { useEffect, useRef, useState } from "react";
-import useInfoMessage from "./useInfoMessage";
+import { useEffect, useState } from "react";
 
 const useProgress = () => {
 	const [progress, setProgress] = useState<any[]>([]);
@@ -8,7 +7,6 @@ const useProgress = () => {
 	const [roundLength, setRoundLength] = useState<number | null>(null);
 	const [roundComplete, setRoundComplete] = useState(false);
 	const [roundFailed, setRoundFailed] = useState(false);
-	const { successMessage, updateSuccessMessage } = useInfoMessage();
 
 	useEffect(() => {
 		// Keep state synced with local storage values
@@ -26,12 +24,16 @@ const useProgress = () => {
 	/**
 	 * Update progress
 	 */
-	const updateProgress = async (incoming: any) => {
+	const updateProgress = async (
+		game: GameName,
+		questionId: number,
+		completed: any
+	) => {
 		setRoundComplete(false);
 		await setProgress((prevProgress) => {
 			// Find the index of the object with the same game name
 			const existingGameIndex = prevProgress.findIndex(
-				(item) => item.game === incoming.game
+				(item) => item.game === game
 			);
 
 			// If an object with the same game name exists
@@ -40,8 +42,7 @@ const useProgress = () => {
 					if (index === existingGameIndex) {
 						// Find the index of the progress item with the same questionId
 						const existingQuestionIndex = item.progress.findIndex(
-							(progressItem: any) =>
-								progressItem.questionId === incoming.progress[0].questionId
+							(progressItem: any) => progressItem.questionId === questionId
 						);
 
 						// If a progress item with the same questionId exists, update its completed data
@@ -49,15 +50,10 @@ const useProgress = () => {
 							return {
 								...item,
 								progress: item.progress.map((progressItem: any) => {
-									if (
-										progressItem.questionId === incoming.progress[0].questionId
-									) {
+									if (progressItem.questionId === questionId) {
 										return {
 											...progressItem,
-											completed: [
-												...progressItem.completed,
-												...incoming.progress[0].completed,
-											],
+											completed: [...progressItem.completed, ...completed],
 										};
 									}
 									return progressItem;
@@ -70,8 +66,8 @@ const useProgress = () => {
 								progress: [
 									...item.progress,
 									{
-										questionId: incoming.progress[0].questionId,
-										completed: incoming.progress[0].completed,
+										questionId,
+										completed,
 									},
 								],
 							};
@@ -82,13 +78,7 @@ const useProgress = () => {
 				localStorage.setItem("progress", JSON.stringify(updatedProgress));
 
 				// Check if the current round is completed
-				if (
-					checkIfCompleted(
-						updatedProgress,
-						incoming.game,
-						incoming.progress[0].questionId
-					)
-				) {
+				if (checkIfCompleted(updatedProgress, game, questionId)) {
 					setRoundComplete(true);
 					localStorage.setItem(
 						"currentRoundIndex",
@@ -102,11 +92,11 @@ const useProgress = () => {
 				const newProgress = [
 					...prevProgress,
 					{
-						game: incoming.game,
+						game: game,
 						progress: [
 							{
-								questionId: incoming.progress[0].questionId,
-								completed: incoming.progress[0].completed,
+								questionId,
+								completed,
 							},
 						],
 					},
@@ -114,13 +104,7 @@ const useProgress = () => {
 				localStorage.setItem("progress", JSON.stringify(newProgress));
 
 				// Check if the current round is completed
-				if (
-					checkIfCompleted(
-						newProgress,
-						incoming.game,
-						incoming.progress[0].questionId
-					)
-				) {
+				if (checkIfCompleted(newProgress, game, questionId)) {
 					setRoundComplete(true);
 					localStorage.setItem(
 						"currentRoundIndex",

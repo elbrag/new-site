@@ -13,7 +13,7 @@ interface GameContextProps {
 	updateUsername: (_username: string) => void;
 	//TODO: type
 	progress: any;
-	updateProgress: (_progress: any) => void;
+	updateProgress: (_game: GameName, questionId: number, completed: any) => void;
 	getGameProgress: (_game: GameName) => any;
 	currentRoundIndex: number;
 	setCurrentRoundIndex: (index: number) => void;

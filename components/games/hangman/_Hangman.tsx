@@ -23,7 +23,6 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		updateProgress,
 		setRoundLength,
 		currentRoundIndex,
-		setCurrentRoundIndex,
 		getQuestionStatus,
 		updateErrors,
 		getGameErrors,
@@ -74,7 +73,6 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 * Check letter
 	 */
 	const checkLetter = async (letter: string) => {
-		console.log(letter);
 		// Check if there's a letter
 		if (!letter.length) {
 			updateInfoMessage("Please enter a letter");
@@ -102,16 +100,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 				questionId,
 			});
 			if (letterMatches) {
-				const progressObj = {
-					game: "hangman",
-					progress: [
-						{
-							questionId: questionId,
-							completed: letterMatches,
-						},
-					],
-				};
-				updateProgress(progressObj);
+				updateProgress(GameName.Hangman, questionId, letterMatches);
 			} else {
 				updateErrors({ game: GameName.Hangman, error: letter }, true);
 			}
@@ -126,7 +115,6 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 			GameName.Hangman,
 			questionId
 		);
-		console.log(index, questionId, currentQuestionStatus);
 		const match = currentQuestionStatus?.completed.find(
 			(c: any) => c.index === index
 		);
