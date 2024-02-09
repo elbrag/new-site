@@ -4,24 +4,24 @@ interface HangedManProps {
 	errorLength: number;
 }
 
-const HangedMan: React.FC<HangedManProps> = ({ errorLength }) => {
-	const drawingOrder = [
-		"base",
-		"verticalBar",
-		"horizontalBar",
-		"diagonalBar",
-		"rope",
-		"noose",
-		"head",
-		"body",
-		"arm1",
-		"arm2",
-		"leg1",
-		"leg2",
-	];
+export const hangmanPartsInOrder = [
+	"base",
+	"verticalBar",
+	"horizontalBar",
+	"diagonalBar",
+	"rope",
+	"noose",
+	"head",
+	"body",
+	"arm1",
+	"arm2",
+	"leg1",
+	"leg2",
+];
 
+const HangedMan: React.FC<HangedManProps> = ({ errorLength }) => {
 	const getDisplayValue = (part: string) => {
-		const currentErrorIndex = drawingOrder.indexOf(part);
+		const currentErrorIndex = hangmanPartsInOrder.indexOf(part);
 		if (currentErrorIndex <= errorLength - 1) return "block";
 		return "none";
 	};

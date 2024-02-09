@@ -9,8 +9,9 @@ import { GameName } from "@/lib/types/game";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import InfoMessage from "@/components/ui/InfoMessage";
 import { AnimatePresence } from "framer-motion";
-import HangedMan from "./HangedMan";
+import HangedMan, { hangmanPartsInOrder } from "./HangedMan";
 import SuccessScreen from "@/components/ui/SuccessScreen";
+import FailedScreen from "@/components/ui/FailedScreen";
 
 interface HangmanProps {}
 
@@ -24,10 +25,12 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		setRoundLength,
 		currentRoundIndex,
 		getQuestionStatus,
+		errors,
 		updateErrors,
 		getGameErrors,
 		roundComplete,
 		roundFailed,
+		onRoundFail,
 		setNumberOfRounds,
 		allRoundsCompleted,
 	} = useContext(GameContext);
@@ -51,10 +54,33 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		if (allRoundsCompleted) updateSuccessMessage("You beat the last round!");
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [roundComplete, allRoundsCompleted]);
+	/**
+	 * Check for round failure to set fail message
+	 *
+	 * same as above
+	 */
+	useEffect(() => {
+		if (roundFailed) updateFailedMessage("You lost this round!");
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [roundFailed]);
 
+	/**
+	 * Update question id if currentRoundIndex changes
+	 */
 	useEffect(() => {
 		setQuestionId(parseInt(maskedWords[currentRoundIndex]?.questionId));
 	}, [currentRoundIndex, maskedWords]);
+
+	useEffect(() => {
+		if (
+			getGameErrors(GameName.Hangman).length &&
+			hangmanPartsInOrder.length === getGameErrors(GameName.Hangman).length &&
+			!roundFailed
+		) {
+			onRoundFail(GameName.Hangman);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [errors]);
 
 	/**
 	 * Fetch masked words
@@ -106,7 +132,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 			if (letterMatches) {
 				updateProgress(GameName.Hangman, questionId, letterMatches);
 			} else {
-				updateErrors(GameName.Hangman, letter, true);
+				await updateErrors(GameName.Hangman, letter, true);
 			}
 		}
 	};
@@ -195,6 +221,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 			</div>
 			<AnimatePresence>
 				{successMessage && <SuccessScreen text={successMessage} />}
+				{failedMessage && <FailedScreen text={failedMessage} />}
 			</AnimatePresence>
 		</div>
 	);

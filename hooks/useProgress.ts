@@ -5,6 +5,7 @@ import useErrors from "./useErrors";
 const useProgress = () => {
 	const { updateErrors } = useErrors();
 
+	// TODO: Move rounds into a useRounds hook
 	const [progress, setProgress] = useState<any[]>([]);
 	const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
 	const [roundLength, setRoundLength] = useState<number | null>(null);
@@ -35,6 +36,8 @@ const useProgress = () => {
 		completed: any
 	) => {
 		setRoundComplete(false);
+		setRoundFailed(false);
+
 		await setProgress((prevProgress) => {
 			// Find the index of the object with the same game name
 			const existingGameIndex = prevProgress.findIndex(
@@ -171,6 +174,22 @@ const useProgress = () => {
 		// TODO: Set points in firebase
 	};
 
+	/**
+	 * On round fail
+	 */
+	const onRoundFail = (game: GameName) => {
+		setRoundFailed(true);
+		if (currentRoundIndex !== numberOfRounds - 1) {
+			// Reset errors
+			updateErrors(game, [], false);
+			// Go to next round
+			localStorage.setItem(
+				"currentRoundIndex",
+				JSON.stringify(currentRoundIndex + 1)
+			);
+		}
+	};
+
 	return {
 		progress,
 		updateProgress,
@@ -186,6 +205,7 @@ const useProgress = () => {
 		setRoundFailed,
 		setNumberOfRounds,
 		allRoundsCompleted,
+		onRoundFail,
 	};
 };
 
