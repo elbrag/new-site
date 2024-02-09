@@ -1,6 +1,6 @@
 import { fetchGameData } from "@/lib/helpers/fetch";
 import { HangmanQuestionProps } from "@/lib/types/questions";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import LetterSlot from "./LetterSlot";
 import Lodash from "./Lodash";
 import LetterInput from "./LetterInput";
@@ -10,6 +10,8 @@ import useInfoMessage from "@/hooks/useInfoMessage";
 import InfoMessage from "@/components/ui/InfoMessage";
 import { AnimatePresence } from "framer-motion";
 import HangedMan from "./HangedMan";
+import SuccessScreen from "@/components/ui/SuccessScreen";
+import useProgress from "@/hooks/useProgress";
 
 interface HangmanProps {}
 
@@ -18,11 +20,40 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		[]
 	);
 	const [currentWordIndex, setCurrentWordIndex] = useState(0);
-	const { updateProgress, getQuestionStatus, updateErrors, getGameErrors } =
-		useContext(GameContext);
+	const {
+		progress,
+		updateProgress,
+		roundLength,
+		setRoundLength,
+		getQuestionStatus,
+		getGameProgress,
+		updateErrors,
+		getGameErrors,
+		roundComplete,
+		setRoundComplete,
+		roundFailed,
+		setRoundFailed,
+	} = useContext(GameContext);
 	const questionId = parseInt(maskedWords[currentWordIndex]?.questionId);
 
-	const { infoMessage, updateInfoMessage } = useInfoMessage();
+	const {
+		infoMessage,
+		updateInfoMessage,
+		successMessage,
+		updateSuccessMessage,
+		failedMessage,
+		updateFailedMessage,
+	} = useInfoMessage();
+
+	/**
+	 * Check for round completion to set success message
+	 *
+	 * Split into these 2 states to enable exit animation
+	 */
+	useEffect(() => {
+		if (roundComplete) updateSuccessMessage("You did it!!");
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [roundComplete]);
 
 	/**
 	 * Fetch masked words
@@ -31,19 +62,25 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		const fetchData = async () => {
 			const maskedWords = await fetchGameData("hangman", "GET");
 			setMaskedWords(maskedWords);
+			const numberOfLettersInCurrentWord = maskedWords[
+				currentWordIndex
+			]?.maskedWord?.reduce((acc: number, nr: number) => acc + nr);
+			setRoundLength(numberOfLettersInCurrentWord);
 		};
 		fetchData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	/**
 	 * Check letter
 	 */
 	const checkLetter = async (letter: string) => {
+		// Check if there's a letter
 		if (!letter.length) {
 			updateInfoMessage("Please enter a letter");
 			return;
 		}
-		const currentQuestionCompleted =
+		let currentQuestionCompleted =
 			getQuestionStatus(GameName.Hangman, questionId)?.completed || [];
 		// Check if letter already has been tried
 		const alreadyFound = currentQuestionCompleted.some(
@@ -163,6 +200,9 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 			<div className="h-[408px]">
 				<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
 			</div>
+			<AnimatePresence>
+				{successMessage && <SuccessScreen text={successMessage} />}
+			</AnimatePresence>
 		</div>
 	);
 };

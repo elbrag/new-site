@@ -18,6 +18,12 @@ interface GameContextProps {
 	getQuestionStatus: (_game: GameName, questionId: number) => any;
 	getGameErrors: (_game: GameName) => any;
 	updateErrors: (_incoming: any, merge: boolean) => void;
+	roundLength: number | null;
+	setRoundLength: (progressLength: number) => void;
+	roundComplete: boolean;
+	setRoundComplete: (complete: boolean) => void;
+	roundFailed: boolean;
+	setRoundFailed: (failed: boolean) => void;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -32,6 +38,12 @@ export const GameContext = createContext<GameContextProps>({
 	getQuestionStatus: () => {},
 	getGameErrors: () => {},
 	updateErrors: () => {},
+	roundLength: null,
+	setRoundLength: () => {},
+	roundComplete: false,
+	setRoundComplete: () => {},
+	roundFailed: false,
+	setRoundFailed: () => {},
 });
 
 interface CategoryPageProviderProps {
@@ -51,8 +63,18 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	 */
 	const { currentScore, updateScore } = useScore();
 	const { username, updateUsername } = useUser();
-	const { progress, updateProgress, getGameProgress, getQuestionStatus } =
-		useProgress();
+	const {
+		progress,
+		updateProgress,
+		roundLength,
+		setRoundLength,
+		getGameProgress,
+		getQuestionStatus,
+		roundComplete,
+		setRoundComplete,
+		roundFailed,
+		setRoundFailed,
+	} = useProgress();
 	const { updateErrors, getGameErrors } = useErrors();
 
 	return (
@@ -69,6 +91,12 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 				getQuestionStatus,
 				updateErrors,
 				getGameErrors,
+				roundLength,
+				setRoundLength,
+				roundComplete,
+				setRoundComplete,
+				roundFailed,
+				setRoundFailed,
 			}}
 		>
 			{children}
