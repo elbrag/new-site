@@ -19,7 +19,7 @@ interface GameContextProps {
 	setCurrentRoundIndex: (index: number) => void;
 	getQuestionStatus: (_game: GameName, questionId: number) => any;
 	getGameErrors: (_game: GameName) => any;
-	updateErrors: (_incoming: any, merge: boolean) => void;
+	updateErrors: (_game: GameName, error: any, merge: boolean) => void;
 	roundLength: number | null;
 	setRoundLength: (roundLength: number) => void;
 	roundComplete: boolean;

@@ -1,7 +1,10 @@
 import { GameName } from "@/lib/types/game";
 import { useEffect, useState } from "react";
+import useErrors from "./useErrors";
 
 const useProgress = () => {
+	const { updateErrors } = useErrors();
+
 	const [progress, setProgress] = useState<any[]>([]);
 	const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
 	const [roundLength, setRoundLength] = useState<number | null>(null);
@@ -81,7 +84,7 @@ const useProgress = () => {
 
 				// Check if the current round is completed
 				if (checkIfCompleted(updatedProgress, game, questionId)) {
-					onRoundComplete();
+					onRoundComplete(game);
 				}
 
 				return updatedProgress;
@@ -103,7 +106,7 @@ const useProgress = () => {
 
 				// Check if the current round is completed
 				if (checkIfCompleted(newProgress, game, questionId)) {
-					onRoundComplete();
+					onRoundComplete(game);
 				}
 				return newProgress;
 			}
@@ -150,13 +153,15 @@ const useProgress = () => {
 	/**
 	 * On round complete
 	 */
-	const onRoundComplete = () => {
+	const onRoundComplete = (game: GameName) => {
 		// Check if all rounds are completed
 		if (currentRoundIndex === numberOfRounds - 1) {
 			setAllRoundsCompleted(true);
 		} else {
 			// Set round complete, just temporary, to show success message
 			setRoundComplete(true);
+			// Reset errors
+			updateErrors(game, [], false);
 			// Go to next round
 			localStorage.setItem(
 				"currentRoundIndex",

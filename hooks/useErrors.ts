@@ -14,18 +14,20 @@ const useErrors = () => {
 	/**
 	 * Update errors
 	 */
-	const updateErrors = async (incoming: any, merge: boolean = false) => {
+	const updateErrors = async (
+		game: GameName,
+		error: any,
+		merge: boolean = false
+	) => {
 		setErrors((prevErrors) => {
-			const existingIndex = prevErrors.findIndex(
-				(item) => item.game === incoming.game
-			);
+			const existingIndex = prevErrors.findIndex((item) => item.game === game);
 			// If there are already errors for this game
 			if (existingIndex !== -1) {
 				const updatedErrors = prevErrors.map((item, index) => {
 					if (index === existingIndex) {
 						const mergedErrors = merge
-							? uniq([...item.errors, incoming.error])
-							: [...item.errors, incoming.error];
+							? uniq([...item.errors, error])
+							: [...item.errors, error];
 						return {
 							...item,
 							errors: mergedErrors,
@@ -38,7 +40,7 @@ const useErrors = () => {
 			}
 			const newErrors = [
 				...prevErrors,
-				{ game: incoming.game, errors: [incoming.error] },
+				{ game: game, errors: Array.isArray(error) ? error : [error] },
 			];
 			localStorage.setItem("errors", JSON.stringify(newErrors));
 			return newErrors;

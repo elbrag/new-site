@@ -106,7 +106,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 			if (letterMatches) {
 				updateProgress(GameName.Hangman, questionId, letterMatches);
 			} else {
-				updateErrors({ game: GameName.Hangman, error: letter }, true);
+				updateErrors(GameName.Hangman, letter, true);
 			}
 		}
 	};
