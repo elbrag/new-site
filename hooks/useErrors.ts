@@ -19,6 +19,7 @@ const useErrors = () => {
 		error: any,
 		merge: boolean = false
 	) => {
+		const shouldReset = Array.isArray(error) && error.length === 0;
 		setErrors((prevErrors) => {
 			const existingIndex = prevErrors.findIndex((item) => item.game === game);
 			// If there are already errors for this game
@@ -30,7 +31,7 @@ const useErrors = () => {
 							: [...item.errors, error];
 						return {
 							...item,
-							errors: mergedErrors,
+							errors: shouldReset ? [] : mergedErrors,
 						};
 					}
 					return item;
@@ -40,7 +41,7 @@ const useErrors = () => {
 			}
 			const newErrors = [
 				...prevErrors,
-				{ game: game, errors: Array.isArray(error) ? error : [error] },
+				{ game: game, errors: shouldReset ? [] : [error] },
 			];
 			localStorage.setItem("errors", JSON.stringify(newErrors));
 			return newErrors;

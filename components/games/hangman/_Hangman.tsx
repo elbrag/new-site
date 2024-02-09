@@ -32,7 +32,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		roundFailed,
 		onRoundFail,
 		setNumberOfRounds,
-		allRoundsCompleted,
+		allRoundsPassed,
 	} = useContext(GameContext);
 
 	const {
@@ -45,24 +45,26 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	} = useInfoMessage();
 
 	/**
-	 * Check for round completion to set success message
+	 * Check for round completion to set success/fail message
 	 *
 	 * Split into these 2 states to enable exit animation
 	 */
 	useEffect(() => {
+		// TODO: investigate why this sticks around to the next round
 		if (roundComplete) updateSuccessMessage("You beat this round!");
-		if (allRoundsCompleted) updateSuccessMessage("You beat the last round!");
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [roundComplete, allRoundsCompleted]);
-	/**
-	 * Check for round failure to set fail message
-	 *
-	 * same as above
-	 */
+	}, [roundComplete]);
+
 	useEffect(() => {
 		if (roundFailed) updateFailedMessage("You lost this round!");
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [roundFailed]);
+
+	useEffect(() => {
+		if (allRoundsPassed)
+			updateSuccessMessage("That was the last round! Good job!");
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [allRoundsPassed]);
 
 	/**
 	 * Update question id if currentRoundIndex changes
@@ -71,6 +73,9 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		setQuestionId(parseInt(maskedWords[currentRoundIndex]?.questionId));
 	}, [currentRoundIndex, maskedWords]);
 
+	/**
+	 * Set round fail if error count meets the limit
+	 */
 	useEffect(() => {
 		if (
 			getGameErrors(GameName.Hangman).length &&
@@ -87,6 +92,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 */
 	useEffect(() => {
 		const fetchData = async () => {
+			// TODO: Rename maskedwords, maybe to sentence
 			const maskedWords = await fetchGameData("hangman", "GET");
 			setMaskedWords(maskedWords);
 			setNumberOfRounds(maskedWords.length);
@@ -202,7 +208,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 						)}
 					</AnimatePresence>
 				</div>
-				{getGameErrors(GameName.Hangman).length && (
+				{!!getGameErrors(GameName.Hangman).length && (
 					<div className="errors my-10">
 						<p>You have already guessed:</p>
 						<ul className="flex gap-2">
@@ -216,6 +222,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 				)}
 			</div>
 			{/* Man  */}
+			{/* TODO: Check why gameErrors remains from one round to another */}
 			<div className="h-[408px]">
 				<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
 			</div>

@@ -12,7 +12,7 @@ const useProgress = () => {
 	const [roundComplete, setRoundComplete] = useState(false);
 	const [roundFailed, setRoundFailed] = useState(false);
 	const [numberOfRounds, setNumberOfRounds] = useState(0);
-	const [allRoundsCompleted, setAllRoundsCompleted] = useState(false);
+	const [allRoundsPassed, setAllRoundsPassed] = useState(false);
 
 	useEffect(() => {
 		// Keep state synced with local storage values
@@ -157,12 +157,12 @@ const useProgress = () => {
 	 * On round complete
 	 */
 	const onRoundComplete = (game: GameName) => {
+		// Set round complete, just temporary, to show success message
+		setRoundComplete(true);
 		// Check if all rounds are completed
 		if (currentRoundIndex === numberOfRounds - 1) {
-			setAllRoundsCompleted(true);
+			setAllRoundsPassed(true);
 		} else {
-			// Set round complete, just temporary, to show success message
-			setRoundComplete(true);
 			// Reset errors
 			updateErrors(game, [], false);
 			// Go to next round
@@ -170,6 +170,7 @@ const useProgress = () => {
 				"currentRoundIndex",
 				JSON.stringify(currentRoundIndex + 1)
 			);
+			setCurrentRoundIndex(currentRoundIndex + 1);
 		}
 		// TODO: Set points in firebase
 	};
@@ -179,7 +180,9 @@ const useProgress = () => {
 	 */
 	const onRoundFail = (game: GameName) => {
 		setRoundFailed(true);
-		if (currentRoundIndex !== numberOfRounds - 1) {
+		if (currentRoundIndex === numberOfRounds - 1) {
+			setAllRoundsPassed(true);
+		} else {
 			// Reset errors
 			updateErrors(game, [], false);
 			// Go to next round
@@ -187,6 +190,7 @@ const useProgress = () => {
 				"currentRoundIndex",
 				JSON.stringify(currentRoundIndex + 1)
 			);
+			setCurrentRoundIndex(currentRoundIndex + 1);
 		}
 	};
 
@@ -204,7 +208,7 @@ const useProgress = () => {
 		roundFailed,
 		setRoundFailed,
 		setNumberOfRounds,
-		allRoundsCompleted,
+		allRoundsPassed,
 		onRoundFail,
 	};
 };
