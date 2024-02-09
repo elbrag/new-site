@@ -11,7 +11,6 @@ import InfoMessage from "@/components/ui/InfoMessage";
 import { AnimatePresence } from "framer-motion";
 import HangedMan from "./HangedMan";
 import SuccessScreen from "@/components/ui/SuccessScreen";
-import useProgress from "@/hooks/useProgress";
 
 interface HangmanProps {}
 
@@ -19,22 +18,18 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	const [maskedWords, setMaskedWords] = useState<HangmanQuestionProps[] | []>(
 		[]
 	);
-	const [currentWordIndex, setCurrentWordIndex] = useState(0);
+	const [questionId, setQuestionId] = useState(0);
 	const {
-		progress,
 		updateProgress,
-		roundLength,
 		setRoundLength,
+		currentRoundIndex,
+		setCurrentRoundIndex,
 		getQuestionStatus,
-		getGameProgress,
 		updateErrors,
 		getGameErrors,
 		roundComplete,
-		setRoundComplete,
 		roundFailed,
-		setRoundFailed,
 	} = useContext(GameContext);
-	const questionId = parseInt(maskedWords[currentWordIndex]?.questionId);
 
 	const {
 		infoMessage,
@@ -55,6 +50,10 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [roundComplete]);
 
+	useEffect(() => {
+		setQuestionId(parseInt(maskedWords[currentRoundIndex]?.questionId));
+	}, [currentRoundIndex, maskedWords]);
+
 	/**
 	 * Fetch masked words
 	 */
@@ -63,11 +62,11 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 			const maskedWords = await fetchGameData("hangman", "GET");
 			setMaskedWords(maskedWords);
 			const numberOfLettersInCurrentWord = maskedWords[
-				currentWordIndex
+				currentRoundIndex
 			]?.maskedWord?.reduce((acc: number, nr: number) => acc + nr);
 			setRoundLength(numberOfLettersInCurrentWord);
 		};
-		fetchData();
+		if (!maskedWords.length) fetchData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -75,6 +74,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 * Check letter
 	 */
 	const checkLetter = async (letter: string) => {
+		console.log(letter);
 		// Check if there's a letter
 		if (!letter.length) {
 			updateInfoMessage("Please enter a letter");
@@ -126,6 +126,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 			GameName.Hangman,
 			questionId
 		);
+		console.log(index, questionId, currentQuestionStatus);
 		const match = currentQuestionStatus?.completed.find(
 			(c: any) => c.index === index
 		);
@@ -140,7 +141,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 					<div className="words flex gap-6 mb-12">
 						{(() => {
 							let indexOutOfTotal = 0;
-							return maskedWords[currentWordIndex].maskedWord.map(
+							return maskedWords[currentRoundIndex].maskedWord.map(
 								(wordCount, i) => {
 									return (
 										<div className="word flex gap-1" key={`word-${i}`}>

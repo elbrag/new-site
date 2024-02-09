@@ -23,6 +23,9 @@ const useInfoMessage = () => {
 		};
 	}, []);
 
+	/**
+	 * Update info message
+	 */
 	const updateInfoMessage = (message: string | null) => {
 		if (timeoutRef.current !== null) {
 			clearTimeout(timeoutRef.current);
@@ -35,6 +38,9 @@ const useInfoMessage = () => {
 		}
 	};
 
+	/**
+	 * Update success message
+	 */
 	const updateSuccessMessage = (message: string | null) => {
 		if (successTimeoutRef.current !== null) {
 			clearTimeout(successTimeoutRef.current);
@@ -47,6 +53,9 @@ const useInfoMessage = () => {
 		}
 	};
 
+	/**
+	 * Update failed message
+	 */
 	const updateFailedMessage = (message: string | null) => {
 		if (failedTimeoutRef.current !== null) {
 			clearTimeout(failedTimeoutRef.current);

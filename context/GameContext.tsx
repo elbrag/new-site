@@ -15,6 +15,8 @@ interface GameContextProps {
 	progress: any;
 	updateProgress: (_progress: any) => void;
 	getGameProgress: (_game: GameName) => any;
+	currentRoundIndex: number;
+	setCurrentRoundIndex: (index: number) => void;
 	getQuestionStatus: (_game: GameName, questionId: number) => any;
 	getGameErrors: (_game: GameName) => any;
 	updateErrors: (_incoming: any, merge: boolean) => void;
@@ -34,6 +36,8 @@ export const GameContext = createContext<GameContextProps>({
 	updateUsername: () => {},
 	progress: {},
 	updateProgress: () => {},
+	currentRoundIndex: 0,
+	setCurrentRoundIndex: () => {},
 	getGameProgress: () => {},
 	getQuestionStatus: () => {},
 	getGameErrors: () => {},
@@ -69,6 +73,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 		roundLength,
 		setRoundLength,
 		getGameProgress,
+		currentRoundIndex,
+		setCurrentRoundIndex,
 		getQuestionStatus,
 		roundComplete,
 		setRoundComplete,
@@ -97,6 +103,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 				setRoundComplete,
 				roundFailed,
 				setRoundFailed,
+				currentRoundIndex,
+				setCurrentRoundIndex,
 			}}
 		>
 			{children}
