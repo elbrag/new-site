@@ -45,9 +45,9 @@ const HangedMan: React.FC<HangedManProps> = ({ errorLength }) => {
 				style={{ display: getDisplayValue("rope") }}
 				id="rope"
 				x="78.5"
-				y="62.5"
+				y="14"
 				width="1"
-				height="51"
+				height="98"
 				transform="rotate(180 78.5 62.5)"
 				fill="black"
 				stroke="black"

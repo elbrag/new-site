@@ -168,6 +168,7 @@ const useProgress = () => {
 				JSON.stringify(currentRoundIndex + 1)
 			);
 		}
+		// TODO: Set points in firebase
 	};
 
 	return {
