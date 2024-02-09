@@ -126,7 +126,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	};
 
 	return (
-		<div className="hangman flex flex-col lg:flex-row min-h-screen">
+		<div className="hangman flex flex-col justify-center items-center lg:flex-row min-h-screen">
 			{/* Game  */}
 			<div className="flex flex-col items-center">
 				{maskedWords?.length ? (

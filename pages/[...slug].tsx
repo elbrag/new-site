@@ -29,15 +29,18 @@ const GamePage = () => {
 				)}.tsx`
 			),
 		{
-			loading: () => <p>Loading...</p>,
+			loading: () => (
+				<div className="min-h-screen flex items-center justify-center">
+					<p>Loading...</p>
+				</div>
+			),
 		}
 	);
 
 	return (
 		<div>
-			<div className="px-6 lg:px-12 min-h-screen flex flex-col items-center">
+			<div className="px-6 lg:px-12 min-h-screen flex flex-col items-center justify-center">
 				<div>
-					<h1 className="text-2xl mb-10">{selectedGame.title}</h1>
 					<GameComponent />
 				</div>
 			</div>
