@@ -7,6 +7,7 @@ import { Blaka } from "next/font/google";
 import { Dela_Gothic_One } from "next/font/google";
 import GameContextProvider from "@/context/GameContext";
 import useFirebase from "@/hooks/useFirebase";
+import { useRouter } from "next/router";
 
 const blaka = Blaka({
 	weight: "400",
@@ -25,21 +26,21 @@ export const FontList = {
 };
 
 function MyApp({ Component, pageProps }: AppProps) {
+	const router = useRouter();
 	useFirebase();
 	//@ts-ignore
 	const fonts = Object.keys(FontList).map((key) => FontList[key]);
 
 	return (
 		<>
-			<style jsx global>{``}</style>
 			<main
-				className={`min-h-screen flex flex-col bg-cream text-black font-dela ${fonts.join(
-					" "
-				)}`}
+				className={`min-h-screen flex flex-col bg-cream text-black font-dela ${
+					router.asPath === "/" ? "h-screen" : ""
+				} ${fonts.join(" ")}`}
 			>
 				<Navigation />
 				<GameContextProvider>
-					<div className="page-content flex-grow h-full flex flex-col  justify-center">
+					<div className="page-content flex-grow h-full flex flex-col justify-center">
 						<Component {...pageProps} />
 					</div>
 					<Footer />

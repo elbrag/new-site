@@ -11,13 +11,13 @@ export default function Navigation() {
 						width={10}
 						height={4}
 						inVw={true}
-						color={IconColors.Lime}
+						color={IconColors.Cream}
 						smallScaleFactor={1.25}
 						mediumScaleFactor={1}
 					/>
 				</Link>
 				<h1
-					className="text-5xl lg:text-6xl leading-none text-border uppercase tracking-wide drop-shadow-text text-lime"
+					className="text-5xl lg:text-6xl leading-none text-border uppercase tracking-wide drop-shadow-text text-cream"
 					style={{ WebkitTextStroke: "0.125vw black" }}
 				>
 					The get to know me game

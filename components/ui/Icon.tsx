@@ -17,7 +17,7 @@ export enum IconTypes {
 export enum IconColors {
 	Black = "black",
 	Lime = "lime",
-	ComingSoon = "comingSoon",
+	Cream = "cream",
 }
 
 interface IconProps {
