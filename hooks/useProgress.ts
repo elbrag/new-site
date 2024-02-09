@@ -7,6 +7,8 @@ const useProgress = () => {
 	const [roundLength, setRoundLength] = useState<number | null>(null);
 	const [roundComplete, setRoundComplete] = useState(false);
 	const [roundFailed, setRoundFailed] = useState(false);
+	const [numberOfRounds, setNumberOfRounds] = useState(0);
+	const [allRoundsCompleted, setAllRoundsCompleted] = useState(false);
 
 	useEffect(() => {
 		// Keep state synced with local storage values
@@ -79,11 +81,7 @@ const useProgress = () => {
 
 				// Check if the current round is completed
 				if (checkIfCompleted(updatedProgress, game, questionId)) {
-					setRoundComplete(true);
-					localStorage.setItem(
-						"currentRoundIndex",
-						JSON.stringify(currentRoundIndex + 1)
-					);
+					onRoundComplete();
 				}
 
 				return updatedProgress;
@@ -105,11 +103,7 @@ const useProgress = () => {
 
 				// Check if the current round is completed
 				if (checkIfCompleted(newProgress, game, questionId)) {
-					setRoundComplete(true);
-					localStorage.setItem(
-						"currentRoundIndex",
-						JSON.stringify(currentRoundIndex + 1)
-					);
+					onRoundComplete();
 				}
 				return newProgress;
 			}
@@ -153,14 +147,22 @@ const useProgress = () => {
 		return questionStatus?.completed?.length === roundLength;
 	};
 
-	const updateCurrentRoundIndex = (game: GameName, maskedWords: any) => {
-		const failedRounds = null;
-		const wonRounds = null;
-
-		const firstIncompleteRound = maskedWords.find((p: any, i: number) => {
-			return !checkIfCompleted(progress, game, p.questionId);
-		});
-		return firstIncompleteRound ? maskedWords.indexOf(firstIncompleteRound) : 0;
+	/**
+	 * On round complete
+	 */
+	const onRoundComplete = () => {
+		// Check if all rounds are completed
+		if (currentRoundIndex === numberOfRounds - 1) {
+			setAllRoundsCompleted(true);
+		} else {
+			// Set round complete, just temporary, to show success message
+			setRoundComplete(true);
+			// Go to next round
+			localStorage.setItem(
+				"currentRoundIndex",
+				JSON.stringify(currentRoundIndex + 1)
+			);
+		}
 	};
 
 	return {
@@ -176,6 +178,8 @@ const useProgress = () => {
 		setRoundComplete,
 		roundFailed,
 		setRoundFailed,
+		setNumberOfRounds,
+		allRoundsCompleted,
 	};
 };
 

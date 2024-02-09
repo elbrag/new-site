@@ -28,6 +28,8 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		getGameErrors,
 		roundComplete,
 		roundFailed,
+		setNumberOfRounds,
+		allRoundsCompleted,
 	} = useContext(GameContext);
 
 	const {
@@ -45,9 +47,10 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 * Split into these 2 states to enable exit animation
 	 */
 	useEffect(() => {
-		if (roundComplete) updateSuccessMessage("You did it!!");
+		if (roundComplete) updateSuccessMessage("You beat this round!");
+		if (allRoundsCompleted) updateSuccessMessage("You beat the last round!");
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [roundComplete]);
+	}, [roundComplete, allRoundsCompleted]);
 
 	useEffect(() => {
 		setQuestionId(parseInt(maskedWords[currentRoundIndex]?.questionId));
@@ -60,6 +63,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		const fetchData = async () => {
 			const maskedWords = await fetchGameData("hangman", "GET");
 			setMaskedWords(maskedWords);
+			setNumberOfRounds(maskedWords.length);
 			const numberOfLettersInCurrentWord = maskedWords[
 				currentRoundIndex
 			]?.maskedWord?.reduce((acc: number, nr: number) => acc + nr);

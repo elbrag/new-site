@@ -21,11 +21,13 @@ interface GameContextProps {
 	getGameErrors: (_game: GameName) => any;
 	updateErrors: (_incoming: any, merge: boolean) => void;
 	roundLength: number | null;
-	setRoundLength: (progressLength: number) => void;
+	setRoundLength: (roundLength: number) => void;
 	roundComplete: boolean;
 	setRoundComplete: (complete: boolean) => void;
 	roundFailed: boolean;
 	setRoundFailed: (failed: boolean) => void;
+	setNumberOfRounds: (numberOfRounds: number) => void;
+	allRoundsCompleted: boolean;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -48,6 +50,8 @@ export const GameContext = createContext<GameContextProps>({
 	setRoundComplete: () => {},
 	roundFailed: false,
 	setRoundFailed: () => {},
+	setNumberOfRounds: () => {},
+	allRoundsCompleted: false,
 });
 
 interface CategoryPageProviderProps {
@@ -80,6 +84,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 		setRoundComplete,
 		roundFailed,
 		setRoundFailed,
+		setNumberOfRounds,
+		allRoundsCompleted,
 	} = useProgress();
 	const { updateErrors, getGameErrors } = useErrors();
 
@@ -105,6 +111,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 				setRoundFailed,
 				currentRoundIndex,
 				setCurrentRoundIndex,
+				setNumberOfRounds,
+				allRoundsCompleted,
 			}}
 		>
 			{children}
