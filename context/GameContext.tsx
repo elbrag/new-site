@@ -5,6 +5,7 @@ import useScore from "@/hooks/useScore";
 import useUser from "@/hooks/useUser";
 import useProgress from "@/hooks/useProgress";
 import useErrors from "@/hooks/useErrors";
+import useRounds from "@/hooks/useRounds";
 interface GameContextProps {
 	gameUrls: string[];
 	currentScore: number;
@@ -75,15 +76,13 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	 */
 	const { currentScore, updateScore } = useScore();
 	const { username, updateUsername } = useUser();
+	const { progress, setProgress, getGameProgress, getQuestionStatus } =
+		useProgress();
 	const {
-		progress,
-		setProgress,
 		roundLength,
 		setRoundLength,
-		getGameProgress,
 		currentRoundIndex,
 		setCurrentRoundIndex,
-		getQuestionStatus,
 		roundComplete,
 		setRoundComplete,
 		roundFailed,
@@ -93,7 +92,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 		setNumberOfRounds,
 		allRoundsPassed,
 		setAllRoundsPassed,
-	} = useProgress();
+	} = useRounds();
 	const { updateErrors, errors, getGameErrors } = useErrors();
 
 	/**
