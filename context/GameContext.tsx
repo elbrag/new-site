@@ -99,7 +99,6 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 		setRoundComplete,
 		roundFailed,
 		setRoundFailed,
-		onRoundFail,
 		numberOfRounds,
 		setNumberOfRounds,
 		allRoundsPassed,
@@ -139,6 +138,25 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	) => {
 		const questionStatus = getQuestionStatus(game, questionId, _progress);
 		return questionStatus?.completed?.length === roundLength;
+	};
+
+	/**
+	 * On round fail
+	 */
+	const onRoundFail = (game: GameName) => {
+		setRoundFailed(true);
+		if (currentRoundIndex === numberOfRounds - 1) {
+			setAllRoundsPassed(true);
+		} else {
+			// Reset errors
+			updateErrors(game, [], false);
+			// Go to next round
+			localStorage.setItem(
+				"currentRoundIndex",
+				JSON.stringify(currentRoundIndex + 1)
+			);
+			setCurrentRoundIndex(currentRoundIndex + 1);
+		}
 	};
 
 	/**
