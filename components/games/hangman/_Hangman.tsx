@@ -32,6 +32,8 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		roundComplete,
 		roundFailed,
 		onRoundFail,
+		setRoundComplete,
+		setRoundFailed,
 		setNumberOfRounds,
 		allRoundsPassed,
 	} = useContext(GameContext);
@@ -51,7 +53,6 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 * Split into these 2 states to enable exit animation
 	 */
 	useEffect(() => {
-		// TODO: investigate why this sticks around to the next round
 		if (roundComplete) updateSuccessMessage("You beat this round!");
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [roundComplete]);
@@ -142,7 +143,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 				questionId,
 			});
 			if (letterMatches) {
-				updateProgress(GameName.Hangman, questionId, letterMatches);
+				await updateProgress(GameName.Hangman, questionId, letterMatches);
 			} else {
 				await updateErrors(GameName.Hangman, letter, true);
 			}

@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useEffect } from "react";
 import gamesData from "../lib/data/gamesData.json";
 import { GameName, GameProps } from "@/lib/types/game";
 import useScore from "@/hooks/useScore";
@@ -112,19 +112,21 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	const onRoundComplete = (game: GameName) => {
 		// Set round complete, just temporary, to show success message
 		setRoundComplete(true);
+		setTimeout(() => {
+			setRoundComplete(false);
+		}, 5500);
 		// Get current round index
 		const currentRoundIndex = getGameCurrentRoundIndex(game);
 		// Check if all rounds are completed
 		if (currentRoundIndex === numberOfRounds - 1) {
 			setAllRoundsPassed(true);
+			setTimeout(() => {
+				setAllRoundsPassed(false);
+			}, 5500);
 		} else {
 			// Reset errors
 			updateErrors(game, [], false);
 			// Go to next round
-			localStorage.setItem(
-				"currentRoundIndex",
-				JSON.stringify(currentRoundIndex + 1)
-			);
 			updateCurrentRoundIndexes(game, currentRoundIndex + 1);
 		}
 		// Send score to Firebase
@@ -147,19 +149,22 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	 * On round fail
 	 */
 	const onRoundFail = (game: GameName) => {
+		// Set round failed, just temporary, to show success message
 		setRoundFailed(true);
+		setTimeout(() => {
+			setRoundFailed(false);
+		}, 5500);
 		// Get current round index
 		const currentRoundIndex = getGameCurrentRoundIndex(game);
 		if (currentRoundIndex === numberOfRounds - 1) {
 			setAllRoundsPassed(true);
+			setTimeout(() => {
+				setAllRoundsPassed(false);
+			}, 5500);
 		} else {
 			// Reset errors
 			updateErrors(game, [], false);
 			// Go to next round
-			localStorage.setItem(
-				"currentRoundIndex",
-				JSON.stringify(currentRoundIndex + 1)
-			);
 			updateCurrentRoundIndexes(game, currentRoundIndex + 1);
 		}
 	};
@@ -172,9 +177,6 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 		questionId: number,
 		completed: HangmanProgressCompletedProps[]
 	) => {
-		setRoundComplete(false);
-		setRoundFailed(false);
-
 		await setProgress((prevProgress) => {
 			// Find the index of the object with the same game name
 			const existingGameIndex = prevProgress.findIndex(
