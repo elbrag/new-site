@@ -15,7 +15,7 @@ const useProgress = () => {
 	 */
 	const getGameProgress = (game: GameName, _progress?: any) => {
 		return (
-			(_progress ?? progress).find((p: any) => p.game === game)?.progress ?? []
+			(_progress ?? progress).find((p: any) => p.game === game)?.questions ?? []
 		);
 	};
 

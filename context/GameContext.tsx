@@ -151,7 +151,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 				const updatedProgress = prevProgress.map((item, index) => {
 					if (index === existingGameIndex) {
 						// Find the index of the progress item with the same questionId
-						const existingQuestionIndex = item.progress.findIndex(
+						const existingQuestionIndex = item.questions.findIndex(
 							(progressItem: any) => progressItem.questionId === questionId
 						);
 
@@ -159,7 +159,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 						if (existingQuestionIndex !== -1) {
 							return {
 								...item,
-								progress: item.progress.map((progressItem: any) => {
+								questions: item.questions.map((progressItem: any) => {
 									if (progressItem.questionId === questionId) {
 										return {
 											...progressItem,
@@ -173,8 +173,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 							// If no progress item with the same questionId exists, add a new progress item
 							return {
 								...item,
-								progress: [
-									...item.progress,
+								questions: [
+									...item.questions,
 									{
 										questionId,
 										completed,
@@ -199,7 +199,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 					...prevProgress,
 					{
 						game: game,
-						progress: [
+						questions: [
 							{
 								questionId,
 								completed,
