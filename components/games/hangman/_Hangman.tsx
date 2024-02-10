@@ -24,7 +24,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	const {
 		updateProgress,
 		setRoundLength,
-		currentRoundIndex,
+		getGameCurrentRoundIndex,
 		getQuestionStatus,
 		errors,
 		updateErrors,
@@ -71,8 +71,12 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 * Update question id if currentRoundIndex changes
 	 */
 	useEffect(() => {
-		setQuestionId(parseInt(maskedWords[currentRoundIndex]?.questionId));
-	}, [currentRoundIndex, maskedWords]);
+		setQuestionId(
+			parseInt(
+				maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]?.questionId
+			)
+		);
+	}, [getGameCurrentRoundIndex, maskedWords]);
 
 	/**
 	 * Set round fail if error count meets the limit
@@ -93,6 +97,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 */
 	useEffect(() => {
 		const fetchData = async () => {
+			const currentRoundIndex = getGameCurrentRoundIndex(GameName.Hangman);
 			// TODO: Rename maskedwords, maybe to sentence
 			const maskedWords = await fetchGameData("hangman", "GET");
 			setMaskedWords(maskedWords);
@@ -166,29 +171,29 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 					<div className="words flex gap-6 mb-12">
 						{(() => {
 							let indexOutOfTotal = 0;
-							return maskedWords[currentRoundIndex].maskedWord.map(
-								(wordCount, i) => {
-									return (
-										<div className="word flex gap-1" key={`word-${i}`}>
-											{Array.from({
-												length: wordCount,
-											}).map((_, index) => {
-												const curIndex = indexOutOfTotal;
-												indexOutOfTotal++;
-												return (
-													<div
-														className="letter flex flex-col"
-														key={`letter-${curIndex}`}
-													>
-														<LetterSlot letter={letterToShow(curIndex)} />
-														<Lodash />
-													</div>
-												);
-											})}
-										</div>
-									);
-								}
-							);
+							return maskedWords[
+								getGameCurrentRoundIndex(GameName.Hangman)
+							].maskedWord.map((wordCount, i) => {
+								return (
+									<div className="word flex gap-1" key={`word-${i}`}>
+										{Array.from({
+											length: wordCount,
+										}).map((_, index) => {
+											const curIndex = indexOutOfTotal;
+											indexOutOfTotal++;
+											return (
+												<div
+													className="letter flex flex-col"
+													key={`letter-${curIndex}`}
+												>
+													<LetterSlot letter={letterToShow(curIndex)} />
+													<Lodash />
+												</div>
+											);
+										})}
+									</div>
+								);
+							});
 						})()}
 					</div>
 				) : (

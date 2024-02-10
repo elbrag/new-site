@@ -25,8 +25,6 @@ interface GameContextProps {
 		completed: HangmanProgressCompletedProps[]
 	) => void;
 	getGameProgress: (_game: GameName) => ProgressQuestionProps[];
-	currentRoundIndex: number;
-	setCurrentRoundIndex: (index: number) => void;
 	getQuestionStatus: (
 		_game: GameName,
 		questionId: number
@@ -36,6 +34,8 @@ interface GameContextProps {
 	updateErrors: (_game: GameName, error: string | [], merge: boolean) => void;
 	roundLength: number | null;
 	setRoundLength: (roundLength: number) => void;
+	updateCurrentRoundIndexes: (game: GameName, roundIndex: number) => void;
+	getGameCurrentRoundIndex: (game: GameName) => number;
 	roundComplete: boolean;
 	setRoundComplete: (complete: boolean) => void;
 	roundFailed: boolean;
@@ -53,8 +53,6 @@ export const GameContext = createContext<GameContextProps>({
 	updateUsername: () => {},
 	progress: [],
 	updateProgress: () => {},
-	currentRoundIndex: 0,
-	setCurrentRoundIndex: () => {},
 	getGameProgress: () => [],
 	getQuestionStatus: () => null,
 	getGameErrors: () => [],
@@ -62,6 +60,8 @@ export const GameContext = createContext<GameContextProps>({
 	updateErrors: () => {},
 	roundLength: null,
 	setRoundLength: () => {},
+	updateCurrentRoundIndexes: () => {},
+	getGameCurrentRoundIndex: () => 0,
 	roundComplete: false,
 	setRoundComplete: () => {},
 	roundFailed: false,
@@ -93,8 +93,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	const {
 		roundLength,
 		setRoundLength,
-		currentRoundIndex,
-		setCurrentRoundIndex,
+		updateCurrentRoundIndexes,
+		getGameCurrentRoundIndex,
 		roundComplete,
 		setRoundComplete,
 		roundFailed,
@@ -112,6 +112,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	const onRoundComplete = (game: GameName) => {
 		// Set round complete, just temporary, to show success message
 		setRoundComplete(true);
+		// Get current round index
+		const currentRoundIndex = getGameCurrentRoundIndex(game);
 		// Check if all rounds are completed
 		if (currentRoundIndex === numberOfRounds - 1) {
 			setAllRoundsPassed(true);
@@ -123,7 +125,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 				"currentRoundIndex",
 				JSON.stringify(currentRoundIndex + 1)
 			);
-			setCurrentRoundIndex(currentRoundIndex + 1);
+			updateCurrentRoundIndexes(game, currentRoundIndex + 1);
 		}
 		// TODO: Set points in firebase
 	};
@@ -145,6 +147,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	 */
 	const onRoundFail = (game: GameName) => {
 		setRoundFailed(true);
+		// Get current round index
+		const currentRoundIndex = getGameCurrentRoundIndex(game);
 		if (currentRoundIndex === numberOfRounds - 1) {
 			setAllRoundsPassed(true);
 		} else {
@@ -155,7 +159,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 				"currentRoundIndex",
 				JSON.stringify(currentRoundIndex + 1)
 			);
-			setCurrentRoundIndex(currentRoundIndex + 1);
+			updateCurrentRoundIndexes(game, currentRoundIndex + 1);
 		}
 	};
 
@@ -268,13 +272,13 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 				getGameErrors,
 				roundLength,
 				setRoundLength,
+				updateCurrentRoundIndexes,
+				getGameCurrentRoundIndex,
 				roundComplete,
 				setRoundComplete,
 				roundFailed,
 				setRoundFailed,
 				onRoundFail,
-				currentRoundIndex,
-				setCurrentRoundIndex,
 				setNumberOfRounds,
 				allRoundsPassed,
 			}}

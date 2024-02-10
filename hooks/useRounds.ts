@@ -1,7 +1,11 @@
+import { CurrentRoundIndexProps } from "@/lib/types/currentRoundIndex";
+import { GameName } from "@/lib/types/game";
 import { useEffect, useState } from "react";
 
 const useRounds = () => {
-	const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
+	const [currentRoundIndexes, setCurrentRoundIndexes] = useState<
+		CurrentRoundIndexProps[]
+	>([]);
 	const [roundLength, setRoundLength] = useState<number | null>(null);
 	const [roundComplete, setRoundComplete] = useState(false);
 	const [roundFailed, setRoundFailed] = useState(false);
@@ -10,14 +14,64 @@ const useRounds = () => {
 
 	useEffect(() => {
 		// Keep state synced with local storage values
-		const storedCurrentRoundIndex = localStorage.getItem("currentRoundIndex");
-		if (storedCurrentRoundIndex)
-			setCurrentRoundIndex(JSON.parse(storedCurrentRoundIndex));
+		const storedCurrentRoundIndexes = localStorage.getItem(
+			"currentRoundIndexes"
+		);
+		if (storedCurrentRoundIndexes)
+			setCurrentRoundIndexes(JSON.parse(storedCurrentRoundIndexes));
 	}, []);
 
+	/**
+	 * Update errors
+	 */
+	const updateCurrentRoundIndexes = async (
+		game: GameName,
+		roundIndex: number
+	) => {
+		setCurrentRoundIndexes((prevRoundIndexes) => {
+			const existingIndex = prevRoundIndexes.findIndex(
+				(item) => item.game === game
+			);
+			// If there are already errors for this game
+			if (existingIndex !== -1) {
+				const updatedRoundIndexes = prevRoundIndexes.map((item, index) => {
+					if (index === existingIndex) {
+						return {
+							...item,
+							currentRoundIndex: roundIndex,
+						};
+					}
+					return item;
+				});
+				localStorage.setItem(
+					"currentRoundIndexes",
+					JSON.stringify(updatedRoundIndexes)
+				);
+				return updatedRoundIndexes;
+			}
+			const newRoundIndexes = [
+				...prevRoundIndexes,
+				{ game: game, currentRoundIndex: roundIndex },
+			];
+			localStorage.setItem(
+				"currentRoundIndexes",
+				JSON.stringify(newRoundIndexes)
+			);
+			return newRoundIndexes;
+		});
+	};
+
+	/**
+	 * Get game specific current round index
+	 */
+	const getGameCurrentRoundIndex = (game: GameName): number => {
+		return (
+			currentRoundIndexes.find((i: CurrentRoundIndexProps) => i.game === game)
+				?.currentRoundIndex ?? 0
+		);
+	};
+
 	return {
-		currentRoundIndex,
-		setCurrentRoundIndex,
 		roundLength,
 		setRoundLength,
 		roundComplete,
@@ -28,6 +82,8 @@ const useRounds = () => {
 		setNumberOfRounds,
 		allRoundsPassed,
 		setAllRoundsPassed,
+		updateCurrentRoundIndexes,
+		getGameCurrentRoundIndex,
 	};
 };
 

@@ -20,7 +20,6 @@ const useErrors = () => {
 		error: string | [],
 		merge: boolean = false
 	) => {
-		console.log("Update errors");
 		const shouldReset = Array.isArray(error) && error.length === 0;
 		setErrors((prevErrors) => {
 			const existingIndex = prevErrors.findIndex((item) => item.game === game);
