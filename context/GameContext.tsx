@@ -33,7 +33,7 @@ interface GameContextProps {
 	) => ProgressQuestionProps | null;
 	getGameErrors: (_game: GameName) => string[];
 	errors: ErrorProps[];
-	updateErrors: (_game: GameName, error: string, merge: boolean) => void;
+	updateErrors: (_game: GameName, error: string | [], merge: boolean) => void;
 	roundLength: number | null;
 	setRoundLength: (roundLength: number) => void;
 	roundComplete: boolean;

@@ -119,7 +119,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 			getQuestionStatus(GameName.Hangman, questionId)?.completed || [];
 		// Check if letter already has been tried
 		const alreadyFound = currentQuestionCompleted.some(
-			(question: any) => question.letter === letter
+			(question: HangmanProgressCompletedProps) => question.letter === letter
 		);
 		const alreadyErrored = getGameErrors(GameName.Hangman).includes(letter);
 		if (alreadyFound || alreadyErrored) {
