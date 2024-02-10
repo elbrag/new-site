@@ -6,6 +6,11 @@ import useUser from "@/hooks/useUser";
 import useProgress from "@/hooks/useProgress";
 import useErrors from "@/hooks/useErrors";
 import useRounds from "@/hooks/useRounds";
+import {
+	HangmanProgressCompletedProps,
+	ProgressProps,
+	ProgressQuestionProps,
+} from "@/lib/types/progress";
 interface GameContextProps {
 	gameUrls: string[];
 	currentScore: number;
@@ -13,12 +18,19 @@ interface GameContextProps {
 	username: string | null;
 	updateUsername: (_username: string) => void;
 	//TODO: type
-	progress: any;
-	updateProgress: (_game: GameName, questionId: number, completed: any) => void;
-	getGameProgress: (_game: GameName) => any;
+	progress: ProgressProps[];
+	updateProgress: (
+		_game: GameName,
+		questionId: number,
+		completed: HangmanProgressCompletedProps[]
+	) => void;
+	getGameProgress: (_game: GameName) => ProgressQuestionProps[];
 	currentRoundIndex: number;
 	setCurrentRoundIndex: (index: number) => void;
-	getQuestionStatus: (_game: GameName, questionId: number) => any;
+	getQuestionStatus: (
+		_game: GameName,
+		questionId: number
+	) => ProgressQuestionProps | null;
 	getGameErrors: (_game: GameName) => any;
 	errors: any;
 	updateErrors: (_game: GameName, error: any, merge: boolean) => void;
@@ -39,12 +51,12 @@ export const GameContext = createContext<GameContextProps>({
 	updateScore: () => {},
 	username: null,
 	updateUsername: () => {},
-	progress: {},
+	progress: [],
 	updateProgress: () => {},
 	currentRoundIndex: 0,
 	setCurrentRoundIndex: () => {},
-	getGameProgress: () => {},
-	getQuestionStatus: () => {},
+	getGameProgress: () => [],
+	getQuestionStatus: () => null,
 	getGameErrors: () => {},
 	errors: [],
 	updateErrors: () => {},
@@ -121,7 +133,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	 * Check if completed
 	 */
 	const checkIfCompleted = (
-		_progress: any,
+		_progress: ProgressProps[],
 		game: GameName,
 		questionId: number
 	) => {
@@ -135,7 +147,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	const updateProgress = async (
 		game: GameName,
 		questionId: number,
-		completed: any
+		completed: HangmanProgressCompletedProps[]
 	) => {
 		setRoundComplete(false);
 		setRoundFailed(false);
@@ -152,22 +164,25 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 					if (index === existingGameIndex) {
 						// Find the index of the progress item with the same questionId
 						const existingQuestionIndex = item.questions.findIndex(
-							(progressItem: any) => progressItem.questionId === questionId
+							(progressItem: ProgressQuestionProps) =>
+								progressItem.questionId === questionId
 						);
 
 						// If a progress item with the same questionId exists, update its completed data
 						if (existingQuestionIndex !== -1) {
 							return {
 								...item,
-								questions: item.questions.map((progressItem: any) => {
-									if (progressItem.questionId === questionId) {
-										return {
-											...progressItem,
-											completed: [...progressItem.completed, ...completed],
-										};
+								questions: item.questions.map(
+									(progressItem: ProgressQuestionProps) => {
+										if (progressItem.questionId === questionId) {
+											return {
+												...progressItem,
+												completed: [...progressItem.completed, ...completed],
+											};
+										}
+										return progressItem;
 									}
-									return progressItem;
-								}),
+								),
 							};
 						} else {
 							// If no progress item with the same questionId exists, add a new progress item

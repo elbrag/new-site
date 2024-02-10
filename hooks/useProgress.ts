@@ -1,8 +1,9 @@
 import { GameName } from "@/lib/types/game";
+import { ProgressProps, ProgressQuestionProps } from "@/lib/types/progress";
 import { useEffect, useState } from "react";
 
 const useProgress = () => {
-	const [progress, setProgress] = useState<any[]>([]);
+	const [progress, setProgress] = useState<ProgressProps[]>([]);
 
 	useEffect(() => {
 		// Keep state synced with local storage values
@@ -13,9 +14,13 @@ const useProgress = () => {
 	/**
 	 * Get game specific progress
 	 */
-	const getGameProgress = (game: GameName, _progress?: any) => {
+	const getGameProgress = (
+		game: GameName,
+		_progress?: ProgressProps[]
+	): ProgressQuestionProps[] => {
 		return (
-			(_progress ?? progress).find((p: any) => p.game === game)?.questions ?? []
+			(_progress ?? progress).find((p: ProgressProps) => p.game === game)
+				?.questions ?? []
 		);
 	};
 
@@ -25,12 +30,12 @@ const useProgress = () => {
 	const getQuestionStatus = (
 		game: GameName,
 		questionId: number,
-		_progress?: any
-	) => {
+		_progress?: ProgressProps[]
+	): ProgressQuestionProps | null => {
 		const progressObj = _progress ?? progress;
 		return (
 			getGameProgress(game, progressObj)?.find(
-				(p: any) => p.questionId === questionId
+				(p: ProgressQuestionProps) => p.questionId === questionId
 			) ?? null
 		);
 	};

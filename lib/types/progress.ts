@@ -1,5 +1,7 @@
+import { GameName } from "./game";
+
 export interface ProgressProps {
-	game: string;
+	game: GameName;
 	questions: ProgressQuestionProps[];
 }
 

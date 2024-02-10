@@ -12,6 +12,7 @@ import { AnimatePresence } from "framer-motion";
 import HangedMan, { hangmanPartsInOrder } from "./HangedMan";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import FailedScreen from "@/components/ui/FailedScreen";
+import { HangmanProgressCompletedProps } from "@/lib/types/progress";
 
 interface HangmanProps {}
 
@@ -152,7 +153,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 			questionId
 		);
 		const match = currentQuestionStatus?.completed.find(
-			(c: any) => c.index === index
+			(c: HangmanProgressCompletedProps) => c.index === index
 		);
 		return match?.letter ?? null;
 	};
