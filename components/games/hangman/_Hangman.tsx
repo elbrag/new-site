@@ -228,7 +228,6 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 				)}
 			</div>
 			{/* Man  */}
-			{/* TODO: Check why gameErrors remains from one round to another */}
 			<div className="h-[408px]">
 				<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
 			</div>

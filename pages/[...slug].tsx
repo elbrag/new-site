@@ -44,9 +44,6 @@ const GamePage = () => {
 					<GameComponent />
 				</div>
 			</div>
-
-			{/* <button onClick={() => updateScore(1)}>Add point</button>
-			{currentScore} */}
 		</div>
 	);
 };

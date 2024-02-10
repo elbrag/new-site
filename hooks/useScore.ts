@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
-import { getDatabase, ref, onValue, set, get } from "firebase/database";
+import { ref, set, get } from "firebase/database";
 import useFirebase from "./useFirebase";
+import gamesData from "../lib/data/gamesData.json";
+import { GameName, GameProps } from "@/lib/types/game";
 
 const useScore = () => {
 	const [currentScore, setCurrentScore] = useState(0);
 	const { userId, database } = useFirebase();
 
-	// Get score
+	/**
+	 * Get score from Firebase
+	 */
 	const getScore = useCallback(() => {
 		if (userId) {
 			const scoreRef = ref(database, `users/${userId}/score`);
@@ -21,16 +25,32 @@ const useScore = () => {
 		}
 	}, [database, userId]);
 
+	/**
+	 * Keep checking for score
+	 */
 	useEffect(() => {
 		getScore();
 	}, [getScore, database, userId]);
 
-	// Update score in Firebase + set state
-	const updateScore = (incoming: number) => {
+	/**
+	 * Update score in Firebase + set state
+	 */
+	const updateScoreInFirebase = (incoming: number) => {
 		const newScore = currentScore + incoming;
 		const scoreRef = ref(database, `users/${userId}/score`);
 		set(scoreRef, newScore);
 		setCurrentScore(newScore);
+	};
+
+	/**
+	 * Update score
+	 *
+	 * Calculate score for game and pass score on to updateScoreInFirebase
+	 */
+	const updateScore = (game: GameName) => {
+		const gameToScore = gamesData.find((data) => data.url === game);
+		const score = gameToScore ? gameToScore.scorePerRound : null;
+		if (score) updateScoreInFirebase(score);
 	};
 
 	return { currentScore, updateScore };

@@ -15,7 +15,7 @@ import { ErrorProps } from "@/lib/types/errors";
 interface GameContextProps {
 	gameUrls: string[];
 	currentScore: number;
-	updateScore: (_incoming: number) => void;
+	updateScore: (_game: GameName) => void;
 	username: string | null;
 	updateUsername: (_username: string) => void;
 	progress: ProgressProps[];
@@ -127,7 +127,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 			);
 			updateCurrentRoundIndexes(game, currentRoundIndex + 1);
 		}
-		// TODO: Set points in firebase
+		// Send score to Firebase
+		updateScore(game);
 	};
 
 	/**

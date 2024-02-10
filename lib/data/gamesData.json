@@ -1,26 +1,32 @@
 [
     {
         "url": "puzzle",
-        "title": "Puzzle"
+        "title": "Puzzle",
+        "scorePerRound": 10
     },
     {
         "url": "memory",
-        "title": "Memory"
+        "title": "Memory",
+        "scorePerRound": 10
     },
     {
         "url": "hangman",
-        "title": "Hangman"
+        "title": "Hangman",
+        "scorePerRound": 10
     },
     {
         "url": "/",
-        "title": "Coming soon"
+        "title": "Coming soon",
+        "scorePerRound": 0
     },
     {
         "url": "/",
-        "title": "Coming soon"
+        "title": "Coming soon",
+        "scorePerRound": 0
     },
     {
         "url": "send-results",
-        "title": "Send results"
+        "title": "Send results",
+        "scorePerRound": 0
     }
 ]
