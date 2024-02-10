@@ -77,7 +77,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	const { username, updateUsername } = useUser();
 	const {
 		progress,
-		updateProgress,
+		setProgress,
 		roundLength,
 		setRoundLength,
 		getGameProgress,
@@ -89,10 +89,135 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 		roundFailed,
 		setRoundFailed,
 		onRoundFail,
+		numberOfRounds,
 		setNumberOfRounds,
 		allRoundsPassed,
+		setAllRoundsPassed,
 	} = useProgress();
 	const { updateErrors, errors, getGameErrors } = useErrors();
+
+	/**
+	 * On round complete
+	 */
+	const onRoundComplete = (game: GameName) => {
+		// Set round complete, just temporary, to show success message
+		setRoundComplete(true);
+		// Check if all rounds are completed
+		if (currentRoundIndex === numberOfRounds - 1) {
+			setAllRoundsPassed(true);
+		} else {
+			// Reset errors
+			updateErrors(game, [], false);
+			// Go to next round
+			localStorage.setItem(
+				"currentRoundIndex",
+				JSON.stringify(currentRoundIndex + 1)
+			);
+			setCurrentRoundIndex(currentRoundIndex + 1);
+		}
+		// TODO: Set points in firebase
+	};
+
+	/**
+	 * Check if completed
+	 */
+	const checkIfCompleted = (
+		_progress: any,
+		game: GameName,
+		questionId: number
+	) => {
+		const questionStatus = getQuestionStatus(game, questionId, _progress);
+		return questionStatus?.completed?.length === roundLength;
+	};
+
+	/**
+	 * Update progress
+	 */
+	const updateProgress = async (
+		game: GameName,
+		questionId: number,
+		completed: any
+	) => {
+		setRoundComplete(false);
+		setRoundFailed(false);
+
+		await setProgress((prevProgress) => {
+			// Find the index of the object with the same game name
+			const existingGameIndex = prevProgress.findIndex(
+				(item) => item.game === game
+			);
+
+			// If an object with the same game name exists
+			if (existingGameIndex !== -1) {
+				const updatedProgress = prevProgress.map((item, index) => {
+					if (index === existingGameIndex) {
+						// Find the index of the progress item with the same questionId
+						const existingQuestionIndex = item.progress.findIndex(
+							(progressItem: any) => progressItem.questionId === questionId
+						);
+
+						// If a progress item with the same questionId exists, update its completed data
+						if (existingQuestionIndex !== -1) {
+							return {
+								...item,
+								progress: item.progress.map((progressItem: any) => {
+									if (progressItem.questionId === questionId) {
+										return {
+											...progressItem,
+											completed: [...progressItem.completed, ...completed],
+										};
+									}
+									return progressItem;
+								}),
+							};
+						} else {
+							// If no progress item with the same questionId exists, add a new progress item
+							return {
+								...item,
+								progress: [
+									...item.progress,
+									{
+										questionId,
+										completed,
+									},
+								],
+							};
+						}
+					}
+					return item;
+				});
+				localStorage.setItem("progress", JSON.stringify(updatedProgress));
+
+				// Check if the current round is completed
+				if (checkIfCompleted(updatedProgress, game, questionId)) {
+					onRoundComplete(game);
+				}
+
+				return updatedProgress;
+			} else {
+				// If no object with the same game name exists, add a new object to progress
+				const newProgress = [
+					...prevProgress,
+					{
+						game: game,
+						progress: [
+							{
+								questionId,
+								completed,
+							},
+						],
+					},
+				];
+				localStorage.setItem("progress", JSON.stringify(newProgress));
+
+				// Check if the current round is completed
+				if (checkIfCompleted(newProgress, game, questionId)) {
+					onRoundComplete(game);
+				}
+				return newProgress;
+			}
+		});
+	};
 
 	return (
 		<GameContext.Provider
