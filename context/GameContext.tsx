@@ -11,13 +11,13 @@ import {
 	ProgressProps,
 	ProgressQuestionProps,
 } from "@/lib/types/progress";
+import { ErrorProps } from "@/lib/types/errors";
 interface GameContextProps {
 	gameUrls: string[];
 	currentScore: number;
 	updateScore: (_incoming: number) => void;
 	username: string | null;
 	updateUsername: (_username: string) => void;
-	//TODO: type
 	progress: ProgressProps[];
 	updateProgress: (
 		_game: GameName,
@@ -31,9 +31,9 @@ interface GameContextProps {
 		_game: GameName,
 		questionId: number
 	) => ProgressQuestionProps | null;
-	getGameErrors: (_game: GameName) => any;
-	errors: any;
-	updateErrors: (_game: GameName, error: any, merge: boolean) => void;
+	getGameErrors: (_game: GameName) => string[];
+	errors: ErrorProps[];
+	updateErrors: (_game: GameName, error: string, merge: boolean) => void;
 	roundLength: number | null;
 	setRoundLength: (roundLength: number) => void;
 	roundComplete: boolean;
@@ -57,7 +57,7 @@ export const GameContext = createContext<GameContextProps>({
 	setCurrentRoundIndex: () => {},
 	getGameProgress: () => [],
 	getQuestionStatus: () => null,
-	getGameErrors: () => {},
+	getGameErrors: () => [],
 	errors: [],
 	updateErrors: () => {},
 	roundLength: null,

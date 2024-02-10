@@ -55,7 +55,7 @@ const useErrors = () => {
 	/**
 	 * Get game specific errors
 	 */
-	const getGameErrors = (game: GameName) => {
+	const getGameErrors = (game: GameName): string[] => {
 		return errors.find((p: any) => p.game === game)?.errors ?? [];
 	};
 
