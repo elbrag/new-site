@@ -15,12 +15,7 @@
         "scorePerRound": 10
     },
     {
-        "url": "/",
-        "title": "Coming soon",
-        "scorePerRound": 0
-    },
-    {
-        "url": "/",
+        "url": "coming-soon",
         "title": "Coming soon",
         "scorePerRound": 0
     },

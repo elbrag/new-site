@@ -1,25 +1,17 @@
 import gamesData from "../lib/data/gamesData.json";
-import { useRouter } from "next/router";
 import { GameContext } from "@/context/GameContext";
-import { Component, useContext } from "react";
+import { useContext } from "react";
 import dynamic from "next/dynamic";
 import { kebabToCamel, kebabToPascal } from "@/lib/helpers/formatting";
 
-const GamePage = () => {
-	const router = useRouter();
-	const { slug } = router.query;
+const GamePage = ({ game }: { game: any }) => {
 	const { updateScore, currentScore } = useContext(GameContext);
 
-	if (!slug || slug.length !== 1) {
-		return <div>Invalid URL</div>;
-	}
-	const gameUrl = slug[0];
-
-	const selectedGame = gamesData.find((g) => g.url === gameUrl);
-
-	if (!selectedGame) {
+	if (!game) {
 		return <div>Game not found</div>;
 	}
+
+	const gameUrl = game.url;
 
 	const GameComponent = dynamic(
 		() =>
@@ -49,3 +41,24 @@ const GamePage = () => {
 };
 
 export default GamePage;
+
+export async function getStaticProps({ params }: { params: any }) {
+	const game = gamesData.find((game) => game.url === params.slug[0]);
+	if (!game) {
+		return {
+			notFound: true,
+		};
+	}
+	return {
+		props: {
+			game,
+		},
+	};
+}
+
+export async function getStaticPaths() {
+	const paths = gamesData.map((game) => ({
+		params: { slug: [game.url] },
+	}));
+	return { paths, fallback: false };
+}
