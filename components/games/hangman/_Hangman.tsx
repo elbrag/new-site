@@ -14,13 +14,14 @@ import SuccessScreen from "@/components/ui/SuccessScreen";
 import FailedScreen from "@/components/ui/FailedScreen";
 import { HangmanProgressCompletedProps } from "@/lib/types/progress";
 
-interface HangmanProps {}
+interface HangmanProps {
+	gameData: any;
+}
 
-const Hangman: React.FC<HangmanProps> = ({}) => {
-	const [maskedWords, setMaskedWords] = useState<HangmanQuestionProps[] | []>(
-		[]
-	);
+const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	const [questionId, setQuestionId] = useState(0);
+	const { maskedWords } = gameData;
+
 	const {
 		updateProgress,
 		setRoundLength,
@@ -97,18 +98,15 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 	 * Fetch masked words
 	 */
 	useEffect(() => {
-		const fetchData = async () => {
+		const setRoundState = async () => {
 			const currentRoundIndex = getGameCurrentRoundIndex(GameName.Hangman);
-			// TODO: Rename maskedwords, maybe to sentence
-			const maskedWords = await fetchGameData("hangman", "GET");
-			setMaskedWords(maskedWords);
 			setNumberOfRounds(maskedWords.length);
 			const numberOfLettersInCurrentWord = maskedWords[
 				currentRoundIndex
 			]?.maskedWord?.reduce((acc: number, nr: number) => acc + nr);
 			setRoundLength(numberOfLettersInCurrentWord);
 		};
-		if (!maskedWords.length) fetchData();
+		setRoundState();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -138,7 +136,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 		}
 		if (questionId) {
 			// Check for match
-			const letterMatches = await fetchGameData("hangman", "POST", {
+			const letterMatches = await fetchGameData(GameName.Hangman, "POST", {
 				letter,
 				questionId,
 			});
@@ -174,7 +172,7 @@ const Hangman: React.FC<HangmanProps> = ({}) => {
 							let indexOutOfTotal = 0;
 							return maskedWords[
 								getGameCurrentRoundIndex(GameName.Hangman)
-							].maskedWord.map((wordCount, i) => {
+							].maskedWord.map((wordCount: number, i: number) => {
 								return (
 									<div className="word flex gap-1" key={`word-${i}`}>
 										{Array.from({

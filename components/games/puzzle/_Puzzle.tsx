@@ -1,8 +1,10 @@
 import React from "react";
 
-interface PuzzleProps {}
+interface PuzzleProps {
+	gameData: any;
+}
 
-const Puzzle: React.FC<PuzzleProps> = ({}) => {
+const Puzzle: React.FC<PuzzleProps> = ({ gameData }) => {
 	return <div className="px-6 lg:px-12">Puzzle</div>;
 };
 

@@ -1,8 +1,10 @@
 import React from "react";
 
-interface SendResultsProps {}
+interface SendResultsProps {
+	gameData: any;
+}
 
-const SendResults: React.FC<SendResultsProps> = ({}) => {
+const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 	return <div className="px-6 lg:px-12">SendResults</div>;
 };
 

@@ -1,8 +1,10 @@
+import { GameName } from "../types/game";
+
 /**
  * Fetch game data wrapper
  */
 export const fetchGameData = async (
-	endpoint: string,
+	endpoint: GameName,
 	method: "POST" | "GET" = "POST",
 	bodyData?: any
 ): Promise<any> => {
@@ -16,7 +18,10 @@ export const fetchGameData = async (
 	if (bodyData) data = { ...data, ...{ body: JSON.stringify(bodyData) } };
 
 	try {
-		const response = await fetch(`/api/games/${endpoint}`, data);
+		const response = await fetch(
+			`${process.env.NEXT_PUBLIC_SITE_URL}/api/games/${endpoint}`,
+			data
+		);
 		const jsonData = await response.json();
 		return jsonData;
 	} catch (error) {

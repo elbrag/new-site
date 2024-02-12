@@ -3,14 +3,13 @@ import { GameContext } from "@/context/GameContext";
 import { useContext } from "react";
 import dynamic from "next/dynamic";
 import { kebabToCamel, kebabToPascal } from "@/lib/helpers/formatting";
+import { GameName, GameProps } from "@/lib/types/game";
+import { fetchGameData } from "@/lib/helpers/fetch";
 
-const GamePage = ({ game }: { game: any }) => {
-	const { updateScore, currentScore } = useContext(GameContext);
-
+const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
 	if (!game) {
 		return <div>Game not found</div>;
 	}
-
 	const gameUrl = game.url;
 
 	const GameComponent = dynamic(
@@ -28,12 +27,12 @@ const GamePage = ({ game }: { game: any }) => {
 			),
 		}
 	);
-
 	return (
 		<div>
 			<div className="px-6 lg:px-12 min-h-screen flex flex-col items-center justify-center">
 				<div>
-					<GameComponent />
+					{/* @ts-ignore */}
+					<GameComponent gameData={gameData} />
 				</div>
 			</div>
 		</div>
@@ -44,6 +43,14 @@ export default GamePage;
 
 export async function getStaticProps({ params }: { params: any }) {
 	const game = gamesData.find((game) => game.url === params.slug[0]);
+
+	let gameData = {};
+
+	if (game?.url === GameName.Hangman) {
+		const maskedWords = await fetchGameData(GameName.Hangman, "GET");
+		gameData = { maskedWords };
+	}
+
 	if (!game) {
 		return {
 			notFound: true,
@@ -52,6 +59,7 @@ export async function getStaticProps({ params }: { params: any }) {
 	return {
 		props: {
 			game,
+			gameData,
 		},
 	};
 }
