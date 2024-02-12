@@ -20,6 +20,11 @@
         "scorePerRound": 0
     },
     {
+        "url": "coming-soon",
+        "title": "Coming soon",
+        "scorePerRound": 0
+    },
+    {
         "url": "send-results",
         "title": "Send results",
         "scorePerRound": 0

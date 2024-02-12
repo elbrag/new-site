@@ -10,7 +10,7 @@ const GameBoard: React.FC = ({}) => {
 			<div className="grid lg:grid-cols-3 lg:grid-rows-2 gap-4 p-4 h-full w-full">
 				{gameUrls.map((gameUrl, i) => (
 					<li key={i}>
-						<GameCard url={gameUrl} locked={gameUrl === "/"} />
+						<GameCard url={gameUrl} locked={gameUrl === "coming-soon"} />
 					</li>
 				))}
 			</div>
