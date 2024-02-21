@@ -13,6 +13,7 @@ import HangedMan, { hangmanPartsInOrder } from "./HangedMan";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import FailedScreen from "@/components/ui/FailedScreen";
 import { HangmanProgressCompletedProps } from "@/lib/types/progress";
+import Pagination from "./Pagination";
 
 interface HangmanProps {
 	gameData: any;
@@ -26,6 +27,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		updateProgress,
 		setRoundLength,
 		getGameCurrentRoundIndex,
+		updateCurrentRoundIndexes,
 		getQuestionStatus,
 		errors,
 		updateErrors,
@@ -33,6 +35,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		roundComplete,
 		roundFailed,
 		onRoundFail,
+		numberOfRounds,
 		setNumberOfRounds,
 		allRoundsPassed,
 	} = useContext(GameContext);
@@ -161,77 +164,87 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	};
 
 	return (
-		<div className="hangman flex flex-col justify-center items-center lg:flex-row min-h-screen">
-			{/* Game  */}
-			<div className="flex flex-col items-center">
-				{maskedWords?.length ? (
-					<div className="words flex gap-6 mb-12">
-						{(() => {
-							let indexOutOfTotal = 0;
-							return maskedWords[
-								getGameCurrentRoundIndex(GameName.Hangman)
-							].maskedWord.map((wordCount: number, i: number) => {
-								return (
-									<div className="word flex gap-1" key={`word-${i}`}>
-										{Array.from({
-											length: wordCount,
-										}).map((_, index) => {
-											const curIndex = indexOutOfTotal;
-											indexOutOfTotal++;
-											return (
-												<div
-													className="letter flex flex-col"
-													key={`letter-${curIndex}`}
-												>
-													<LetterSlot letter={letterToShow(curIndex)} />
-													<Lodash />
-												</div>
-											);
-										})}
-									</div>
-								);
-							});
-						})()}
+		<div className="hangman min-h-screen">
+			<div className="flex flex-col justify-center items-center lg:flex-row">
+				{/* Game  */}
+				<div className="flex flex-col items-center">
+					{maskedWords?.length ? (
+						<div className="words flex gap-6 mb-12">
+							{(() => {
+								let indexOutOfTotal = 0;
+								return maskedWords[
+									getGameCurrentRoundIndex(GameName.Hangman)
+								].maskedWord.map((wordCount: number, i: number) => {
+									return (
+										<div className="word flex gap-1" key={`word-${i}`}>
+											{Array.from({
+												length: wordCount,
+											}).map((_, index) => {
+												const curIndex = indexOutOfTotal;
+												indexOutOfTotal++;
+												return (
+													<div
+														className="letter flex flex-col"
+														key={`letter-${curIndex}`}
+													>
+														<LetterSlot letter={letterToShow(curIndex)} />
+														<Lodash />
+													</div>
+												);
+											})}
+										</div>
+									);
+								});
+							})()}
+						</div>
+					) : (
+						<div className="h-16"></div>
+					)}
+					<div className="relative">
+						<LetterInput
+							onClick={(value) => {
+								checkLetter(value);
+							}}
+						/>
+						<AnimatePresence>
+							{infoMessage && (
+								<div className="absolute right-0 top-0 translate-x-full">
+									<InfoMessage text={infoMessage} />
+								</div>
+							)}
+						</AnimatePresence>
 					</div>
-				) : (
-					<div className="h-16"></div>
-				)}
-
-				<div className="relative">
-					<LetterInput
-						onClick={(value) => {
-							checkLetter(value);
-						}}
-					/>
-					<AnimatePresence>
-						{infoMessage && (
-							<div className="absolute right-0 top-0 translate-x-full">
-								<InfoMessage text={infoMessage} />
-							</div>
-						)}
-					</AnimatePresence>
+					{!!getGameErrors(GameName.Hangman).length && (
+						<div className="errors my-10">
+							<p>You have already guessed:</p>
+							<ul className="flex gap-2">
+								{getGameErrors(GameName.Hangman).map(
+									(err: string, i: number) => (
+										<li className="uppercase text-lg" key={`error-${i}`}>
+											{err}
+										</li>
+									)
+								)}
+							</ul>
+						</div>
+					)}
 				</div>
-				{!!getGameErrors(GameName.Hangman).length && (
-					<div className="errors my-10">
-						<p>You have already guessed:</p>
-						<ul className="flex gap-2">
-							{getGameErrors(GameName.Hangman).map((err: string, i: number) => (
-								<li className="uppercase text-lg" key={`error-${i}`}>
-									{err}
-								</li>
-							))}
-						</ul>
-					</div>
-				)}
+				{/* Man  */}
+				<div className="h-[408px]">
+					<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
+				</div>
+				<AnimatePresence>
+					{successMessage && <SuccessScreen text={successMessage} />}
+					{failedMessage && <FailedScreen text={failedMessage} />}
+				</AnimatePresence>
 			</div>
-			{/* Man  */}
-			<div className="h-[408px]">
-				<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
-			</div>
-			<AnimatePresence>
-				{successMessage && <SuccessScreen text={successMessage} />}
-				{failedMessage && <FailedScreen text={failedMessage} />}
-			</AnimatePresence>
+			<Pagination
+				itemLength={numberOfRounds}
+				onClick={(index) => {
+					updateCurrentRoundIndexes(GameName.Hangman, index);
+				}}
+				activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
+			/>
 		</div>
 	);
 };

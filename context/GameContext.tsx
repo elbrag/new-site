@@ -41,6 +41,7 @@ interface GameContextProps {
 	roundFailed: boolean;
 	setRoundFailed: (failed: boolean) => void;
 	onRoundFail: (_game: GameName) => void;
+	numberOfRounds: number;
 	setNumberOfRounds: (numberOfRounds: number) => void;
 	allRoundsPassed: boolean;
 }
@@ -67,6 +68,7 @@ export const GameContext = createContext<GameContextProps>({
 	roundFailed: false,
 	setRoundFailed: () => {},
 	onRoundFail: () => {},
+	numberOfRounds: 0,
 	setNumberOfRounds: () => {},
 	allRoundsPassed: false,
 });
@@ -282,6 +284,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 				roundFailed,
 				setRoundFailed,
 				onRoundFail,
+				numberOfRounds,
 				setNumberOfRounds,
 				allRoundsPassed,
 			}}
