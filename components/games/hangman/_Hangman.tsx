@@ -33,8 +33,6 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		roundComplete,
 		roundFailed,
 		onRoundFail,
-		setRoundComplete,
-		setRoundFailed,
 		setNumberOfRounds,
 		allRoundsPassed,
 	} = useContext(GameContext);
