@@ -44,6 +44,7 @@ interface GameContextProps {
 	numberOfRounds: number;
 	setNumberOfRounds: (numberOfRounds: number) => void;
 	allRoundsPassed: boolean;
+	resetRound: (game: GameName, questionId: number) => void;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -71,6 +72,7 @@ export const GameContext = createContext<GameContextProps>({
 	numberOfRounds: 0,
 	setNumberOfRounds: () => {},
 	allRoundsPassed: false,
+	resetRound: () => {},
 });
 
 interface CategoryPageProviderProps {
@@ -177,8 +179,10 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	const updateProgress = async (
 		game: GameName,
 		questionId: number,
-		completed: HangmanProgressCompletedProps[]
+		completed: HangmanProgressCompletedProps[] | []
 	) => {
+		const shouldReset = Array.isArray(completed) && completed.length === 0;
+
 		await setProgress((prevProgress) => {
 			// Find the index of the object with the same game name
 			const existingGameIndex = prevProgress.findIndex(
@@ -204,7 +208,9 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 										if (progressItem.questionId === questionId) {
 											return {
 												...progressItem,
-												completed: [...progressItem.completed, ...completed],
+												completed: shouldReset
+													? []
+													: [...progressItem.completed, ...completed],
 											};
 										}
 										return progressItem;
@@ -260,6 +266,14 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 		});
 	};
 
+	/**
+	 * Reset round progress and errors
+	 */
+	const resetRound = (game: GameName, questionId: number) => {
+		updateErrors(game, [], false);
+		updateProgress(game, questionId, []);
+	};
+
 	return (
 		<GameContext.Provider
 			value={{
@@ -287,6 +301,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 				numberOfRounds,
 				setNumberOfRounds,
 				allRoundsPassed,
+				resetRound,
 			}}
 		>
 			{children}

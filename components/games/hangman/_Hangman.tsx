@@ -1,5 +1,4 @@
 import { fetchGameData } from "@/lib/helpers/fetch";
-import { HangmanQuestionProps } from "@/lib/types/questions";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import LetterSlot from "./LetterSlot";
 import Lodash from "./Lodash";
@@ -14,6 +13,7 @@ import SuccessScreen from "@/components/ui/SuccessScreen";
 import FailedScreen from "@/components/ui/FailedScreen";
 import { HangmanProgressCompletedProps } from "@/lib/types/progress";
 import Pagination from "./Pagination";
+import ResetButton from "./ResetButton";
 
 interface HangmanProps {
 	gameData: any;
@@ -38,6 +38,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		numberOfRounds,
 		setNumberOfRounds,
 		allRoundsPassed,
+		resetRound,
 	} = useContext(GameContext);
 
 	const {
@@ -238,13 +239,20 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 					{failedMessage && <FailedScreen text={failedMessage} />}
 				</AnimatePresence>
 			</div>
-			<Pagination
-				itemLength={numberOfRounds}
-				onClick={(index) => {
-					updateCurrentRoundIndexes(GameName.Hangman, index);
-				}}
-				activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
-			/>
+			<div className="flex gap-6">
+				<Pagination
+					itemLength={numberOfRounds}
+					onClick={(index) => {
+						updateCurrentRoundIndexes(GameName.Hangman, index);
+					}}
+					activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
+				/>
+				<ResetButton
+					onSubmit={() => {
+						resetRound(GameName.Hangman, questionId);
+					}}
+				/>
+			</div>
 		</div>
 	);
 };
