@@ -14,17 +14,26 @@
 		--foreground-rgb: 255, 255, 255;
 		--background-start-rgb: 0, 0, 0;
 		--background-end-rgb: 0, 0, 0;
+		--line-color-1: rgb(226, 226, 226);
+		--line-color-2: #e8e8e8;
 	}
 }
 
 body {
-	color: rgb(var(--foreground-rgb));
-	background: linear-gradient(
-			to bottom,
-			transparent,
-			rgb(var(--background-end-rgb))
-		)
-		rgb(var(--background-start-rgb));
+	@apply bg-military;
+}
+
+.page-content {
+	@apply bg-paper;
+	background-image: linear-gradient(
+			var(--line-color-1) 1.5px,
+			transparent 1.5px
+		),
+		linear-gradient(90deg, var(--line-color-1) 1.5px, transparent 1.5px),
+		linear-gradient(var(--line-color-2) 1px, transparent 1px),
+		linear-gradient(90deg, var(--line-color-2) 1px, transparent 1px);
+	background-position: -1.5px -1.5px, -1.5px -1.5px, -1px -1px, -1px -1px;
+	background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
 }
 
 li {

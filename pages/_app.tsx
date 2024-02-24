@@ -34,13 +34,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<main
-				className={`min-h-screen flex flex-col bg-cream text-black font-dela ${
+				className={`min-h-screen flex flex-col  text-military font-dela ${
 					router.asPath === "/" ? "h-screen" : ""
 				} ${fonts.join(" ")}`}
 			>
 				<Navigation />
 				<GameContextProvider>
-					<div className="page-content flex-grow h-full flex flex-col justify-center">
+					<div className="page-content flex-grow h-full flex flex-col justify-center mx-5">
 						<Component {...pageProps} />
 					</div>
 					<Footer />

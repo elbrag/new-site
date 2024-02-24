@@ -7,7 +7,7 @@ export default function Footer() {
 	const { currentScore, username, updateUsername } = useContext(GameContext);
 
 	return (
-		<footer className="p-6 lg:p-12 flex justify-between text-black">
+		<footer className="py-4 px-5 flex justify-between text-lime">
 			<div>
 				<input
 					onKeyUp={(e: any) => setInputValue(e.currentTarget.value)}

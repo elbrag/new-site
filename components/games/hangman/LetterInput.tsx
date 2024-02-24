@@ -11,7 +11,7 @@ const LetterInput: React.FC<LetterInputProps> = ({ onClick }) => {
 	const handleInputChange = (e: any) => {
 		const value = e.currentTarget.value;
 
-		if (value === "" || value.match(/^[A-Za-z]$/)) {
+		if (value === "" || value.match(/^[A-Öa-ö]$/)) {
 			setInputValue(value);
 		}
 	};
@@ -20,7 +20,7 @@ const LetterInput: React.FC<LetterInputProps> = ({ onClick }) => {
 		<div className="letter-input flex items-center gap-4">
 			<input
 				type="text"
-				className="text-3xl text-center p-3 focus:outline-none active:outline-none w-24 uppercase"
+				className="text-2xl text-center p-2 focus:outline-none active:outline-none w-20 uppercase border-military border-2"
 				maxLength={1}
 				onChange={(e) => handleInputChange(e)}
 				value={inputValue}

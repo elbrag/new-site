@@ -15,6 +15,7 @@ export enum IconTypes {
 }
 
 export enum IconColors {
+	Military = "military",
 	Black = "black",
 	Lime = "lime",
 	Cream = "cream",

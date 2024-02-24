@@ -165,8 +165,8 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	};
 
 	return (
-		<div className="hangman min-h-screen">
-			<div className="flex flex-col justify-center items-center lg:flex-row">
+		<div className="hangman min-h-screen flex flex-col justify-center w-full">
+			<div className="flex flex-col justify-center items-center lg:flex-row lg:justify-around gap-4">
 				{/* Game  */}
 				<div className="flex flex-col items-center">
 					{maskedWords?.length ? (
@@ -185,7 +185,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 												indexOutOfTotal++;
 												return (
 													<div
-														className="letter flex flex-col"
+														className="letter flex flex-col items-center"
 														key={`letter-${curIndex}`}
 													>
 														<LetterSlot letter={letterToShow(curIndex)} />
@@ -217,11 +217,13 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 					</div>
 					{!!getGameErrors(GameName.Hangman).length && (
 						<div className="errors my-10">
-							<p>You have already guessed:</p>
 							<ul className="flex gap-2">
 								{getGameErrors(GameName.Hangman).map(
 									(err: string, i: number) => (
-										<li className="uppercase text-lg" key={`error-${i}`}>
+										<li
+											className="uppercase text-lg lg:text-xl"
+											key={`error-${i}`}
+										>
 											{err}
 										</li>
 									)
@@ -239,7 +241,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 					{failedMessage && <FailedScreen text={failedMessage} />}
 				</AnimatePresence>
 			</div>
-			<div className="flex gap-6">
+			{/* <div className="flex gap-6">
 				<Pagination
 					itemLength={numberOfRounds}
 					onClick={(index) => {
@@ -252,7 +254,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 						resetRound(GameName.Hangman, questionId);
 					}}
 				/>
-			</div>
+			</div> */}
 		</div>
 	);
 };
