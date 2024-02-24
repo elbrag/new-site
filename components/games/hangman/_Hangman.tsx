@@ -170,33 +170,41 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 				{/* Game  */}
 				<div className="flex flex-col items-center">
 					{maskedWords?.length ? (
-						<div className="words flex gap-6 mb-12">
-							{(() => {
-								let indexOutOfTotal = 0;
-								return maskedWords[
-									getGameCurrentRoundIndex(GameName.Hangman)
-								].maskedWord.map((wordCount: number, i: number) => {
-									return (
-										<div className="word flex gap-1" key={`word-${i}`}>
-											{Array.from({
-												length: wordCount,
-											}).map((_, index) => {
-												const curIndex = indexOutOfTotal;
-												indexOutOfTotal++;
-												return (
-													<div
-														className="letter flex flex-col items-center"
-														key={`letter-${curIndex}`}
-													>
-														<LetterSlot letter={letterToShow(curIndex)} />
-														<Lodash />
-													</div>
-												);
-											})}
-										</div>
-									);
-								});
-							})()}
+						<div>
+							<h2 className="text-center font-alegreya text-lg mb-10">
+								{
+									maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
+										?.description
+								}
+							</h2>
+							<div className="words flex gap-6 mb-16">
+								{(() => {
+									let indexOutOfTotal = 0;
+									return maskedWords[
+										getGameCurrentRoundIndex(GameName.Hangman)
+									].maskedWord.map((wordCount: number, i: number) => {
+										return (
+											<div className="word flex gap-1" key={`word-`}>
+												{Array.from({
+													length: wordCount,
+												}).map((_, index) => {
+													const curIndex = indexOutOfTotal;
+													indexOutOfTotal++;
+													return (
+														<div
+															className="letter flex flex-col items-center"
+															key={`letter-${index}`}
+														>
+															<LetterSlot letter={letterToShow(curIndex)} />
+															<Lodash />
+														</div>
+													);
+												})}
+											</div>
+										);
+									});
+								})()}
+							</div>
 						</div>
 					) : (
 						<div className="h-16"></div>

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import hangman from "../../../lib/data/answers/hangman.json";
-import { HangmanQuestionProps } from "@/lib/types/questions";
+import { HangmanQuestionProps, QuestionProps } from "@/lib/types/questions";
 
 export default function handler(
 	req: NextApiRequest,
@@ -25,6 +25,7 @@ const getMaskedWords = () => {
 	return hangman.map((question) => {
 		return {
 			questionId: question.questionId,
+			description: question.description,
 			maskedWord: question.answer.split(" ").map((answer) => answer.length),
 		};
 	}) as unknown as HangmanQuestionProps;

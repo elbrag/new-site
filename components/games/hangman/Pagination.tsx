@@ -17,8 +17,8 @@ const Pagination: React.FC<PaginationProps> = ({
 				<li key={`page-${index}`}>
 					<button
 						onClick={() => onClick(index)}
-						className={`py-3 px-4 rounded-lg border-2 border-black ${
-							activeItemIndex === index ? "bg-black text-cream" : ""
+						className={`py-3 px-4 rounded-lg border-2 border-military ${
+							activeItemIndex === index ? "bg-military text-paper" : ""
 						}`}
 					>
 						{index + 1}

@@ -11,7 +11,7 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 	return (
 		<Link
 			className={`game-card border-military border-015vw rounded-lg h-full flex items-center justify-center relative shadow-card ${
-				locked ? "bg-cream" : "bg-lime"
+				locked ? "bg-paper" : "bg-lime"
 			}`}
 			href={locked ? "" : url}
 		>

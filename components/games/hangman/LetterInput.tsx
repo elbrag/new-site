@@ -20,7 +20,7 @@ const LetterInput: React.FC<LetterInputProps> = ({ onClick }) => {
 		<div className="letter-input flex items-center gap-4">
 			<input
 				type="text"
-				className="text-2xl text-center p-2 focus:outline-none active:outline-none w-20 uppercase border-military border-2"
+				className="text-2xl text-center p-2 focus:outline-none active:outline-none w-20 uppercase border-military border-2 bg-paper"
 				maxLength={1}
 				onChange={(e) => handleInputChange(e)}
 				value={inputValue}

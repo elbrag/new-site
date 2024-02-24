@@ -24,7 +24,7 @@ module.exports = {
 	],
 	theme: {
 		fontFamily: {
-			blaka: "var(--font-blaka), sans-serif",
+			alegreya: "var(--font-alegreya), sans-serif",
 			dela: "var(--font-dela), sans-serif",
 		},
 		colors: {

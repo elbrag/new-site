@@ -1,10 +1,12 @@
 [
     {
         "questionId": 1,
-        "answer": "A fat ass"
+        "description": "Where I went to university",
+        "answer": "Jönköping"
     },
     {
         "questionId": 2,
-        "answer": "An ugly vulture"
+        "description": "My favourite way of css'ing",
+        "answer": "Tailwind"
     }
 ]

@@ -15,7 +15,7 @@ const FailedScreen: React.FC<FailedScreenProps> = ({ text }) => {
 			transition={{ duration: 0.5 }}
 			className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center"
 		>
-			<div className="px-12 py-8 bg-black text-cream text-2xl rounded-xl">
+			<div className="px-12 py-8 bg-military text-lime text-2xl rounded-xl">
 				{text}
 			</div>
 		</motion.div>
