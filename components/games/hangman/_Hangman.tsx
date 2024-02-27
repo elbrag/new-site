@@ -57,6 +57,16 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	 */
 	useEffect(() => {
 		if (roundComplete) updateSuccessMessage("You beat this round!");
+
+		const setRoundState = async () => {
+			const currentRoundIndex = getGameCurrentRoundIndex(GameName.Hangman);
+			setNumberOfRounds(maskedWords.length);
+			const numberOfLettersInCurrentWord = maskedWords[
+				currentRoundIndex
+			]?.maskedWord?.reduce((acc: number, nr: number) => acc + nr);
+			setRoundLength(numberOfLettersInCurrentWord);
+		};
+		setRoundState();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [roundComplete]);
 
@@ -95,22 +105,6 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [errors]);
-
-	/**
-	 * Fetch masked words
-	 */
-	useEffect(() => {
-		const setRoundState = async () => {
-			const currentRoundIndex = getGameCurrentRoundIndex(GameName.Hangman);
-			setNumberOfRounds(maskedWords.length);
-			const numberOfLettersInCurrentWord = maskedWords[
-				currentRoundIndex
-			]?.maskedWord?.reduce((acc: number, nr: number) => acc + nr);
-			setRoundLength(numberOfLettersInCurrentWord);
-		};
-		setRoundState();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
 
 	/**
 	 * Check letter
@@ -184,7 +178,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 										getGameCurrentRoundIndex(GameName.Hangman)
 									].maskedWord.map((wordCount: number, i: number) => {
 										return (
-											<div className="word flex gap-1" key={`word-`}>
+											<div className="word flex gap-1" key={`word-${i}`}>
 												{Array.from({
 													length: wordCount,
 												}).map((_, index) => {

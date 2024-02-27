@@ -1,12 +1,32 @@
 [
     {
         "questionId": 1,
-        "description": "Where I went to university",
-        "answer": "Jönköping"
+        "description": "Where I got my bachelor's degree",
+        "answer": "Jönköping University"
     },
     {
         "questionId": 2,
         "description": "My favourite way of css'ing",
-        "answer": "Tailwind"
+        "answer": "Tailwind CSS"
+    },
+    {
+        "questionId": 3,
+        "description": "One of my best soft skills",
+        "answer": "Clear communication"
+    },
+    {
+        "questionId": 4,
+        "description": "Possibly my backup career",
+        "answer": "Archeology"
+    },
+    {
+        "questionId": 5,
+        "description": "On my playlist while coding",
+        "answer": "The Chemical Brothers"
+    },
+    {
+        "questionId": 6,
+        "description": "The frontend work that makes me go ❤️‍🔥",
+        "answer": "Motion and physics"
     }
 ]
