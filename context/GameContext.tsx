@@ -133,7 +133,9 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 			// Reset errors
 			updateErrors(game, [], false);
 			// Go to next round
-			updateCurrentRoundIndexes(game, currentRoundIndex + 1);
+			setTimeout(() => {
+				updateCurrentRoundIndexes(game, currentRoundIndex + 1);
+			}, 1000);
 		}
 		// Send score to Firebase
 		updateScore(game);
@@ -171,7 +173,9 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 			// Reset errors
 			updateErrors(game, [], false);
 			// Go to next round
-			updateCurrentRoundIndexes(game, currentRoundIndex + 1);
+			setTimeout(() => {
+				updateCurrentRoundIndexes(game, currentRoundIndex + 1);
+			}, 1000);
 		}
 	};
 

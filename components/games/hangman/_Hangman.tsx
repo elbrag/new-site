@@ -6,7 +6,7 @@ import { GameContext } from "@/context/GameContext";
 import { GameName } from "@/lib/types/game";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import InfoMessage from "@/components/ui/InfoMessage";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import HangedMan, { hangmanPartsInOrder } from "./HangedMan";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import FailedScreen from "@/components/ui/FailedScreen";
@@ -56,7 +56,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	 * Split into these 2 states to enable exit animation
 	 */
 	useEffect(() => {
-		if (roundComplete) updateSuccessMessage("You beat this round!");
+		if (roundComplete) updateSuccessMessage("You got it!");
 
 		const setRoundState = async () => {
 			const currentRoundIndex = getGameCurrentRoundIndex(GameName.Hangman);
@@ -71,7 +71,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	}, [roundComplete]);
 
 	useEffect(() => {
-		if (roundFailed) updateFailedMessage("You lost this round!");
+		if (roundFailed) updateFailedMessage("Ouch, my neck!!");
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [roundFailed]);
 
@@ -164,42 +164,50 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 				{/* Game  */}
 				<div className="flex flex-col items-center">
 					{maskedWords?.length ? (
-						<div>
-							<h2 className="text-center font-alegreya text-lg mb-10">
-								{
-									maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
-										?.description
-								}
-							</h2>
-							<div className="words flex gap-6 mb-16">
-								{(() => {
-									let indexOutOfTotal = 0;
-									return maskedWords[
-										getGameCurrentRoundIndex(GameName.Hangman)
-									].maskedWord.map((wordCount: number, i: number) => {
-										return (
-											<div className="word flex gap-1" key={`word-${i}`}>
-												{Array.from({
-													length: wordCount,
-												}).map((_, index) => {
-													const curIndex = indexOutOfTotal;
-													indexOutOfTotal++;
-													return (
-														<div
-															className="letter flex flex-col items-center"
-															key={`letter-${index}`}
-														>
-															<LetterSlot letter={letterToShow(curIndex)} />
-															<Lodash />
-														</div>
-													);
-												})}
-											</div>
-										);
-									});
-								})()}
-							</div>
-						</div>
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={getGameCurrentRoundIndex(GameName.Hangman)}
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+								transition={{ duration: 0.5 }}
+							>
+								<h2 className="text-center font-alegreya text-lg mb-10">
+									{
+										maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
+											?.description
+									}
+								</h2>
+								<div className="words flex gap-6 mb-16">
+									{(() => {
+										let indexOutOfTotal = 0;
+										return maskedWords[
+											getGameCurrentRoundIndex(GameName.Hangman)
+										].maskedWord.map((wordCount: number, i: number) => {
+											return (
+												<div className="word flex gap-1" key={`word-${i}`}>
+													{Array.from({
+														length: wordCount,
+													}).map((_, index) => {
+														const curIndex = indexOutOfTotal;
+														indexOutOfTotal++;
+														return (
+															<div
+																className="letter flex flex-col items-center"
+																key={`letter-${index}`}
+															>
+																<LetterSlot letter={letterToShow(curIndex)} />
+																<Lodash />
+															</div>
+														);
+													})}
+												</div>
+											);
+										});
+									})()}
+								</div>
+							</motion.div>
+						</AnimatePresence>
 					) : (
 						<div className="h-16"></div>
 					)}

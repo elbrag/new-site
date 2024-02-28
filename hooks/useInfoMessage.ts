@@ -54,7 +54,7 @@ const useInfoMessage = () => {
 		if (message !== null) {
 			successTimeoutRef.current = setTimeout(() => {
 				setSuccessMessage(null);
-			}, 5000);
+			}, 3000);
 		}
 	};
 
@@ -69,7 +69,7 @@ const useInfoMessage = () => {
 		if (message !== null) {
 			failedTimeoutRef.current = setTimeout(() => {
 				setFailedMessage(null);
-			}, 5000);
+			}, 3000);
 		}
 	};
 
