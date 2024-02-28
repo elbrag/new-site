@@ -4,10 +4,12 @@ const useInfoMessage = () => {
 	const [infoMessage, setInfoMessage] = useState<string | null>(null);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 	const [failedMessage, setFailedMessage] = useState<string | null>(null);
+	const [scoreMessage, setScoreMessage] = useState<string | null>(null);
 
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const failedTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const scoreTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
 		return () => {
@@ -19,6 +21,9 @@ const useInfoMessage = () => {
 			}
 			if (failedTimeoutRef.current !== null) {
 				clearTimeout(failedTimeoutRef.current);
+			}
+			if (scoreTimeoutRef.current !== null) {
+				clearTimeout(scoreTimeoutRef.current);
 			}
 		};
 	}, []);
@@ -68,6 +73,21 @@ const useInfoMessage = () => {
 		}
 	};
 
+	/**
+	 * Update score message
+	 */
+	const updateScoreMessage = (message: string | null) => {
+		if (scoreTimeoutRef.current !== null) {
+			clearTimeout(scoreTimeoutRef.current);
+		}
+		setScoreMessage(message);
+		if (message !== null) {
+			scoreTimeoutRef.current = setTimeout(() => {
+				setScoreMessage(null);
+			}, 4000);
+		}
+	};
+
 	// Nice to have: re-animate message even if it's the same message
 
 	return {
@@ -77,6 +97,8 @@ const useInfoMessage = () => {
 		updateSuccessMessage,
 		failedMessage,
 		updateFailedMessage,
+		scoreMessage,
+		updateScoreMessage,
 	};
 };
 

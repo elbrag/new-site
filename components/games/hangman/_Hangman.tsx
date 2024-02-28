@@ -1,7 +1,6 @@
 import { fetchGameData } from "@/lib/helpers/fetch";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import LetterSlot from "./LetterSlot";
-import Lodash from "./Lodash";
 import LetterInput from "./LetterInput";
 import { GameContext } from "@/context/GameContext";
 import { GameName } from "@/lib/types/game";
@@ -14,6 +13,7 @@ import FailedScreen from "@/components/ui/FailedScreen";
 import { HangmanProgressCompletedProps } from "@/lib/types/progress";
 import Pagination from "./Pagination";
 import ResetButton from "./ResetButton";
+import Lodash from "./lodash";
 
 interface HangmanProps {
 	gameData: any;

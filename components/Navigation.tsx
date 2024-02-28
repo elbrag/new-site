@@ -3,7 +3,7 @@ import Icon, { IconColors, IconTypes } from "./ui/Icon";
 
 export default function Navigation() {
 	return (
-		<header className="py-4 px-5">
+		<header className="py-4 px-5 fixed top-0 bg-military w-full z-1">
 			<nav className="flex justify-start items-end">
 				<Link href="/" aria-label="Home" className="block mr-2vw">
 					<Icon

@@ -1,13 +1,13 @@
 import { GameContext } from "@/context/GameContext";
-import Link from "next/link";
 import { useContext, useState } from "react";
+import CurrentScore from "./CurrentScore";
 
 export default function Footer() {
 	const [inputValue, setInputValue] = useState("");
-	const { currentScore, username, updateUsername } = useContext(GameContext);
+	const { username, updateUsername } = useContext(GameContext);
 
 	return (
-		<footer className="py-4 px-5 flex justify-between text-lime">
+		<footer className="py-4 px-5 flex justify-between text-lime fixed bottom-0 w-full bg-military z-1">
 			<div>
 				<input
 					onKeyUp={(e: any) => setInputValue(e.currentTarget.value)}
@@ -18,7 +18,7 @@ export default function Footer() {
 				</button>
 			</div>
 			Username: {username}
-			<p>Score: {currentScore}</p>
+			<CurrentScore />
 		</footer>
 	);
 }

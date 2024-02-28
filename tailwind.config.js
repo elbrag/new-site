@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 
 const distances = {
+	18: "4.5rem",
 	"0125vw": "0.125vw",
 	"015vw": "0.15vw",
 	"1vw": "1vw",
@@ -64,11 +65,18 @@ module.exports = {
 			margin: {
 				...distances,
 			},
+			padding: {
+				...distances,
+			},
 			boxShadow: {
 				...shadows,
 			},
 			dropShadow: {
 				...shadows,
+			},
+			zIndex: {
+				1: 1,
+				2: 2,
 			},
 		},
 	},

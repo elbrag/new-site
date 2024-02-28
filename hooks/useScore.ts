@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ref, set, get } from "firebase/database";
 import useFirebase from "./useFirebase";
-import gamesData from "../lib/data/gamesData.json";
-import { GameName, GameProps } from "@/lib/types/game";
 
 const useScore = () => {
 	const [currentScore, setCurrentScore] = useState(0);
@@ -42,18 +40,7 @@ const useScore = () => {
 		setCurrentScore(newScore);
 	};
 
-	/**
-	 * Update score
-	 *
-	 * Calculate score for game and pass score on to updateScoreInFirebase
-	 */
-	const updateScore = (game: GameName) => {
-		const gameToScore = gamesData.find((data) => data.url === game);
-		const score = gameToScore ? gameToScore.scorePerRound : null;
-		if (score) updateScoreInFirebase(score);
-	};
-
-	return { currentScore, updateScore };
+	return { currentScore, updateScoreInFirebase };
 };
 
 export default useScore;

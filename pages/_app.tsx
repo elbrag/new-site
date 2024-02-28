@@ -39,7 +39,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 			>
 				<Navigation />
 				<GameContextProvider>
-					<div className="page-content flex-grow h-full flex flex-col justify-center mx-5">
+					<div className="page-content flex-grow h-full flex flex-col justify-center mx-5 mt-18 mb-16 py-16">
 						<Component {...pageProps} />
 					</div>
 					<Footer />

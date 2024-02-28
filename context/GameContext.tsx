@@ -1,4 +1,4 @@
-import { createContext, useEffect } from "react";
+import { createContext } from "react";
 import gamesData from "../lib/data/gamesData.json";
 import { GameName, GameProps } from "@/lib/types/game";
 import useScore from "@/hooks/useScore";
@@ -12,10 +12,10 @@ import {
 	ProgressQuestionProps,
 } from "@/lib/types/progress";
 import { ErrorProps } from "@/lib/types/errors";
+import useInfoMessage from "@/hooks/useInfoMessage";
 interface GameContextProps {
 	gameUrls: string[];
 	currentScore: number;
-	updateScore: (_game: GameName) => void;
 	username: string | null;
 	updateUsername: (_username: string) => void;
 	progress: ProgressProps[];
@@ -45,12 +45,12 @@ interface GameContextProps {
 	setNumberOfRounds: (numberOfRounds: number) => void;
 	allRoundsPassed: boolean;
 	resetRound: (game: GameName, questionId: number) => void;
+	scoreMessage: string | null;
 }
 
 export const GameContext = createContext<GameContextProps>({
 	gameUrls: [],
 	currentScore: 0,
-	updateScore: () => {},
 	username: null,
 	updateUsername: () => {},
 	progress: [],
@@ -73,6 +73,7 @@ export const GameContext = createContext<GameContextProps>({
 	setNumberOfRounds: () => {},
 	allRoundsPassed: false,
 	resetRound: () => {},
+	scoreMessage: null,
 });
 
 interface CategoryPageProviderProps {
@@ -90,7 +91,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	/**
 	 * Hooks
 	 */
-	const { currentScore, updateScore } = useScore();
+	const { scoreMessage, updateScoreMessage } = useInfoMessage();
+	const { currentScore, updateScoreInFirebase } = useScore();
 	const { username, updateUsername } = useUser();
 	const { progress, setProgress, getGameProgress, getQuestionStatus } =
 		useProgress();
@@ -274,12 +276,25 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 		updateProgress(game, questionId, []);
 	};
 
+	/**
+	 * Update score
+	 *
+	 * Calculate score for game and pass score on to updateScoreInFirebase
+	 */
+	const updateScore = (game: GameName) => {
+		const gameToScore = gamesData.find((data) => data.url === game);
+		const score = gameToScore ? gameToScore.scorePerRound : null;
+		if (score) {
+			updateScoreInFirebase(score);
+			updateScoreMessage(`+${score}`);
+		}
+	};
+
 	return (
 		<GameContext.Provider
 			value={{
 				gameUrls,
 				currentScore,
-				updateScore,
 				username,
 				updateUsername,
 				progress,
@@ -302,6 +317,7 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 				setNumberOfRounds,
 				allRoundsPassed,
 				resetRound,
+				scoreMessage,
 			}}
 		>
 			{children}
