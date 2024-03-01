@@ -159,13 +159,14 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	};
 
 	return (
-		<div className="hangman min-h-screen flex flex-col justify-center w-full">
+		<div className="hangman min-h-[80vh] flex flex-col justify-center w-full">
 			<div className="flex flex-col justify-center items-center lg:flex-row lg:justify-around gap-4">
 				{/* Game  */}
-				<div className="flex flex-col items-center">
+				<div className="flex flex-col items-center lg:max-w-3/5">
 					{maskedWords?.length ? (
 						<AnimatePresence mode="wait">
 							<motion.div
+								className="w-full"
 								key={getGameCurrentRoundIndex(GameName.Hangman)}
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
@@ -178,7 +179,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 											?.description
 									}
 								</h2>
-								<div className="words flex gap-6 mb-16">
+								<div className="words flex gap-6 mb-16 flex-wrap justify-center">
 									{(() => {
 										let indexOutOfTotal = 0;
 										return maskedWords[
@@ -225,13 +226,20 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 							)}
 						</AnimatePresence>
 					</div>
+				</div>
+				<div className="flex flex-col items-center">
+					{/* Man  */}
+					<div className="h-[408px]">
+						<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
+					</div>
+					{/* Error list */}
 					{!!getGameErrors(GameName.Hangman).length && (
 						<div className="errors my-10">
-							<ul className="flex gap-2">
+							<ul className="flex gap-2 justify-center">
 								{getGameErrors(GameName.Hangman).map(
 									(err: string, i: number) => (
 										<li
-											className="uppercase text-lg lg:text-xl"
+											className="uppercase text-xl lg:text-2xl"
 											key={`error-${i}`}
 										>
 											{err}
@@ -241,10 +249,6 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 							</ul>
 						</div>
 					)}
-				</div>
-				{/* Man  */}
-				<div className="h-[408px]">
-					<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
 				</div>
 				<AnimatePresence>
 					{successMessage && <SuccessScreen text={successMessage} />}

@@ -6,6 +6,9 @@ const distances = {
 	"015vw": "0.15vw",
 	"1vw": "1vw",
 	"2vw": "2vw",
+	"1/2": "50%",
+	"2/3": "66.67%",
+	"3/5": "60%",
 };
 const shadows = {
 	text: "0 3px 3px 0px rgba(0, 0, 0, 0.3)",
@@ -77,6 +80,9 @@ module.exports = {
 			zIndex: {
 				1: 1,
 				2: 2,
+			},
+			maxWidth: {
+				...distances,
 			},
 		},
 	},
