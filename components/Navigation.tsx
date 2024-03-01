@@ -8,8 +8,8 @@ export default function Navigation() {
 				<Link href="/" aria-label="Home" className="block mr-2vw">
 					<Icon
 						icon={IconTypes.Logo}
-						width={10}
-						height={4}
+						width={8}
+						height={3}
 						inVw={true}
 						color={IconColors.Military}
 						smallScaleFactor={1.25}
