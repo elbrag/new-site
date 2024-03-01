@@ -38,6 +38,15 @@ module.exports = {
 			lime: "#5EFC5B",
 			cream: "#F7EBDB",
 			paper: "#FFFCF7",
+			confetti: {
+				blue: "#8FD0FF",
+				green: "#82FF80",
+				yellow: "#F6FF8F",
+				orange: "#FFAD72",
+				red: "#FF6A6A",
+				pink: "#FF9FF5",
+				purple: "#B98FFF",
+			},
 		},
 		fontSize: {
 			"6xl": "4.25vw",
@@ -93,5 +102,6 @@ module.exports = {
 		{ pattern: /text-/ },
 		{ pattern: /w-/, variants: ["md", "lg"] },
 		{ pattern: /h-/, variants: ["md", "lg"] },
+		{ pattern: /bg-/, variants: ["md", "lg"] },
 	],
 };

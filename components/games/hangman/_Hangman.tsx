@@ -14,6 +14,7 @@ import { HangmanProgressCompletedProps } from "@/lib/types/progress";
 import Pagination from "./Pagination";
 import ResetButton from "./ResetButton";
 import Lodash from "./Lodash";
+import Confetti from "@/components/ui/Confetti";
 
 interface HangmanProps {
 	gameData: any;
@@ -253,6 +254,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 				<AnimatePresence>
 					{successMessage && <SuccessScreen text={successMessage} />}
 					{failedMessage && <FailedScreen text={failedMessage} />}
+					<Confetti />
 				</AnimatePresence>
 			</div>
 			{/* <div className="flex gap-6">
