@@ -14,7 +14,7 @@ import { HangmanProgressCompletedProps } from "@/lib/types/progress";
 import Pagination from "./Pagination";
 import ResetButton from "./ResetButton";
 import Confetti from "@/components/ui/Confetti";
-import Lodash from "./lodash_temp";
+import Lodash from "./Lodash";
 
 interface HangmanProps {
 	gameData: any;
