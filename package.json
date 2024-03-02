@@ -24,13 +24,11 @@
     "react-dom": "18.2.0",
     "styled-components": "^6.1.8",
     "tailwindcss": "3.4.0",
-    "typescript": "5.3.3",
-    "uuid": "^9.0.1"
+    "typescript": "5.3.3"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
     "@types/lodash": "^4.14.202",
-    "@types/uuid": "^9.0.8",
     "babel-plugin-styled-components": "^2.1.4"
   }
 }
