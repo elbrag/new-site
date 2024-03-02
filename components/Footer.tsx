@@ -9,15 +9,15 @@ export default function Footer() {
 	return (
 		<footer className="py-4 px-5 flex justify-between text-lime fixed bottom-0 w-full bg-military z-1">
 			<div>
-				<input
+				{/* <input
 					onKeyUp={(e: any) => setInputValue(e.currentTarget.value)}
 					placeholder="Username"
 				/>
 				<button type="submit" onClick={() => updateUsername(inputValue)}>
 					Update name
-				</button>
+				</button> */}
 			</div>
-			Username: {username}
+			{/* Username: {username} */}
 			<CurrentScore />
 		</footer>
 	);

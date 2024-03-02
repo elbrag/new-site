@@ -2,6 +2,8 @@
 
 const distances = {
 	18: "4.5rem",
+	128: "32rem",
+	144: "36rem",
 	"0125vw": "0.125vw",
 	"015vw": "0.15vw",
 	"1vw": "1vw",
@@ -9,6 +11,7 @@ const distances = {
 	"1/2": "50%",
 	"2/3": "66.67%",
 	"3/5": "60%",
+	"80vh": "80vh",
 };
 const shadows = {
 	text: "0 3px 3px 0px rgba(0, 0, 0, 0.3)",
@@ -93,6 +96,7 @@ module.exports = {
 			maxWidth: {
 				...distances,
 			},
+			minHeight: { ...distances },
 		},
 	},
 	plugins: [],

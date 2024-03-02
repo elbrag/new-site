@@ -4,9 +4,15 @@ interface ButtonProps {
 	label: string;
 	onClick?: (event: any) => void;
 	href?: string;
+	isSubmit?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({ label, onClick, href }) => {
+const Button: React.FC<ButtonProps> = ({
+	label,
+	onClick,
+	href,
+	isSubmit = false,
+}) => {
 	const activeClasses =
 		"active:shadow-button-click active:translate-x-px active:translate-y-[2px] active:shadow-military active:border-military active:text-military";
 	const hoverClasses =
@@ -19,12 +25,14 @@ const Button: React.FC<ButtonProps> = ({ label, onClick, href }) => {
 				<a className={buttonClasses} href={href}>
 					{label}
 				</a>
-			) : onClick ? (
+			) : onClick || isSubmit ? (
 				<button
-					type="button"
+					type={isSubmit ? "submit" : "button"}
 					onClick={(e) => {
-						e.preventDefault();
-						onClick(e);
+						if (onClick) {
+							e.preventDefault();
+							onClick(e);
+						}
 					}}
 					className={buttonClasses}
 				>
