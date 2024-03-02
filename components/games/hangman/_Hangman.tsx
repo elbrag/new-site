@@ -13,8 +13,8 @@ import FailedScreen from "@/components/ui/FailedScreen";
 import { HangmanProgressCompletedProps } from "@/lib/types/progress";
 import Pagination from "./Pagination";
 import ResetButton from "./ResetButton";
-import Lodash from "./Lodash";
 import Confetti from "@/components/ui/Confetti";
+import Lodash from "./lodash_temp";
 
 interface HangmanProps {
 	gameData: any;
