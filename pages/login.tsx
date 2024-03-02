@@ -15,8 +15,8 @@ const Login: React.FC = () => {
 				</h1>
 				<div>
 					<form onSubmit={(e) => login(e)}>
-						<Input label="Username" className="mb-6" />
-						<Input label="Password" type="password" className="mb-10" />
+						{/* <Input label="Username" className="mb-6" />
+						<Input label="Password" type="password" className="mb-10" /> */}
 
 						<div className="flex flex-col items-center">
 							<div className="mb-6">

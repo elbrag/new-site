@@ -15,9 +15,9 @@ const Signup: React.FC = () => {
 				</h1>
 				<div>
 					<form onSubmit={(e) => signup(e)}>
-						<Input label="Username" className="mb-6" />
+						{/* <Input label="Username" className="mb-6" />
 						<Input label="Password" type="password" className="mb-6" />
-						<Input label="Password again" type="password" className="mb-10" />
+						<Input label="Password again" type="password" className="mb-10" /> */}
 
 						<div className="flex flex-col items-center">
 							<div className="mb-6">
