@@ -4,8 +4,9 @@ import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import { Dela_Gothic_One, Alegreya } from "next/font/google";
 import GameContextProvider from "@/context/GameContext";
-import useFirebase from "@/hooks/useFirebase";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+import FirebaseContextProvider from "@/context/FirebaseContext";
 
 const delaGothicOne = Dela_Gothic_One({
 	weight: "400",
@@ -26,9 +27,12 @@ export const FontList = {
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const router = useRouter();
-	useFirebase();
 	//@ts-ignore
 	const fonts = Object.keys(FontList).map((key) => FontList[key]);
+
+	useEffect(() => {
+		console.log("rerender app.tsx");
+	}, []);
 
 	return (
 		<>
@@ -38,12 +42,14 @@ function MyApp({ Component, pageProps }: AppProps) {
 				} ${fonts.join(" ")}`}
 			>
 				<Navigation />
-				<GameContextProvider>
-					<div className="page-content flex-grow h-full flex flex-col justify-center mx-5 mt-18 mb-16 py-16">
-						<Component {...pageProps} />
-					</div>
-					<Footer />
-				</GameContextProvider>
+				<FirebaseContextProvider>
+					<GameContextProvider>
+						<div className="page-content flex-grow h-full flex flex-col justify-center mx-5 mt-18 mb-16 py-16">
+							<Component {...pageProps} />
+						</div>
+						<Footer />
+					</GameContextProvider>
+				</FirebaseContextProvider>
 			</main>
 		</>
 	);

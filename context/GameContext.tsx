@@ -1,8 +1,6 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import gamesData from "../lib/data/gamesData.json";
 import { GameName, GameProps } from "@/lib/types/game";
-import useScore from "@/hooks/useScore";
-import useUser from "@/hooks/useUser";
 import useProgress from "@/hooks/useProgress";
 import useErrors from "@/hooks/useErrors";
 import useRounds from "@/hooks/useRounds";
@@ -13,6 +11,7 @@ import {
 } from "@/lib/types/progress";
 import { ErrorProps } from "@/lib/types/errors";
 import useInfoMessage from "@/hooks/useInfoMessage";
+import { FirebaseContext } from "./FirebaseContext";
 interface GameContextProps {
 	gameUrls: string[];
 	currentScore: number;
@@ -76,11 +75,11 @@ export const GameContext = createContext<GameContextProps>({
 	scoreMessage: null,
 });
 
-interface CategoryPageProviderProps {
+interface GameContextProviderProps {
 	children: React.ReactNode;
 }
 
-const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
+const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	/**
 	 * Variables
 	 */
@@ -92,8 +91,8 @@ const GameContextProvider = ({ children }: CategoryPageProviderProps) => {
 	 * Hooks
 	 */
 	const { scoreMessage, updateScoreMessage } = useInfoMessage();
-	const { currentScore, updateScoreInFirebase } = useScore();
-	const { username, updateUsername } = useUser();
+	const { username, updateUsername, currentScore, updateScoreInFirebase } =
+		useContext(FirebaseContext);
 	const { progress, setProgress, getGameProgress, getQuestionStatus } =
 		useProgress();
 	const {
