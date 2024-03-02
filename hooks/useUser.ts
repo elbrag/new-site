@@ -23,13 +23,15 @@ const useUser = () => {
 
 	useEffect(() => {
 		getUsername();
-	}, [database, getUsername, userId]);
+	}, [getUsername]);
 
 	// Update username in Firebase + set state
 	const updateUsername = (username: string) => {
-		const userRef = ref(database, `users/${userId}/username`);
-		set(userRef, username);
-		setUsername(username);
+		if (userId) {
+			const userRef = ref(database, `users/${userId}/username`);
+			set(userRef, username);
+			setUsername(username);
+		}
 	};
 
 	return { username, updateUsername };

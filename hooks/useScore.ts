@@ -6,15 +6,13 @@ const useScore = () => {
 	const [currentScore, setCurrentScore] = useState(0);
 	const { userId, database } = useFirebase();
 
-	/**
-	 * Get score from Firebase
-	 */
+	// Get score from Firebase
 	const getScore = useCallback(() => {
 		if (userId) {
 			const scoreRef = ref(database, `users/${userId}/score`);
 			get(scoreRef)
 				.then((snapshot) => {
-					const score: number = snapshot.val();
+					const score = snapshot.val();
 					setCurrentScore(score === null ? 0 : score);
 				})
 				.catch((error) => {
@@ -23,21 +21,18 @@ const useScore = () => {
 		}
 	}, [database, userId]);
 
-	/**
-	 * Keep checking for score
-	 */
 	useEffect(() => {
 		getScore();
-	}, [getScore, database, userId]);
+	}, [getScore]);
 
-	/**
-	 * Update score in Firebase + set state
-	 */
-	const updateScoreInFirebase = (incoming: number) => {
-		const newScore = currentScore + incoming;
-		const scoreRef = ref(database, `users/${userId}/score`);
-		set(scoreRef, newScore);
-		setCurrentScore(newScore);
+	// Update score in Firebase + set state
+	const updateScoreInFirebase = (incoming: any) => {
+		if (userId) {
+			const newScore = currentScore + incoming;
+			const scoreRef = ref(database, `users/${userId}/score`);
+			set(scoreRef, newScore);
+			setCurrentScore(newScore);
+		}
 	};
 
 	return { currentScore, updateScoreInFirebase };
