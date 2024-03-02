@@ -5,6 +5,7 @@ interface ButtonProps {
 	onClick?: (event: any) => void;
 	href?: string;
 	isSubmit?: boolean;
+	buttonStyle?: "button" | "link";
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -12,17 +13,24 @@ const Button: React.FC<ButtonProps> = ({
 	onClick,
 	href,
 	isSubmit = false,
+	buttonStyle = "button",
 }) => {
-	const activeClasses =
+	const activeButtonClasses =
 		"active:shadow-button-click active:translate-x-px active:translate-y-[2px] active:shadow-military active:border-military active:text-military";
-	const hoverClasses =
+	const hoverButtonClasses =
 		"hover:shadow-button-hover hover:-translate-y-[2px] hover:-translate-x-[2px]";
-	const buttonClasses = `px-6 py-3 uppercase text-lg border-2 rounded-lg shadow-button transition-all origin-left bg-lime ${hoverClasses} ${activeClasses}`;
+	const buttonClasses = `px-6 py-3 uppercase lg:text-lg border-2 rounded-lg shadow-button transition-all origin-left bg-lime ease-bouncy-2 ${hoverButtonClasses} ${activeButtonClasses}`;
+
+	const activeLinkClasses = `active:text-lime active:scale-100`;
+	const hoverLinkClasses = `hover:rotate-4 hover:scale-110`;
+	const linkClasses = `underline underline-offset-3 decoration-2 transition-all ease-bouncy-2 duration-200 text-sm lg:text-base ${activeLinkClasses} ${hoverLinkClasses}`;
+
+	const classes = buttonStyle === "link" ? linkClasses : buttonClasses;
 
 	return (
 		<>
 			{href ? (
-				<a className={buttonClasses} href={href}>
+				<a className={classes} href={href}>
 					{label}
 				</a>
 			) : onClick || isSubmit ? (
@@ -34,7 +42,7 @@ const Button: React.FC<ButtonProps> = ({
 							onClick(e);
 						}
 					}}
-					className={buttonClasses}
+					className={classes}
 				>
 					{label}
 				</button>

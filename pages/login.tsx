@@ -15,11 +15,14 @@ const Login: React.FC = () => {
 				</h1>
 				<div>
 					<form onSubmit={(e) => login(e)}>
-						<Input label="Username" className="mb-8" />
-						<Input label="Password" type="password" className="mb-12" />
+						<Input label="Username" className="mb-6" />
+						<Input label="Password" type="password" className="mb-10" />
 
-						<div className="flex justify-center">
-							<Button label="Log in" isSubmit={true} />
+						<div className="flex flex-col items-center">
+							<div className="mb-6">
+								<Button label="Log in" isSubmit={true} />
+							</div>
+							<Button label="Sign up" href="/signup" buttonStyle="link" />
 						</div>
 					</form>
 				</div>

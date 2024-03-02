@@ -59,6 +59,8 @@ module.exports = {
 			"2xl": "1.75rem",
 			xl: "1.5rem",
 			lg: "1.25rem",
+			base: "1rem",
+			sm: "0.875rem",
 		},
 		extend: {
 			backgroundImage: {
@@ -68,11 +70,19 @@ module.exports = {
 			},
 			transitionTimingFunction: {
 				"bouncy-1": "cubic-bezier(0.68, -0.55, 0.27, 1.55)",
+				"bouncy-2": "cubic-bezier(0.68, 0.05, 0.27, 1.25)",
 			},
 			transitionProperty: {
 				height: "height",
 				width: "width",
 				size: "width, height",
+			},
+			rotate: {
+				4: "4deg",
+				5: "5deg",
+			},
+			transitionDuration: {
+				400: "400ms",
 			},
 			borderWidth: {
 				...distances,
@@ -97,6 +107,7 @@ module.exports = {
 				...distances,
 			},
 			minHeight: { ...distances },
+			textUnderlineOffset: { 3: "3px", 5: "5px" },
 		},
 	},
 	plugins: [],
