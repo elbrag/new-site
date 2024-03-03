@@ -17,7 +17,7 @@ interface GameContextProps {
 	gameUrls: string[];
 	currentScore: number;
 	username: string | null;
-	updateUsername: (_username: string) => void;
+	updateUsernameInFirebase: (_username: string) => void;
 	progress: ProgressProps[];
 	updateProgress: (
 		_game: GameName,
@@ -52,7 +52,7 @@ export const GameContext = createContext<GameContextProps>({
 	gameUrls: [],
 	currentScore: 0,
 	username: null,
-	updateUsername: () => {},
+	updateUsernameInFirebase: () => {},
 	progress: [],
 	updateProgress: () => {},
 	getGameProgress: () => [],
@@ -92,8 +92,12 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	 * Hooks
 	 */
 	const { scoreMessage, updateScoreMessage } = useInfoMessage();
-	const { username, updateUsername, currentScore, updateScoreInFirebase } =
-		useContext(FirebaseContext);
+	const {
+		username,
+		updateUsernameInFirebase,
+		currentScore,
+		updateScoreInFirebase,
+	} = useContext(FirebaseContext);
 	const { progress, setProgress, getGameProgress, getQuestionStatus } =
 		useProgress();
 	const {
@@ -300,7 +304,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				gameUrls,
 				currentScore,
 				username,
-				updateUsername,
+				updateUsernameInFirebase,
 				progress,
 				updateProgress,
 				getGameProgress,

@@ -7,12 +7,12 @@ import Input from "./ui/Input";
 
 export default function Username() {
 	const [showModal, setShowModal] = useState(false);
-	const { username, updateUsername } = useContext(GameContext);
+	const { username, updateUsernameInFirebase } = useContext(GameContext);
 	const [inputValue, setInputValue] = useState(username ?? "");
 
 	const onUsernameSubmit = async (e: any) => {
 		e.preventDefault();
-		await updateUsername(inputValue);
+		await updateUsernameInFirebase(inputValue);
 		setShowModal(false);
 	};
 

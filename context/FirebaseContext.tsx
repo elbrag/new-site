@@ -9,8 +9,8 @@ import {
 	browserLocalPersistence,
 } from "firebase/auth";
 import { useCallback, useEffect, useState } from "react";
-import { ref, set, get } from "firebase/database";
 import useScore from "@/hooks/firebase/useScore";
+import useUser from "@/hooks/firebase/useUser";
 
 let firebaseApp: FirebaseApp | undefined;
 let firebaseDatabase: Database;
@@ -19,14 +19,14 @@ interface FirebaseContextProps {
 	currentScore: number;
 	updateScoreInFirebase: (incoming: number) => void;
 	username: string | null;
-	updateUsername: (username: string) => void;
+	updateUsernameInFirebase: (username: string) => void;
 }
 
 export const FirebaseContext = createContext<FirebaseContextProps>({
 	currentScore: 0,
 	updateScoreInFirebase: () => {},
 	username: null,
-	updateUsername: () => {},
+	updateUsernameInFirebase: () => {},
 });
 
 interface FirebaseContextProviderProps {
@@ -38,45 +38,44 @@ const FirebaseContextProvider = ({
 }: FirebaseContextProviderProps) => {
 	const [userId, setUserId] = useState<string | null>(null);
 	const [signedIn, setSignedIn] = useState(false);
-	const [username, setUsername] = useState<string | null>(null);
 
-	// TODO: Put in hooks to make easier to read
 	const { currentScore, updateFirebaseScore, getFirebaseScore } = useScore();
+	const { username, updateFirebaseUsername, getFirebaseUsername } = useUser();
 
-	// Get username
+	/**
+	 * Get username (sets state)
+	 */
 	const getUsername = useCallback(() => {
 		if (userId) {
-			const userRef = ref(firebaseDatabase, `users/${userId}/username`);
-			get(userRef)
-				.then((snapshot) => {
-					const username = snapshot.val();
-					setUsername(username);
-				})
-				.catch((error) => {
-					console.error("Error getting username:", error);
-				});
+			getFirebaseUsername(firebaseDatabase, userId);
 		}
-	}, [userId]);
+	}, [getFirebaseUsername, userId]);
+
 	useEffect(() => {
 		getUsername();
 	}, [getUsername]);
 
-	// Update username in Firebase + set state
-	const updateUsername = (username: string) => {
+	/**
+	 * Update username via hook
+	 */
+	const updateUsernameInFirebase = (username: string) => {
 		if (userId) {
-			const userRef = ref(firebaseDatabase, `users/${userId}/username`);
-			set(userRef, username);
-			setUsername(username);
+			updateFirebaseUsername(firebaseDatabase, userId, username);
 		}
 	};
 
-	// Update score
+	/**
+	 * Update score via hook
+	 */
 	const updateScoreInFirebase = (incoming: number) => {
 		if (userId) {
 			updateFirebaseScore(firebaseDatabase, userId, incoming);
 		}
 	};
 
+	/**
+	 * Get firebase score (sets state)
+	 */
 	useEffect(() => {
 		if (userId) {
 			getFirebaseScore(firebaseDatabase, userId);
@@ -84,7 +83,7 @@ const FirebaseContextProvider = ({
 	}, [getFirebaseScore, userId]);
 
 	/**
-	 * Sign in to Firebase
+	 * Sign in anonymously to Firebase
 	 */
 	const signInToFirebase = (auth: any) => {
 		if (signedIn) return;
@@ -102,6 +101,11 @@ const FirebaseContextProvider = ({
 
 	/**
 	 * Initialize Firebase
+	 *
+	 * Init with config
+	 * Check if signed in, otherwise set persistance + sign in
+	 * Set user id
+	 * Clean up
 	 */
 	useEffect(() => {
 		if (!firebaseApp) {
@@ -136,7 +140,12 @@ const FirebaseContextProvider = ({
 
 	return (
 		<FirebaseContext.Provider
-			value={{ currentScore, updateScoreInFirebase, username, updateUsername }}
+			value={{
+				currentScore,
+				updateScoreInFirebase,
+				username,
+				updateUsernameInFirebase,
+			}}
 		>
 			{children}
 		</FirebaseContext.Provider>
