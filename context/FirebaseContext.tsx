@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import { useCallback, useEffect, useState } from "react";
 import { ref, set, get } from "firebase/database";
+import useScore from "@/hooks/firebase/useScore";
 
 let firebaseApp: FirebaseApp | undefined;
 let firebaseDatabase: Database;
@@ -37,10 +38,10 @@ const FirebaseContextProvider = ({
 }: FirebaseContextProviderProps) => {
 	const [userId, setUserId] = useState<string | null>(null);
 	const [signedIn, setSignedIn] = useState(false);
-	const [currentScore, setCurrentScore] = useState(0);
 	const [username, setUsername] = useState<string | null>(null);
 
 	// TODO: Put in hooks to make easier to read
+	const { currentScore, updateFirebaseScore, getFirebaseScore } = useScore();
 
 	// Get username
 	const getUsername = useCallback(() => {
@@ -69,34 +70,18 @@ const FirebaseContextProvider = ({
 		}
 	};
 
-	// Get score from Firebase
-	const getScore = useCallback(() => {
+	// Update score
+	const updateScoreInFirebase = (incoming: number) => {
 		if (userId) {
-			const scoreRef = ref(firebaseDatabase, `users/${userId}/score`);
-			get(scoreRef)
-				.then((snapshot) => {
-					const score = snapshot.val();
-					setCurrentScore(score === null ? 0 : score);
-				})
-				.catch((error) => {
-					console.error("Error getting score:", error);
-				});
-		}
-	}, [userId]);
-
-	useEffect(() => {
-		getScore();
-	}, [getScore]);
-
-	// Update score in Firebase + set state
-	const updateScoreInFirebase = (incoming: any) => {
-		if (userId) {
-			const newScore = currentScore + incoming;
-			const scoreRef = ref(firebaseDatabase, `users/${userId}/score`);
-			set(scoreRef, newScore);
-			setCurrentScore(newScore);
+			updateFirebaseScore(firebaseDatabase, userId, incoming);
 		}
 	};
+
+	useEffect(() => {
+		if (userId) {
+			getFirebaseScore(firebaseDatabase, userId);
+		}
+	}, [getFirebaseScore, userId]);
 
 	/**
 	 * Sign in to Firebase
@@ -120,7 +105,6 @@ const FirebaseContextProvider = ({
 	 */
 	useEffect(() => {
 		if (!firebaseApp) {
-			// Initialize Firebase
 			const firebaseConfig = {
 				apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
 				databaseURL:
@@ -133,23 +117,18 @@ const FirebaseContextProvider = ({
 		if (firebaseApp) {
 			const auth = getAuth(firebaseApp);
 
-			// Listen for auth state changes
 			const unsubscribe = onAuthStateChanged(auth, (user) => {
 				if (user) {
-					// User is already signed in or has been authenticated
 					console.log("User is already signed in:", user.uid);
 					setUserId(user.uid);
-					setSignedIn(true); // Ensure signedIn state is updated
+					setSignedIn(true);
 				} else {
-					// No user is signed in, attempt to sign in anonymously
 					console.log("No user found, attempting to sign in anonymously...");
 					setPersistence(auth, browserLocalPersistence).then(() => {
 						signInToFirebase(auth);
 					});
 				}
 			});
-
-			// Cleanup subscription on unmount
 			return () => unsubscribe();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
