@@ -1,7 +1,13 @@
 import { createContext } from "react";
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { Database, getDatabase } from "firebase/database";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
+import {
+	getAuth,
+	signInAnonymously,
+	onAuthStateChanged,
+	setPersistence,
+	browserLocalPersistence,
+} from "firebase/auth";
 import { useCallback, useEffect, useState } from "react";
 import { ref, set, get } from "firebase/database";
 
@@ -137,7 +143,9 @@ const FirebaseContextProvider = ({
 				} else {
 					// No user is signed in, attempt to sign in anonymously
 					console.log("No user found, attempting to sign in anonymously...");
-					signInToFirebase(auth);
+					setPersistence(auth, browserLocalPersistence).then(() => {
+						signInToFirebase(auth);
+					});
 				}
 			});
 

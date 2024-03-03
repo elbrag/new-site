@@ -14,7 +14,7 @@ const Confetti: React.FC<ConfettiProps> = ({}) => {
 	];
 
 	return (
-		<div className="confetti fixed w-screen h-screen flex justify-center items-center">
+		<div className="confetti hidden fixed w-screen h-screen flex justify-center items-center">
 			<div className="flex">
 				{Array.from(confettiColors).map((color, i) => (
 					<span
