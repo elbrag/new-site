@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 import { useCallback, useEffect, useState } from "react";
 import useScore from "@/hooks/firebase/useScore";
-import useUser from "@/hooks/firebase/useUser";
+import useUsername from "@/hooks/firebase/useUsername";
 
 let firebaseApp: FirebaseApp | undefined;
 let firebaseDatabase: Database;
@@ -40,7 +40,8 @@ const FirebaseContextProvider = ({
 	const [signedIn, setSignedIn] = useState(false);
 
 	const { currentScore, updateFirebaseScore, getFirebaseScore } = useScore();
-	const { username, updateFirebaseUsername, getFirebaseUsername } = useUser();
+	const { username, updateFirebaseUsername, getFirebaseUsername } =
+		useUsername();
 
 	/**
 	 * Get username (sets state)
