@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ref, set, get, Database } from "firebase/database";
+import { Database } from "firebase/database";
 import useUserData from "./useUserData";
 
 const useUsername = () => {
@@ -14,8 +14,6 @@ const useUsername = () => {
 		userId: string,
 		_username: string
 	) => {
-		const userRef = ref(firebaseDatabase, `users/${userId}/username`);
-		set(userRef, _username);
 		await updateUserData(firebaseDatabase, userId, "username", _username);
 		setUsername(_username);
 	};
