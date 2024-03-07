@@ -57,7 +57,9 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	 * Split into these 2 states to enable exit animation
 	 */
 	useEffect(() => {
-		if (roundComplete) updateSuccessMessage("You got it!");
+		if (roundComplete) {
+			updateSuccessMessage("You got it!");
+		}
 
 		const setRoundState = async () => {
 			const currentRoundIndex = getGameCurrentRoundIndex(GameName.Hangman);
@@ -168,7 +170,6 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 						<AnimatePresence mode="wait">
 							<motion.div
 								className="w-full"
-								key={getGameCurrentRoundIndex(GameName.Hangman)}
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								exit={{ opacity: 0 }}
@@ -253,8 +254,10 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 				</div>
 				<AnimatePresence>
 					{successMessage && <SuccessScreen text={successMessage} />}
+				</AnimatePresence>
+				<AnimatePresence>
 					{failedMessage && <FailedScreen text={failedMessage} />}
-					<Confetti />
+					{/* <Confetti /> */}
 				</AnimatePresence>
 			</div>
 			{/* <div className="flex gap-6">
