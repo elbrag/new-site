@@ -13,6 +13,7 @@ import {
 import { ErrorProps } from "@/lib/types/errors";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import { FirebaseContext } from "./FirebaseContext";
+import { Database } from "firebase/database";
 interface GameContextProps {
 	gameUrls: string[];
 	currentScore: number;
@@ -34,7 +35,12 @@ interface GameContextProps {
 	updateErrors: (_game: GameName, error: string | [], merge: boolean) => void;
 	roundLength: number | null;
 	setRoundLength: (roundLength: number) => void;
-	updateCurrentRoundIndexes: (game: GameName, roundIndex: number) => void;
+	updateCurrentRoundIndexes: (
+		firebaseDatabase: Database,
+		userId: string,
+		game: GameName,
+		roundIndex: number
+	) => void;
 	getGameCurrentRoundIndex: (game: GameName) => number;
 	roundComplete: boolean;
 	setRoundComplete: (complete: boolean) => void;
@@ -97,6 +103,8 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		updateUsernameInFirebase,
 		currentScore,
 		updateScoreInFirebase,
+		firebaseDatabase,
+		userId,
 	} = useContext(FirebaseContext);
 	const { progress, setProgress, getGameProgress, getQuestionStatus } =
 		useProgress();
@@ -138,7 +146,12 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			updateErrors(game, [], false);
 			// Go to next round
 			setTimeout(() => {
-				updateCurrentRoundIndexes(game, currentRoundIndex + 1);
+				updateCurrentRoundIndexes(
+					firebaseDatabase,
+					userId,
+					game,
+					currentRoundIndex + 1
+				);
 			}, 1000);
 		}
 		// Send score to Firebase
@@ -178,7 +191,12 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			updateErrors(game, [], false);
 			// Go to next round
 			setTimeout(() => {
-				updateCurrentRoundIndexes(game, currentRoundIndex + 1);
+				updateCurrentRoundIndexes(
+					firebaseDatabase,
+					userId,
+					game,
+					currentRoundIndex + 1
+				);
 			}, 1000);
 		}
 	};

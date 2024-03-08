@@ -11,11 +11,17 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import useScore from "@/hooks/firebase/useScore";
 import useUsername from "@/hooks/firebase/useUsername";
+import {
+	FirebaseDatabaseProps,
+	FirebaseUserIdProps,
+} from "@/lib/types/firebase";
 
 let firebaseApp: FirebaseApp | undefined;
 let firebaseDatabase: Database;
 
 interface FirebaseContextProps {
+	firebaseDatabase: FirebaseDatabaseProps;
+	userId: FirebaseUserIdProps;
 	currentScore: number;
 	updateScoreInFirebase: (incoming: number) => void;
 	username: string | null;
@@ -23,6 +29,8 @@ interface FirebaseContextProps {
 }
 
 export const FirebaseContext = createContext<FirebaseContextProps>({
+	firebaseDatabase: undefined,
+	userId: null,
 	currentScore: 0,
 	updateScoreInFirebase: () => {},
 	username: null,
@@ -142,6 +150,8 @@ const FirebaseContextProvider = ({
 	return (
 		<FirebaseContext.Provider
 			value={{
+				firebaseDatabase,
+				userId,
 				currentScore,
 				updateScoreInFirebase,
 				username,

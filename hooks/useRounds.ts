@@ -1,6 +1,15 @@
 import { CurrentRoundIndexProps } from "@/lib/types/currentRoundIndex";
+import {
+	FirebaseDatabaseProps,
+	FirebaseUserIdProps,
+} from "@/lib/types/firebase";
 import { GameName } from "@/lib/types/game";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
+import useUserData from "./firebase/useUserData";
+import {
+	firebaseDatabaseIsMissing,
+	userIdIsMissing,
+} from "@/lib/helpers/errorThrowMessages";
 
 const useRounds = () => {
 	const [currentRoundIndexes, setCurrentRoundIndexes] = useState<
@@ -11,6 +20,7 @@ const useRounds = () => {
 	const [roundFailed, setRoundFailed] = useState(false);
 	const [numberOfRounds, setNumberOfRounds] = useState(0);
 	const [allRoundsPassed, setAllRoundsPassed] = useState(false);
+	const { updateUserData, getUserData } = useUserData();
 
 	useEffect(() => {
 		// Keep state synced with local storage values
@@ -25,9 +35,14 @@ const useRounds = () => {
 	 * Update errors
 	 */
 	const updateCurrentRoundIndexes = async (
+		firebaseDatabase: FirebaseDatabaseProps,
+		userId: FirebaseUserIdProps,
 		game: GameName,
 		roundIndex: number
 	) => {
+		if (!firebaseDatabase) return firebaseDatabaseIsMissing;
+		if (!userId) return userIdIsMissing;
+
 		setCurrentRoundIndexes((prevRoundIndexes) => {
 			const existingIndex = prevRoundIndexes.findIndex(
 				(item) => item.game === game
@@ -43,6 +58,12 @@ const useRounds = () => {
 					}
 					return item;
 				});
+				updateUserData(
+					firebaseDatabase,
+					userId,
+					"currentRoundIndexes",
+					JSON.stringify(updatedRoundIndexes)
+				);
 				localStorage.setItem(
 					"currentRoundIndexes",
 					JSON.stringify(updatedRoundIndexes)
@@ -53,6 +74,12 @@ const useRounds = () => {
 				...prevRoundIndexes,
 				{ game: game, currentRoundIndex: roundIndex },
 			];
+			updateUserData(
+				firebaseDatabase,
+				userId,
+				"currentRoundIndexes",
+				JSON.stringify(newRoundIndexes)
+			);
 			localStorage.setItem(
 				"currentRoundIndexes",
 				JSON.stringify(newRoundIndexes)
