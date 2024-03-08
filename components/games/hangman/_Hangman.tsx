@@ -1,20 +1,17 @@
 import { fetchGameData } from "@/lib/helpers/fetch";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import LetterSlot from "./LetterSlot";
 import LetterInput from "./LetterInput";
 import { GameContext } from "@/context/GameContext";
 import { GameName } from "@/lib/types/game";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import InfoMessage from "@/components/ui/InfoMessage";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import HangedMan, { hangmanPartsInOrder } from "./HangedMan";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import FailedScreen from "@/components/ui/FailedScreen";
 import { HangmanProgressCompletedProps } from "@/lib/types/progress";
-import Pagination from "./Pagination";
-import ResetButton from "./ResetButton";
-import Confetti from "@/components/ui/Confetti";
-import Lodash from "./Lodash";
+
+import RoundContent from "./RoundContent";
 
 interface HangmanProps {
 	gameData: any;
@@ -28,7 +25,6 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		updateProgress,
 		setRoundLength,
 		getGameCurrentRoundIndex,
-		updateCurrentRoundIndexes,
 		getQuestionStatus,
 		errors,
 		updateErrors,
@@ -36,10 +32,8 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		roundComplete,
 		roundFailed,
 		onRoundFail,
-		numberOfRounds,
 		setNumberOfRounds,
 		allRoundsPassed,
-		resetRound,
 	} = useContext(GameContext);
 
 	const {
@@ -147,20 +141,6 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		}
 	};
 
-	/**
-	 * Get letter to show in slot
-	 */
-	const letterToShow = (index: number) => {
-		const currentQuestionStatus = getQuestionStatus(
-			GameName.Hangman,
-			questionId
-		);
-		const match = currentQuestionStatus?.completed.find(
-			(c: HangmanProgressCompletedProps) => c.index === index
-		);
-		return match?.letter ?? null;
-	};
-
 	return (
 		<div className="hangman min-h-[80vh] flex flex-col justify-center w-full">
 			<div className="flex flex-col justify-center items-center lg:flex-row lg:justify-around gap-4">
@@ -168,48 +148,18 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 				<div className="flex flex-col items-center lg:max-w-3/5">
 					{maskedWords?.length ? (
 						<AnimatePresence mode="wait">
-							<motion.div
-								className="w-full"
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								exit={{ opacity: 0 }}
-								transition={{ duration: 0.5 }}
-							>
-								<h2 className="text-center font-alegreya text-lg mb-10">
-									{
-										maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
-											?.description
-									}
-								</h2>
-								<div className="words flex gap-6 mb-16 flex-wrap justify-center">
-									{(() => {
-										let indexOutOfTotal = 0;
-										return maskedWords[
-											getGameCurrentRoundIndex(GameName.Hangman)
-										].maskedWord.map((wordCount: number, i: number) => {
-											return (
-												<div className="word flex gap-1" key={`word-${i}`}>
-													{Array.from({
-														length: wordCount,
-													}).map((_, index) => {
-														const curIndex = indexOutOfTotal;
-														indexOutOfTotal++;
-														return (
-															<div
-																className="letter flex flex-col items-center"
-																key={`letter-${index}`}
-															>
-																<LetterSlot letter={letterToShow(curIndex)} />
-																<Lodash />
-															</div>
-														);
-													})}
-												</div>
-											);
-										});
-									})()}
-								</div>
-							</motion.div>
+							<RoundContent
+								key={`round-${getGameCurrentRoundIndex(GameName.Hangman)}`}
+								questionStatus={getQuestionStatus(GameName.Hangman, questionId)}
+								description={
+									maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
+										?.description
+								}
+								maskedWord={
+									maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
+										.maskedWord
+								}
+							/>
 						</AnimatePresence>
 					) : (
 						<div className="h-16"></div>
