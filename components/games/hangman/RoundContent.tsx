@@ -8,14 +8,14 @@ import {
 import { motion } from "framer-motion";
 
 interface RoundContentProps {
-	key: string;
+	motionKey: string;
 	description: string;
 	maskedWord: any;
 	questionStatus: ProgressQuestionProps | null;
 }
 
 const RoundContent: React.FC<RoundContentProps> = ({
-	key,
+	motionKey,
 	questionStatus,
 	description,
 	maskedWord,
@@ -37,7 +37,7 @@ const RoundContent: React.FC<RoundContentProps> = ({
 			animate={{ opacity: 1 }}
 			exit={{ opacity: 0 }}
 			transition={{ duration: 0.5 }}
-			key={key}
+			key={motionKey}
 		>
 			<h2 className="text-center font-alegreya text-lg mb-10">{description}</h2>
 			<div className="words flex gap-6 mb-16 flex-wrap justify-center">

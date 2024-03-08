@@ -149,7 +149,9 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 					{maskedWords?.length ? (
 						<AnimatePresence mode="wait">
 							<RoundContent
-								key={`round-${getGameCurrentRoundIndex(GameName.Hangman)}`}
+								motionKey={`round-${getGameCurrentRoundIndex(
+									GameName.Hangman
+								)}`}
 								questionStatus={getQuestionStatus(GameName.Hangman, questionId)}
 								description={
 									maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
