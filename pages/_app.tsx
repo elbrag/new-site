@@ -7,6 +7,9 @@ import GameContextProvider from "@/context/GameContext";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import FirebaseContextProvider from "@/context/FirebaseContext";
+import RoundContextProvider from "@/context/RoundContext";
+import ProgressContextProvider from "@/context/ProgressContext";
+import ErrorContextProvider from "@/context/ErrorContext";
 
 const delaGothicOne = Dela_Gothic_One({
 	weight: "400",
@@ -42,14 +45,20 @@ function MyApp({ Component, pageProps }: AppProps) {
 				} ${fonts.join(" ")}`}
 			>
 				<Navigation />
-				<FirebaseContextProvider>
-					<GameContextProvider>
-						<div className="page-content flex-grow h-full flex flex-col justify-center mx-5 mt-18 mb-16 py-16">
-							<Component {...pageProps} />
-						</div>
-						<Footer />
-					</GameContextProvider>
-				</FirebaseContextProvider>
+				<ErrorContextProvider>
+					<ProgressContextProvider>
+						<RoundContextProvider>
+							<FirebaseContextProvider>
+								<GameContextProvider>
+									<div className="page-content flex-grow h-full flex flex-col justify-center mx-5 mt-18 mb-16 py-16">
+										<Component {...pageProps} />
+									</div>
+									<Footer />
+								</GameContextProvider>
+							</FirebaseContextProvider>
+						</RoundContextProvider>
+					</ProgressContextProvider>
+				</ErrorContextProvider>
 			</main>
 		</>
 	);

@@ -1,10 +1,7 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 import gamesData from "../lib/data/gamesData.json";
 import { GameName, GameProps } from "@/lib/types/game";
 
-import useProgress from "@/hooks/useProgress";
-import useErrors from "@/hooks/useErrors";
-import useRounds from "@/hooks/useRounds";
 import {
 	HangmanProgressCompletedProps,
 	ProgressProps,
@@ -13,7 +10,18 @@ import {
 import { ErrorProps } from "@/lib/types/errors";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import { FirebaseContext } from "./FirebaseContext";
-import { Database } from "firebase/database";
+import { RoundContext } from "./RoundContext";
+import { ErrorContext } from "./ErrorContext";
+import { ProgressContext } from "./ProgressContext";
+import {
+	FirebaseDatabaseProps,
+	FirebaseUserIdProps,
+} from "@/lib/types/firebase";
+import useUserData from "@/hooks/firebase/useUserData";
+import {
+	firebaseDatabaseIsMissing,
+	userIdIsMissing,
+} from "@/lib/helpers/errorThrowMessages";
 interface GameContextProps {
 	gameUrls: string[];
 	currentScore: number;
@@ -32,26 +40,15 @@ interface GameContextProps {
 	) => ProgressQuestionProps | null;
 	getGameErrors: (_game: GameName) => string[];
 	errors: ErrorProps[];
-	updateErrors: (_game: GameName, error: string | [], merge: boolean) => void;
-	roundLength: number | null;
-	setRoundLength: (roundLength: number) => void;
-	updateCurrentRoundIndexes: (
-		firebaseDatabase: Database,
-		userId: string,
-		game: GameName,
-		roundIndex: number
+	updateErrors: (
+		firebaseDatabase: FirebaseDatabaseProps,
+		userId: FirebaseUserIdProps,
+		_game: GameName,
+		error: string | [],
+		merge: boolean
 	) => void;
-	getGameCurrentRoundIndex: (game: GameName) => number;
-	roundComplete: boolean;
-	setRoundComplete: (complete: boolean) => void;
-	roundFailed: boolean;
-	setRoundFailed: (failed: boolean) => void;
-	onRoundFail: (_game: GameName) => void;
-	numberOfRounds: number;
-	setNumberOfRounds: (numberOfRounds: number) => void;
-	allRoundsPassed: boolean;
-	resetRound: (game: GameName, questionId: number) => void;
 	scoreMessage: string | null;
+	onRoundFail: (_game: GameName) => void;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -66,20 +63,8 @@ export const GameContext = createContext<GameContextProps>({
 	getGameErrors: () => [],
 	errors: [],
 	updateErrors: () => {},
-	roundLength: null,
-	setRoundLength: () => {},
-	updateCurrentRoundIndexes: () => {},
-	getGameCurrentRoundIndex: () => 0,
-	roundComplete: false,
-	setRoundComplete: () => {},
-	roundFailed: false,
-	setRoundFailed: () => {},
-	onRoundFail: () => {},
-	numberOfRounds: 0,
-	setNumberOfRounds: () => {},
-	allRoundsPassed: false,
-	resetRound: () => {},
 	scoreMessage: null,
+	onRoundFail: () => {},
 });
 
 interface GameContextProviderProps {
@@ -106,28 +91,30 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		firebaseDatabase,
 		userId,
 	} = useContext(FirebaseContext);
-	const { progress, setProgress, getGameProgress, getQuestionStatus } =
-		useProgress();
+
 	const {
-		roundLength,
-		setRoundLength,
-		updateCurrentRoundIndexes,
-		getGameCurrentRoundIndex,
-		roundComplete,
 		setRoundComplete,
+		getGameCurrentRoundIndex,
+		numberOfRounds,
+		setAllRoundsPassed,
+		onRoundFinish,
 		roundFailed,
 		setRoundFailed,
-		numberOfRounds,
-		setNumberOfRounds,
-		allRoundsPassed,
-		setAllRoundsPassed,
-	} = useRounds();
-	const { updateErrors, errors, getGameErrors } = useErrors();
+		roundLength,
+	} = useContext(RoundContext);
+
+	const { progress, setProgress, getGameProgress, getQuestionStatus } =
+		useContext(ProgressContext);
+
+	const { updateErrors, errors, getGameErrors } = useContext(ErrorContext);
+
+	const { updateUserData } = useUserData();
 
 	/**
 	 * On round complete
 	 */
 	const onRoundComplete = (game: GameName) => {
+		console.log("onRoundComplete");
 		// Set round complete, just temporary, to show success message
 		setRoundComplete(true);
 		setTimeout(() => {
@@ -143,15 +130,10 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			}, 5500);
 		} else {
 			// Reset errors
-			updateErrors(game, [], false);
+			updateErrors(firebaseDatabase, userId, game, [], false);
 			// Go to next round
 			setTimeout(() => {
-				updateCurrentRoundIndexes(
-					firebaseDatabase,
-					userId,
-					game,
-					currentRoundIndex + 1
-				);
+				onRoundFinish(firebaseDatabase, userId, game, currentRoundIndex + 1);
 			}, 1000);
 		}
 		// Send score to Firebase
@@ -188,15 +170,10 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			}, 5500);
 		} else {
 			// Reset errors
-			updateErrors(game, [], false);
+			updateErrors(firebaseDatabase, userId, game, [], false);
 			// Go to next round
 			setTimeout(() => {
-				updateCurrentRoundIndexes(
-					firebaseDatabase,
-					userId,
-					game,
-					currentRoundIndex + 1
-				);
+				onRoundFinish(firebaseDatabase, userId, game, currentRoundIndex + 1);
 			}, 1000);
 		}
 	};
@@ -209,17 +186,19 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		questionId: number,
 		completed: HangmanProgressCompletedProps[] | []
 	) => {
+		if (!firebaseDatabase) return firebaseDatabaseIsMissing;
+		if (!userId) return userIdIsMissing;
 		const shouldReset = Array.isArray(completed) && completed.length === 0;
 
-		await setProgress((prevProgress) => {
+		await setProgress((prevProgress: any) => {
 			// Find the index of the object with the same game name
 			const existingGameIndex = prevProgress.findIndex(
-				(item) => item.game === game
+				(item: any) => item.game === game
 			);
 
 			// If an object with the same game name exists
 			if (existingGameIndex !== -1) {
-				const updatedProgress = prevProgress.map((item, index) => {
+				const updatedProgress = prevProgress.map((item: any, index: number) => {
 					if (index === existingGameIndex) {
 						// Find the index of the progress item with the same questionId
 						const existingQuestionIndex = item.questions.findIndex(
@@ -261,7 +240,12 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 					}
 					return item;
 				});
-				localStorage.setItem("progress", JSON.stringify(updatedProgress));
+				updateUserData(
+					firebaseDatabase,
+					userId,
+					"progress",
+					JSON.stringify(updatedProgress)
+				);
 
 				// Check if the current round is completed
 				if (checkIfCompleted(updatedProgress, game, questionId)) {
@@ -283,7 +267,12 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 						],
 					},
 				];
-				localStorage.setItem("progress", JSON.stringify(newProgress));
+				updateUserData(
+					firebaseDatabase,
+					userId,
+					"progress",
+					JSON.stringify(newProgress)
+				);
 
 				// Check if the current round is completed
 				if (checkIfCompleted(newProgress, game, questionId)) {
@@ -298,7 +287,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	 * Reset round progress and errors
 	 */
 	const resetRound = (game: GameName, questionId: number) => {
-		updateErrors(game, [], false);
+		updateErrors(firebaseDatabase, userId, game, [], false);
 		updateProgress(game, questionId, []);
 	};
 
@@ -330,20 +319,8 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				errors,
 				updateErrors,
 				getGameErrors,
-				roundLength,
-				setRoundLength,
-				updateCurrentRoundIndexes,
-				getGameCurrentRoundIndex,
-				roundComplete,
-				setRoundComplete,
-				roundFailed,
-				setRoundFailed,
-				onRoundFail,
-				numberOfRounds,
-				setNumberOfRounds,
-				allRoundsPassed,
-				resetRound,
 				scoreMessage,
+				onRoundFail,
 			}}
 		>
 			{children}

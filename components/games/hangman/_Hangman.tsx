@@ -12,6 +12,10 @@ import FailedScreen from "@/components/ui/FailedScreen";
 import { HangmanProgressCompletedProps } from "@/lib/types/progress";
 
 import RoundContent from "./RoundContent";
+import { FirebaseContext } from "@/context/FirebaseContext";
+import { RoundContext } from "@/context/RoundContext";
+import { ErrorContext } from "@/context/ErrorContext";
+import { ProgressContext } from "@/context/ProgressContext";
 
 interface HangmanProps {
 	gameData: any;
@@ -21,20 +25,22 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	const [questionId, setQuestionId] = useState(0);
 	const { maskedWords } = gameData;
 
+	const { firebaseDatabase, userId } = useContext(FirebaseContext);
+
+	const { getQuestionStatus } = useContext(ProgressContext);
+
+	const { onRoundFail, updateProgress } = useContext(GameContext);
+
+	const { errors, updateErrors, getGameErrors } = useContext(ErrorContext);
+
 	const {
-		updateProgress,
-		setRoundLength,
+		updateRoundLength,
 		getGameCurrentRoundIndex,
-		getQuestionStatus,
-		errors,
-		updateErrors,
-		getGameErrors,
-		roundComplete,
 		roundFailed,
-		onRoundFail,
 		setNumberOfRounds,
 		allRoundsPassed,
-	} = useContext(GameContext);
+		roundComplete,
+	} = useContext(RoundContext);
 
 	const {
 		infoMessage,
@@ -61,7 +67,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 			const numberOfLettersInCurrentWord = maskedWords[
 				currentRoundIndex
 			]?.maskedWord?.reduce((acc: number, nr: number) => acc + nr);
-			setRoundLength(numberOfLettersInCurrentWord);
+			updateRoundLength(numberOfLettersInCurrentWord);
 		};
 		setRoundState();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -136,7 +142,13 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 			if (letterMatches) {
 				await updateProgress(GameName.Hangman, questionId, letterMatches);
 			} else {
-				await updateErrors(GameName.Hangman, letter, true);
+				await updateErrors(
+					firebaseDatabase,
+					userId,
+					GameName.Hangman,
+					letter,
+					true
+				);
 			}
 		}
 	};
@@ -216,7 +228,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 				<Pagination
 					itemLength={numberOfRounds}
 					onClick={(index) => {
-						updateCurrentRoundIndexes(GameName.Hangman, index);
+						onRoundFinish(GameName.Hangman, index);
 					}}
 					activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
 				/>

@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useContext, useRef } from "react";
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { Database, getDatabase } from "firebase/database";
 import {
@@ -15,6 +15,9 @@ import {
 	FirebaseDatabaseProps,
 	FirebaseUserIdProps,
 } from "@/lib/types/firebase";
+import { RoundContext } from "./RoundContext";
+import { ErrorContext } from "./ErrorContext";
+import { ProgressContext } from "./ProgressContext";
 
 let firebaseApp: FirebaseApp | undefined;
 let firebaseDatabase: Database;
@@ -50,19 +53,43 @@ const FirebaseContextProvider = ({
 	const { currentScore, updateFirebaseScore, getFirebaseScore } = useScore();
 	const { username, updateFirebaseUsername, getFirebaseUsername } =
 		useUsername();
+	const { currentRoundIndexes, updateCurrentRoundIndexes } =
+		useContext(RoundContext);
+	const { errors, updateErrorState } = useContext(ErrorContext);
+	const { progress, updateProgressState } = useContext(ProgressContext);
 
 	/**
-	 * Get username (sets state)
+	 * Keep states synced with Firebase values
 	 */
-	const getUsername = useCallback(() => {
-		if (userId) {
-			getFirebaseUsername(firebaseDatabase, userId);
-		}
-	}, [getFirebaseUsername, userId]);
 
+	// Progress
 	useEffect(() => {
-		getUsername();
-	}, [getUsername]);
+		if (userId && firebaseDatabase && !progress?.length) {
+			updateProgressState(firebaseDatabase, userId);
+		}
+	}, [progress?.length, updateProgressState, userId]);
+
+	// Errors
+	useEffect(() => {
+		if (userId && firebaseDatabase && !errors?.length) {
+			updateErrorState(firebaseDatabase, userId);
+		}
+	}, [errors?.length, updateErrorState, userId]);
+
+	// Round indexes
+	useEffect(() => {
+		if (userId && firebaseDatabase && !currentRoundIndexes?.length) {
+			updateCurrentRoundIndexes(firebaseDatabase, userId);
+		}
+	}, [currentRoundIndexes?.length, updateCurrentRoundIndexes, userId]);
+
+	// Username
+	useEffect(() => {
+		if (userId && !username) {
+			getFirebaseUsername(firebaseDatabase, userId);
+			console.log("Got firebase username");
+		}
+	}, [getFirebaseUsername, userId, username]);
 
 	/**
 	 * Update username via hook
@@ -116,7 +143,7 @@ const FirebaseContextProvider = ({
 	 * Set user id
 	 * Clean up
 	 */
-	useEffect(() => {
+	const initFirebase = async () => {
 		if (!firebaseApp) {
 			const firebaseConfig = {
 				apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -130,22 +157,43 @@ const FirebaseContextProvider = ({
 		if (firebaseApp) {
 			const auth = getAuth(firebaseApp);
 
-			const unsubscribe = onAuthStateChanged(auth, (user) => {
+			const unsubscribe = onAuthStateChanged(auth, async (user) => {
 				if (user) {
 					console.log("User is already signed in:", user.uid);
-					setUserId(user.uid);
-					setSignedIn(true);
+					await setUserId(user.uid);
+					await setSignedIn(true);
 				} else {
 					console.log("No user found, attempting to sign in anonymously...");
-					setPersistence(auth, browserLocalPersistence).then(() => {
-						signInToFirebase(auth);
-					});
+					await setPersistence(auth, browserLocalPersistence);
+					signInToFirebase(auth);
 				}
 			});
-			return () => unsubscribe();
+			return unsubscribe;
 		}
+	};
+
+	const [isInitialized, setIsInitialized] = useState(false);
+
+	useEffect(() => {
+		let unsubscribe: any;
+
+		const asyncInitFirebase = async () => {
+			if (!isInitialized) {
+				unsubscribe = await initFirebase();
+				await setIsInitialized(true);
+			}
+		};
+
+		asyncInitFirebase();
+
+		// Clean up
+		return () => {
+			if (unsubscribe) {
+				unsubscribe();
+			}
+		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [isInitialized]);
 
 	return (
 		<FirebaseContext.Provider
