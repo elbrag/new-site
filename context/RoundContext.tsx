@@ -87,9 +87,6 @@ const RoundContextProvider = ({ children }: RoundContextProviderProps) => {
 		);
 		if (storedCurrentRoundIndexes?.length) {
 			setCurrentRoundIndexes(JSON.parse(storedCurrentRoundIndexes));
-			console.log(
-				`Updated current round indexes to ${storedCurrentRoundIndexes}`
-			);
 		}
 	};
 
@@ -102,10 +99,10 @@ const RoundContextProvider = ({ children }: RoundContextProviderProps) => {
 		game: GameName,
 		roundIndex: number
 	) => {
-		console.log("onRoundFinish");
-
 		if (!firebaseDatabase) return firebaseDatabaseIsMissing;
 		if (!userId) return userIdIsMissing;
+
+		let updatedRoundIndexes;
 
 		setCurrentRoundIndexes((prevRoundIndexes) => {
 			const existingIndex = prevRoundIndexes.findIndex(
@@ -113,7 +110,7 @@ const RoundContextProvider = ({ children }: RoundContextProviderProps) => {
 			);
 			// If there are already roundindexes for this game
 			if (existingIndex !== -1) {
-				const updatedRoundIndexes = prevRoundIndexes.map((item, index) => {
+				updatedRoundIndexes = prevRoundIndexes.map((item, index) => {
 					if (index === existingIndex) {
 						return {
 							...item,
@@ -122,26 +119,21 @@ const RoundContextProvider = ({ children }: RoundContextProviderProps) => {
 					}
 					return item;
 				});
-				updateUserData(
-					firebaseDatabase,
-					userId,
-					"currentRoundIndexes",
-					JSON.stringify(updatedRoundIndexes)
-				);
 				return updatedRoundIndexes;
 			}
-			const newRoundIndexes = [
+			updatedRoundIndexes = [
 				...prevRoundIndexes,
 				{ game: game, currentRoundIndex: roundIndex },
 			];
-			updateUserData(
-				firebaseDatabase,
-				userId,
-				"currentRoundIndexes",
-				JSON.stringify(newRoundIndexes)
-			);
-			return newRoundIndexes;
+			return updatedRoundIndexes;
 		});
+
+		await updateUserData(
+			firebaseDatabase,
+			userId,
+			"currentRoundIndexes",
+			JSON.stringify(updatedRoundIndexes)
+		);
 	};
 
 	/**

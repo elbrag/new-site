@@ -61,7 +61,6 @@ const ProgressContextProvider = ({
 		);
 		if (storedProgress?.length) {
 			setProgress(JSON.parse(storedProgress));
-			console.log(`Updated progress state to ${storedProgress}`);
 		}
 	};
 

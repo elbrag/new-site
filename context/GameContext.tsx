@@ -49,6 +49,7 @@ interface GameContextProps {
 	) => void;
 	scoreMessage: string | null;
 	onRoundFail: (_game: GameName) => void;
+	resetRound: (game: GameName, questionId: number) => void;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -65,6 +66,7 @@ export const GameContext = createContext<GameContextProps>({
 	updateErrors: () => {},
 	scoreMessage: null,
 	onRoundFail: () => {},
+	resetRound: () => {},
 });
 
 interface GameContextProviderProps {
@@ -114,7 +116,6 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	 * On round complete
 	 */
 	const onRoundComplete = (game: GameName) => {
-		console.log("onRoundComplete");
 		// Set round complete, just temporary, to show success message
 		setRoundComplete(true);
 		setTimeout(() => {
@@ -321,6 +322,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				getGameErrors,
 				scoreMessage,
 				onRoundFail,
+				resetRound,
 			}}
 		>
 			{children}

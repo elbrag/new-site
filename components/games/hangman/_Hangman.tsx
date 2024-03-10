@@ -16,6 +16,7 @@ import { FirebaseContext } from "@/context/FirebaseContext";
 import { RoundContext } from "@/context/RoundContext";
 import { ErrorContext } from "@/context/ErrorContext";
 import { ProgressContext } from "@/context/ProgressContext";
+import ResetButton from "./ResetButton";
 
 interface HangmanProps {
 	gameData: any;
@@ -29,7 +30,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 
 	const { getQuestionStatus } = useContext(ProgressContext);
 
-	const { onRoundFail, updateProgress } = useContext(GameContext);
+	const { onRoundFail, updateProgress, resetRound } = useContext(GameContext);
 
 	const { errors, updateErrors, getGameErrors } = useContext(ErrorContext);
 
@@ -40,6 +41,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		setNumberOfRounds,
 		allRoundsPassed,
 		roundComplete,
+		currentRoundIndexes,
 	} = useContext(RoundContext);
 
 	const {
@@ -52,6 +54,24 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	} = useInfoMessage();
 
 	/**
+	 * Set round state based on words
+	 */
+	const setRoundState = async () => {
+		const currentRoundIndex = getGameCurrentRoundIndex(GameName.Hangman);
+		setNumberOfRounds(maskedWords.length);
+		const numberOfLettersInCurrentWord = maskedWords[
+			currentRoundIndex
+		]?.maskedWord?.reduce((acc: number, nr: number) => acc + nr);
+		updateRoundLength(numberOfLettersInCurrentWord);
+	};
+
+	// Watch for round indexes change before setting round state
+	useEffect(() => {
+		setRoundState();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [currentRoundIndexes]);
+
+	/**
 	 * Check for round completion to set success/fail message
 	 *
 	 * Split into these 2 states to enable exit animation
@@ -60,15 +80,6 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		if (roundComplete) {
 			updateSuccessMessage("You got it!");
 		}
-
-		const setRoundState = async () => {
-			const currentRoundIndex = getGameCurrentRoundIndex(GameName.Hangman);
-			setNumberOfRounds(maskedWords.length);
-			const numberOfLettersInCurrentWord = maskedWords[
-				currentRoundIndex
-			]?.maskedWord?.reduce((acc: number, nr: number) => acc + nr);
-			updateRoundLength(numberOfLettersInCurrentWord);
-		};
 		setRoundState();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [roundComplete]);
@@ -224,20 +235,20 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 					{/* <Confetti /> */}
 				</AnimatePresence>
 			</div>
-			{/* <div className="flex gap-6">
-				<Pagination
+			<div className="flex gap-6">
+				{/* <Pagination
 					itemLength={numberOfRounds}
 					onClick={(index) => {
 						onRoundFinish(GameName.Hangman, index);
 					}}
 					activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
-				/>
+				/> */}
 				<ResetButton
 					onSubmit={() => {
 						resetRound(GameName.Hangman, questionId);
 					}}
 				/>
-			</div> */}
+			</div>
 		</div>
 	);
 };

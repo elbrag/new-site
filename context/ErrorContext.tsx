@@ -51,7 +51,6 @@ const ErrorContextProvider = ({ children }: ErrorContextProviderProps) => {
 		const storedErrors = await getUserData(firebaseDatabase, userId, "errors");
 		if (storedErrors?.length) {
 			setErrors(JSON.parse(storedErrors));
-			console.log(`Updated error state to ${storedErrors}`);
 		}
 	};
 

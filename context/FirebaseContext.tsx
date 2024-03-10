@@ -87,7 +87,6 @@ const FirebaseContextProvider = ({
 	useEffect(() => {
 		if (userId && !username) {
 			getFirebaseUsername(firebaseDatabase, userId);
-			console.log("Got firebase username");
 		}
 	}, [getFirebaseUsername, userId, username]);
 
@@ -125,7 +124,6 @@ const FirebaseContextProvider = ({
 		if (signedIn) return;
 		signInAnonymously(auth)
 			.then(() => {
-				console.log("Signed in to Firebase");
 				setSignedIn(true);
 			})
 			.catch((error: any) => {

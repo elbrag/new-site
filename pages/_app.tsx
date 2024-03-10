@@ -33,10 +33,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 	//@ts-ignore
 	const fonts = Object.keys(FontList).map((key) => FontList[key]);
 
-	useEffect(() => {
-		console.log("rerender app.tsx");
-	}, []);
-
 	return (
 		<>
 			<main
