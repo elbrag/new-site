@@ -74,7 +74,7 @@ const RoundContextProvider = ({ children }: RoundContextProviderProps) => {
 	};
 
 	/**
-	 * Update current round indexes
+	 * Update current round indexes state from Firebase data
 	 */
 	const updateCurrentRoundIndexesState = async (
 		firebaseDatabase: Database,

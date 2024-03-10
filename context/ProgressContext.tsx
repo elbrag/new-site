@@ -1,21 +1,8 @@
 import useUserData from "@/hooks/firebase/useUserData";
-import {
-	firebaseDatabaseIsMissing,
-	userIdIsMissing,
-} from "@/lib/helpers/errorThrowMessages";
-import { CurrentRoundIndexProps } from "@/lib/types/currentRoundIndex";
-import {
-	FirebaseDatabaseProps,
-	FirebaseUserIdProps,
-} from "@/lib/types/firebase";
 import { GameName } from "@/lib/types/game";
-import {
-	HangmanProgressCompletedProps,
-	ProgressProps,
-	ProgressQuestionProps,
-} from "@/lib/types/progress";
+import { ProgressProps, ProgressQuestionProps } from "@/lib/types/progress";
 import { Database } from "firebase/database";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 
 interface ProgressContextProps {
 	progress: ProgressProps[];
@@ -48,7 +35,7 @@ const ProgressContextProvider = ({
 	const { getUserData } = useUserData();
 
 	/**
-	 * Update progress state
+	 * Update progress state from Firebase data
 	 */
 	const updateProgressState = async (
 		firebaseDatabase: Database,

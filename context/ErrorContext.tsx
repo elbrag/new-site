@@ -42,7 +42,7 @@ const ErrorContextProvider = ({ children }: ErrorContextProviderProps) => {
 	const { updateUserData, getUserData } = useUserData();
 
 	/**
-	 * Update error state
+	 * Update error state from Firebase data
 	 */
 	const updateErrorState = async (
 		firebaseDatabase: Database,

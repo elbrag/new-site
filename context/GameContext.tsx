@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect } from "react";
+/**
+ * Game Context
+ *
+ * Central place for several other contexts and hooks
+ */
+
+import { createContext, useContext } from "react";
 import gamesData from "../lib/data/gamesData.json";
 import { GameName, GameProps } from "@/lib/types/game";
 
@@ -27,25 +33,10 @@ interface GameContextProps {
 	currentScore: number;
 	username: string | null;
 	updateUsernameInFirebase: (_username: string) => void;
-	progress: ProgressProps[];
 	updateProgress: (
 		_game: GameName,
 		questionId: number,
 		completed: HangmanProgressCompletedProps[]
-	) => void;
-	getGameProgress: (_game: GameName) => ProgressQuestionProps[];
-	getQuestionStatus: (
-		_game: GameName,
-		questionId: number
-	) => ProgressQuestionProps | null;
-	getGameErrors: (_game: GameName) => string[];
-	errors: ErrorProps[];
-	updateErrors: (
-		firebaseDatabase: FirebaseDatabaseProps,
-		userId: FirebaseUserIdProps,
-		_game: GameName,
-		error: string | [],
-		merge: boolean
 	) => void;
 	scoreMessage: string | null;
 	onRoundFail: (_game: GameName) => void;
@@ -57,13 +48,7 @@ export const GameContext = createContext<GameContextProps>({
 	currentScore: 0,
 	username: null,
 	updateUsernameInFirebase: () => {},
-	progress: [],
 	updateProgress: () => {},
-	getGameProgress: () => [],
-	getQuestionStatus: () => null,
-	getGameErrors: () => [],
-	errors: [],
-	updateErrors: () => {},
 	scoreMessage: null,
 	onRoundFail: () => {},
 	resetRound: () => {},
@@ -74,10 +59,6 @@ interface GameContextProviderProps {
 }
 
 const GameContextProvider = ({ children }: GameContextProviderProps) => {
-	/**
-	 * Variables
-	 */
-
 	// Game urls from data
 	const gameUrls = gamesData.map((game: GameProps) => game.url);
 
@@ -100,7 +81,6 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		numberOfRounds,
 		setAllRoundsPassed,
 		onRoundFinish,
-		roundFailed,
 		setRoundFailed,
 		roundLength,
 	} = useContext(RoundContext);
@@ -313,13 +293,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				currentScore,
 				username,
 				updateUsernameInFirebase,
-				progress,
 				updateProgress,
-				getGameProgress,
-				getQuestionStatus,
-				errors,
-				updateErrors,
-				getGameErrors,
 				scoreMessage,
 				onRoundFail,
 				resetRound,
