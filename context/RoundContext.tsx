@@ -1,3 +1,9 @@
+/**
+ * Round context
+ *
+ * Manages "currentRoundIndexes" data in Firebase
+ */
+
 import useUserData from "@/hooks/firebase/useUserData";
 import {
 	firebaseDatabaseIsMissing,

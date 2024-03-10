@@ -1,3 +1,9 @@
+/**
+ * Error context
+ *
+ * Manages "errors" data in Firebase
+ */
+
 import useUserData from "@/hooks/firebase/useUserData";
 import {
 	firebaseDatabaseIsMissing,
@@ -11,7 +17,7 @@ import {
 import { GameName } from "@/lib/types/game";
 import { Database } from "firebase/database";
 import uniq from "lodash/uniq";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 
 interface ErrorContextProps {
 	getGameErrors: (_game: GameName) => string[];

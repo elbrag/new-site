@@ -13,16 +13,11 @@ import {
 	ProgressProps,
 	ProgressQuestionProps,
 } from "@/lib/types/progress";
-import { ErrorProps } from "@/lib/types/errors";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import { FirebaseContext } from "./FirebaseContext";
 import { RoundContext } from "./RoundContext";
 import { ErrorContext } from "./ErrorContext";
 import { ProgressContext } from "./ProgressContext";
-import {
-	FirebaseDatabaseProps,
-	FirebaseUserIdProps,
-} from "@/lib/types/firebase";
 import useUserData from "@/hooks/firebase/useUserData";
 import {
 	firebaseDatabaseIsMissing,

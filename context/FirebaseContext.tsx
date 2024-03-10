@@ -1,4 +1,11 @@
-import { createContext, useContext, useRef } from "react";
+/**
+ * Firebase context
+ *
+ * Manages Firebase auth
+ * Syncs states with Firebase data
+ */
+
+import { createContext, useContext } from "react";
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { Database, getDatabase } from "firebase/database";
 import {
@@ -8,7 +15,7 @@ import {
 	setPersistence,
 	browserLocalPersistence,
 } from "firebase/auth";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useScore from "@/hooks/firebase/useScore";
 import useUsername from "@/hooks/firebase/useUsername";
 import {

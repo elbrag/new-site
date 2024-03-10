@@ -10,7 +10,6 @@ import HangedMan, { hangmanPartsInOrder } from "./HangedMan";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import FailedScreen from "@/components/ui/FailedScreen";
 import { HangmanProgressCompletedProps } from "@/lib/types/progress";
-
 import RoundContent from "./RoundContent";
 import { FirebaseContext } from "@/context/FirebaseContext";
 import { RoundContext } from "@/context/RoundContext";
@@ -23,17 +22,14 @@ interface HangmanProps {
 }
 
 const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
-	const [questionId, setQuestionId] = useState(0);
+	// Initial data
 	const { maskedWords } = gameData;
 
+	// Context data and functions
 	const { firebaseDatabase, userId } = useContext(FirebaseContext);
-
 	const { getQuestionStatus } = useContext(ProgressContext);
-
 	const { onRoundFail, updateProgress, resetRound } = useContext(GameContext);
-
 	const { errors, updateErrors, getGameErrors } = useContext(ErrorContext);
-
 	const {
 		updateRoundLength,
 		getGameCurrentRoundIndex,
@@ -44,6 +40,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		currentRoundIndexes,
 	} = useContext(RoundContext);
 
+	// Hooks
 	const {
 		infoMessage,
 		updateInfoMessage,
@@ -52,6 +49,9 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		failedMessage,
 		updateFailedMessage,
 	} = useInfoMessage();
+
+	// States
+	const [questionId, setQuestionId] = useState(0);
 
 	/**
 	 * Set round state based on words

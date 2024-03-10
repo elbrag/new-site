@@ -1,3 +1,9 @@
+/**
+ * Progress context
+ *
+ * Manages "progress" data in Firebase
+ */
+
 import useUserData from "@/hooks/firebase/useUserData";
 import { GameName } from "@/lib/types/game";
 import { ProgressProps, ProgressQuestionProps } from "@/lib/types/progress";
