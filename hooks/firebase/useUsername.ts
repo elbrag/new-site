@@ -19,9 +19,9 @@ const useUsername = () => {
 	};
 
 	/**
-	 * Get username from Firebase
+	 * Update username state from Firebase data
 	 */
-	const getFirebaseUsername = async (
+	const updateUsernameState = async (
 		firebaseDatabase: Database,
 		userId: string
 	) => {
@@ -29,7 +29,7 @@ const useUsername = () => {
 		setUsername(_username);
 	};
 
-	return { username, getFirebaseUsername, updateFirebaseUsername };
+	return { username, updateUsernameState, updateFirebaseUsername };
 };
 
 export default useUsername;

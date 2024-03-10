@@ -14,7 +14,7 @@ import { createContext, useState } from "react";
 
 interface RoundContextProps {
 	currentRoundIndexes: CurrentRoundIndexProps[];
-	updateCurrentRoundIndexes: (
+	updateCurrentRoundIndexesState: (
 		firebaseDatabase: Database,
 		userId: string
 	) => void;
@@ -39,7 +39,7 @@ interface RoundContextProps {
 
 export const RoundContext = createContext<RoundContextProps>({
 	currentRoundIndexes: [],
-	updateCurrentRoundIndexes: () => {},
+	updateCurrentRoundIndexesState: () => {},
 	roundLength: null,
 	updateRoundLength: () => {},
 	onRoundFinish: () => {},
@@ -76,7 +76,7 @@ const RoundContextProvider = ({ children }: RoundContextProviderProps) => {
 	/**
 	 * Update current round indexes
 	 */
-	const updateCurrentRoundIndexes = async (
+	const updateCurrentRoundIndexesState = async (
 		firebaseDatabase: Database,
 		userId: string
 	) => {
@@ -150,7 +150,7 @@ const RoundContextProvider = ({ children }: RoundContextProviderProps) => {
 		<RoundContext.Provider
 			value={{
 				currentRoundIndexes,
-				updateCurrentRoundIndexes,
+				updateCurrentRoundIndexesState,
 				roundLength,
 				updateRoundLength,
 				onRoundFinish,

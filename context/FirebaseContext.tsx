@@ -50,10 +50,10 @@ const FirebaseContextProvider = ({
 	const [userId, setUserId] = useState<string | null>(null);
 	const [signedIn, setSignedIn] = useState(false);
 
-	const { currentScore, updateFirebaseScore, getFirebaseScore } = useScore();
-	const { username, updateFirebaseUsername, getFirebaseUsername } =
+	const { currentScore, updateFirebaseScore, updateScoreState } = useScore();
+	const { username, updateFirebaseUsername, updateUsernameState } =
 		useUsername();
-	const { currentRoundIndexes, updateCurrentRoundIndexes } =
+	const { currentRoundIndexes, updateCurrentRoundIndexesState } =
 		useContext(RoundContext);
 	const { errors, updateErrorState } = useContext(ErrorContext);
 	const { progress, updateProgressState } = useContext(ProgressContext);
@@ -79,16 +79,23 @@ const FirebaseContextProvider = ({
 	// Round indexes
 	useEffect(() => {
 		if (userId && firebaseDatabase && !currentRoundIndexes?.length) {
-			updateCurrentRoundIndexes(firebaseDatabase, userId);
+			updateCurrentRoundIndexesState(firebaseDatabase, userId);
 		}
-	}, [currentRoundIndexes?.length, updateCurrentRoundIndexes, userId]);
+	}, [currentRoundIndexes?.length, updateCurrentRoundIndexesState, userId]);
 
 	// Username
 	useEffect(() => {
 		if (userId && !username) {
-			getFirebaseUsername(firebaseDatabase, userId);
+			updateUsernameState(firebaseDatabase, userId);
 		}
-	}, [getFirebaseUsername, userId, username]);
+	}, [updateUsernameState, userId, username]);
+
+	// Score
+	useEffect(() => {
+		if (userId) {
+			updateScoreState(firebaseDatabase, userId);
+		}
+	}, [updateScoreState, userId]);
 
 	/**
 	 * Update username via hook
@@ -107,15 +114,6 @@ const FirebaseContextProvider = ({
 			updateFirebaseScore(firebaseDatabase, userId, incoming);
 		}
 	};
-
-	/**
-	 * Get firebase score (sets state)
-	 */
-	useEffect(() => {
-		if (userId) {
-			getFirebaseScore(firebaseDatabase, userId);
-		}
-	}, [getFirebaseScore, userId]);
 
 	/**
 	 * Sign in anonymously to Firebase

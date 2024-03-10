@@ -20,9 +20,9 @@ const useScore = () => {
 	};
 
 	/**
-	 * Get score from Firebase
+	 * Set score state from Firebase data
 	 */
-	const getFirebaseScore = async (
+	const updateScoreState = async (
 		firebaseDatabase: Database,
 		userId: string
 	) => {
@@ -30,7 +30,7 @@ const useScore = () => {
 		setCurrentScore(_score === null ? 0 : _score);
 	};
 
-	return { currentScore, updateFirebaseScore, getFirebaseScore };
+	return { currentScore, updateFirebaseScore, updateScoreState };
 };
 
 export default useScore;
