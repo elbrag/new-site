@@ -3,7 +3,7 @@ import LetterSlot from "./LetterSlot";
 import Lodash from "./Lodash";
 import {
 	HangmanProgressCompletedProps,
-	ProgressQuestionProps,
+	ProgressRoundProps,
 } from "@/lib/types/progress";
 import { motion } from "framer-motion";
 
@@ -11,12 +11,12 @@ interface RoundContentProps {
 	motionKey: string;
 	description: string;
 	maskedWord: any;
-	questionStatus: ProgressQuestionProps | null;
+	roundStatus: ProgressRoundProps | null;
 }
 
 const RoundContent: React.FC<RoundContentProps> = ({
 	motionKey,
-	questionStatus,
+	roundStatus,
 	description,
 	maskedWord,
 }) => {
@@ -24,7 +24,7 @@ const RoundContent: React.FC<RoundContentProps> = ({
 	 * Get letter to show in slot
 	 */
 	const letterToShow = (index: number) => {
-		const match = questionStatus?.completed.find(
+		const match = roundStatus?.completed.find(
 			(c: HangmanProgressCompletedProps) => c.index === index
 		);
 		return match?.letter ?? null;

@@ -6,19 +6,19 @@
 
 import useUserData from "@/hooks/firebase/useUserData";
 import { GameName } from "@/lib/types/game";
-import { ProgressProps, ProgressQuestionProps } from "@/lib/types/progress";
+import { ProgressProps, ProgressRoundProps } from "@/lib/types/progress";
 import { Database } from "firebase/database";
 import { createContext, useState } from "react";
 
 interface ProgressContextProps {
 	progress: ProgressProps[];
 	setProgress: (progress: any) => void;
-	getGameProgress: (_game: GameName) => ProgressQuestionProps[];
-	getQuestionStatus: (
+	getGameProgress: (_game: GameName) => ProgressRoundProps[];
+	getRoundStatus: (
 		_game: GameName,
-		questionId: number,
+		roundId: number,
 		_progress?: ProgressProps[]
-	) => ProgressQuestionProps | null;
+	) => ProgressRoundProps | null;
 	updateProgressState: (firebaseDatabase: Database, userId: string) => void;
 }
 
@@ -26,7 +26,7 @@ export const ProgressContext = createContext<ProgressContextProps>({
 	progress: [],
 	setProgress: () => {},
 	getGameProgress: () => [],
-	getQuestionStatus: () => null,
+	getRoundStatus: () => null,
 	updateProgressState: () => {},
 });
 
@@ -63,25 +63,25 @@ const ProgressContextProvider = ({
 	const getGameProgress = (
 		game: GameName,
 		_progress?: ProgressProps[]
-	): ProgressQuestionProps[] => {
+	): ProgressRoundProps[] => {
 		return (
 			(_progress ?? progress).find((p: ProgressProps) => p.game === game)
-				?.questions ?? []
+				?.rounds ?? []
 		);
 	};
 
 	/**
-	 * Get question specific current status
+	 * Get round specific current status
 	 */
-	const getQuestionStatus = (
+	const getRoundStatus = (
 		game: GameName,
-		questionId: number,
+		roundId: number,
 		_progress?: ProgressProps[]
-	): ProgressQuestionProps | null => {
+	): ProgressRoundProps | null => {
 		const progressObj = _progress ?? progress;
 		return (
 			getGameProgress(game, progressObj)?.find(
-				(p: ProgressQuestionProps) => p.questionId === questionId
+				(p: ProgressRoundProps) => p.roundId === roundId
 			) ?? null
 		);
 	};
@@ -92,7 +92,7 @@ const ProgressContextProvider = ({
 				progress,
 				setProgress,
 				getGameProgress,
-				getQuestionStatus,
+				getRoundStatus,
 				updateProgressState,
 			}}
 		>

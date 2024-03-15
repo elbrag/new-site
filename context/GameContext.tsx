@@ -11,7 +11,7 @@ import { GameName, GameProps } from "@/lib/types/game";
 import {
 	HangmanProgressCompletedProps,
 	ProgressProps,
-	ProgressQuestionProps,
+	ProgressRoundProps,
 } from "@/lib/types/progress";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import { FirebaseContext } from "./FirebaseContext";
@@ -30,12 +30,12 @@ interface GameContextProps {
 	updateUsernameInFirebase: (_username: string) => void;
 	updateProgress: (
 		_game: GameName,
-		questionId: number,
+		roundId: number,
 		completed: HangmanProgressCompletedProps[]
 	) => void;
 	scoreMessage: string | null;
 	onRoundFail: (_game: GameName) => void;
-	resetRound: (game: GameName, questionId: number) => void;
+	resetRound: (game: GameName, roundId: number) => void;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -80,10 +80,9 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		roundLength,
 	} = useContext(RoundContext);
 
-	const { progress, setProgress, getGameProgress, getQuestionStatus } =
-		useContext(ProgressContext);
+	const { progress, setProgress, getRoundStatus } = useContext(ProgressContext);
 
-	const { updateErrors, errors, getGameErrors } = useContext(ErrorContext);
+	const { updateErrors } = useContext(ErrorContext);
 
 	const { updateUserData } = useUserData();
 
@@ -122,10 +121,10 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	const checkIfCompleted = (
 		_progress: ProgressProps[],
 		game: GameName,
-		questionId: number
+		roundId: number
 	) => {
-		const questionStatus = getQuestionStatus(game, questionId, _progress);
-		return questionStatus?.completed?.length === roundLength;
+		const roundStatus = getRoundStatus(game, roundId, _progress);
+		return roundStatus?.completed?.length === roundLength;
 	};
 
 	/**
@@ -159,63 +158,65 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	 */
 	const updateProgress = async (
 		game: GameName,
-		questionId: number,
+		roundId: number,
 		completed: HangmanProgressCompletedProps[] | []
 	) => {
 		if (!firebaseDatabase) return firebaseDatabaseIsMissing;
 		if (!userId) return userIdIsMissing;
 		const shouldReset = Array.isArray(completed) && completed.length === 0;
 
-		await setProgress((prevProgress: any) => {
+		await setProgress((prevProgress: ProgressProps[]) => {
 			// Find the index of the object with the same game name
 			const existingGameIndex = prevProgress.findIndex(
-				(item: any) => item.game === game
+				(item: ProgressProps) => item.game === game
 			);
 
 			// If an object with the same game name exists
 			if (existingGameIndex !== -1) {
-				const updatedProgress = prevProgress.map((item: any, index: number) => {
-					if (index === existingGameIndex) {
-						// Find the index of the progress item with the same questionId
-						const existingQuestionIndex = item.questions.findIndex(
-							(progressItem: ProgressQuestionProps) =>
-								progressItem.questionId === questionId
-						);
+				const updatedProgress = prevProgress.map(
+					(item: ProgressProps, index: number) => {
+						if (index === existingGameIndex) {
+							// Find the index of the progress item with the same roundId
+							const existingRoundIndex = item.rounds.findIndex(
+								(progressItem: ProgressRoundProps) =>
+									progressItem.roundId === roundId
+							);
 
-						// If a progress item with the same questionId exists, update its completed data
-						if (existingQuestionIndex !== -1) {
-							return {
-								...item,
-								questions: item.questions.map(
-									(progressItem: ProgressQuestionProps) => {
-										if (progressItem.questionId === questionId) {
-											return {
-												...progressItem,
-												completed: shouldReset
-													? []
-													: [...progressItem.completed, ...completed],
-											};
+							// If a progress item with the same roundId exists, update its completed data
+							if (existingRoundIndex !== -1) {
+								return {
+									...item,
+									rounds: item.rounds.map(
+										(progressItem: ProgressRoundProps) => {
+											if (progressItem.roundId === roundId) {
+												return {
+													...progressItem,
+													completed: shouldReset
+														? []
+														: [...progressItem.completed, ...completed],
+												};
+											}
+											return progressItem;
 										}
-										return progressItem;
-									}
-								),
-							};
-						} else {
-							// If no progress item with the same questionId exists, add a new progress item
-							return {
-								...item,
-								questions: [
-									...item.questions,
-									{
-										questionId,
-										completed,
-									},
-								],
-							};
+									),
+								};
+							} else {
+								// If no progress item with the same roundId exists, add a new progress item
+								return {
+									...item,
+									rounds: [
+										...item.rounds,
+										{
+											roundId,
+											completed,
+										},
+									],
+								};
+							}
 						}
+						return item;
 					}
-					return item;
-				});
+				);
 				updateUserData(
 					firebaseDatabase,
 					userId,
@@ -224,7 +225,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				);
 
 				// Check if the current round is completed
-				if (checkIfCompleted(updatedProgress, game, questionId)) {
+				if (checkIfCompleted(updatedProgress, game, roundId)) {
 					onRoundComplete(game);
 				}
 
@@ -235,9 +236,9 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 					...prevProgress,
 					{
 						game: game,
-						questions: [
+						rounds: [
 							{
-								questionId,
+								roundId,
 								completed,
 							},
 						],
@@ -251,7 +252,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				);
 
 				// Check if the current round is completed
-				if (checkIfCompleted(newProgress, game, questionId)) {
+				if (checkIfCompleted(newProgress, game, roundId)) {
 					onRoundComplete(game);
 				}
 				return newProgress;
@@ -262,9 +263,9 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	/**
 	 * Reset round progress and errors
 	 */
-	const resetRound = (game: GameName, questionId: number) => {
+	const resetRound = (game: GameName, roundId: number) => {
 		updateErrors(firebaseDatabase, userId, game, [], false);
-		updateProgress(game, questionId, []);
+		updateProgress(game, roundId, []);
 	};
 
 	/**

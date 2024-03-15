@@ -9,12 +9,12 @@ import {
 	firebaseDatabaseIsMissing,
 	userIdIsMissing,
 } from "@/lib/helpers/errorThrowMessages";
-import { CurrentRoundIndexProps } from "@/lib/types/currentRoundIndex";
 import {
 	FirebaseDatabaseProps,
 	FirebaseUserIdProps,
 } from "@/lib/types/firebase";
 import { GameName } from "@/lib/types/game";
+import { CurrentRoundIndexProps } from "@/lib/types/rounds";
 import { Database } from "firebase/database";
 import { createContext, useState } from "react";
 

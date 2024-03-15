@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import hangman from "../../../lib/data/answers/hangman.json";
-import { HangmanQuestionProps, QuestionProps } from "@/lib/types/questions";
+import { HangmanRoundProps } from "@/lib/types/rounds";
 
 export default function handler(
 	req: NextApiRequest,
@@ -22,13 +22,13 @@ export default function handler(
  * Get masked words
  */
 const getMaskedWords = () => {
-	return hangman.map((question) => {
+	return hangman.map((round) => {
 		return {
-			questionId: question.questionId,
-			description: question.description,
-			maskedWord: question.answer.split(" ").map((answer) => answer.length),
+			roundId: round.roundId,
+			description: round.description,
+			maskedWord: round.answer.split(" ").map((answer) => answer.length),
 		};
-	}) as unknown as HangmanQuestionProps;
+	}) as unknown as HangmanRoundProps;
 };
 
 /**
@@ -36,15 +36,13 @@ const getMaskedWords = () => {
  * returns the letter(s) if it is in words, otherwise false
  */
 const getLetterFromWords = (reqBody: any) => {
-	const { questionId, letter } = reqBody;
-	if (!questionId || !letter) {
+	const { roundId, letter } = reqBody;
+	if (!roundId || !letter) {
 		throw new Error();
 	}
-	const currentQuestion = hangman.find(
-		(question) => question.questionId === questionId
-	);
-	if (currentQuestion?.answer.toLowerCase().includes(letter.toLowerCase())) {
-		const matches = currentQuestion?.answer
+	const currentRound = hangman.find((round) => round.roundId === roundId);
+	if (currentRound?.answer.toLowerCase().includes(letter.toLowerCase())) {
+		const matches = currentRound?.answer
 			.split("")
 			.filter((char) => char != " ")
 			.map((char, index) => ({ char, index }))

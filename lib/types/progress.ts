@@ -2,11 +2,11 @@ import { GameName } from "./game";
 
 export interface ProgressProps {
 	game: GameName;
-	questions: ProgressQuestionProps[];
+	rounds: ProgressRoundProps[];
 }
 
-export interface ProgressQuestionProps {
-	questionId: number;
+export interface ProgressRoundProps {
+	roundId: number;
 	completed: HangmanProgressCompletedProps[]; // TODO: Add alternatives for other games;
 }
 

@@ -1,5 +1,5 @@
 export interface AnswerProps {
-	questionId: string;
+	roundId: string;
 }
 
 export interface HangmanAnswerProps extends AnswerProps {

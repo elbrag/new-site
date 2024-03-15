@@ -27,7 +27,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 
 	// Context data and functions
 	const { firebaseDatabase, userId } = useContext(FirebaseContext);
-	const { getQuestionStatus } = useContext(ProgressContext);
+	const { getRoundStatus } = useContext(ProgressContext);
 	const { onRoundFail, updateProgress, resetRound } = useContext(GameContext);
 	const { errors, updateErrors, getGameErrors } = useContext(ErrorContext);
 	const {
@@ -51,7 +51,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	} = useInfoMessage();
 
 	// States
-	const [questionId, setQuestionId] = useState(0);
+	const [roundId, setRoundId] = useState(0);
 
 	/**
 	 * Set round state based on words
@@ -96,13 +96,11 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	}, [allRoundsPassed]);
 
 	/**
-	 * Update question id if currentRoundIndex changes
+	 * Update round id if currentRoundIndex changes
 	 */
 	useEffect(() => {
-		setQuestionId(
-			parseInt(
-				maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]?.questionId
-			)
+		setRoundId(
+			parseInt(maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]?.roundId)
 		);
 	}, [getGameCurrentRoundIndex, maskedWords]);
 
@@ -129,11 +127,11 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 			updateInfoMessage("Please enter a letter");
 			return;
 		}
-		let currentQuestionCompleted =
-			getQuestionStatus(GameName.Hangman, questionId)?.completed || [];
+		let roundStatus =
+			getRoundStatus(GameName.Hangman, roundId)?.completed || [];
 		// Check if letter already has been tried
-		const alreadyFound = currentQuestionCompleted.some(
-			(question: HangmanProgressCompletedProps) => question.letter === letter
+		const alreadyFound = roundStatus.some(
+			(round: HangmanProgressCompletedProps) => round.letter === letter
 		);
 		const alreadyErrored = getGameErrors(GameName.Hangman).includes(letter);
 		if (alreadyFound || alreadyErrored) {
@@ -144,14 +142,14 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 			);
 			return;
 		}
-		if (questionId) {
+		if (roundId) {
 			// Check for match
 			const letterMatches = await fetchGameData(GameName.Hangman, "POST", {
 				letter,
-				questionId,
+				roundId,
 			});
 			if (letterMatches) {
-				await updateProgress(GameName.Hangman, questionId, letterMatches);
+				await updateProgress(GameName.Hangman, roundId, letterMatches);
 			} else {
 				await updateErrors(
 					firebaseDatabase,
@@ -175,7 +173,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 								motionKey={`round-${getGameCurrentRoundIndex(
 									GameName.Hangman
 								)}`}
-								questionStatus={getQuestionStatus(GameName.Hangman, questionId)}
+								roundStatus={getRoundStatus(GameName.Hangman, roundId)}
 								description={
 									maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
 										?.description
@@ -245,7 +243,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 				/> */}
 				<ResetButton
 					onSubmit={() => {
-						resetRound(GameName.Hangman, questionId);
+						resetRound(GameName.Hangman, roundId);
 					}}
 				/>
 			</div>
