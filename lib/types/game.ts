@@ -1,3 +1,5 @@
+import { HangmanRoundProps } from "./rounds";
+
 export enum GameName {
 	Hangman = "hangman",
 	Memory = "memory",
@@ -9,4 +11,8 @@ export interface GameProps {
 	url: string;
 	title: string;
 	scorePerRound: number;
+}
+
+export interface HangmanGameData {
+	maskedWords: HangmanRoundProps[];
 }

@@ -2,7 +2,7 @@ import { fetchGameData } from "@/lib/helpers/fetch";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import LetterInput from "./LetterInput";
 import { GameContext } from "@/context/GameContext";
-import { GameName } from "@/lib/types/game";
+import { HangmanGameData, GameName } from "@/lib/types/game";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import InfoMessage from "@/components/ui/InfoMessage";
 import { AnimatePresence } from "framer-motion";
@@ -16,9 +16,10 @@ import { RoundContext } from "@/context/RoundContext";
 import { ErrorContext } from "@/context/ErrorContext";
 import { ProgressContext } from "@/context/ProgressContext";
 import ResetButton from "./ResetButton";
+import FactsList from "@/components/ui/FactsList";
 
 interface HangmanProps {
-	gameData: any;
+	gameData: HangmanGameData;
 }
 
 const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
@@ -167,40 +168,50 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 			<div className="flex flex-col justify-center items-center lg:flex-row lg:justify-around gap-4">
 				{/* Game  */}
 				<div className="flex flex-col items-center lg:max-w-3/5">
-					{maskedWords?.length ? (
-						<AnimatePresence mode="wait">
-							<RoundContent
-								motionKey={`round-${getGameCurrentRoundIndex(
-									GameName.Hangman
-								)}`}
-								roundStatus={getRoundStatus(GameName.Hangman, roundId)}
-								description={
-									maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
-										?.description
-								}
-								maskedWord={
-									maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
-										.maskedWord
-								}
-							/>
-						</AnimatePresence>
-					) : (
-						<div className="h-16"></div>
-					)}
-					<div className="relative">
-						<LetterInput
-							onClick={(value) => {
-								checkLetter(value);
-							}}
-						/>
-						<AnimatePresence>
-							{infoMessage && (
-								<div className="absolute right-0 top-0 translate-x-full">
-									<InfoMessage text={infoMessage} />
-								</div>
+					{!allRoundsPassed ? (
+						<>
+							{/* Round */}
+							{maskedWords?.length ? (
+								<AnimatePresence mode="wait">
+									<RoundContent
+										motionKey={`round-${getGameCurrentRoundIndex(
+											GameName.Hangman
+										)}`}
+										roundStatus={getRoundStatus(GameName.Hangman, roundId)}
+										description={
+											maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
+												?.description
+										}
+										maskedWord={
+											maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
+												.maskedWord
+										}
+									/>
+								</AnimatePresence>
+							) : (
+								<div className="h-16"></div>
 							)}
-						</AnimatePresence>
-					</div>
+							{/* Input + input feedback */}
+							<div className="relative">
+								<LetterInput
+									onClick={(value) => {
+										checkLetter(value);
+									}}
+								/>
+								<AnimatePresence>
+									{infoMessage && (
+										<div className="absolute right-0 top-0 translate-x-full">
+											<InfoMessage text={infoMessage} />
+										</div>
+									)}
+								</AnimatePresence>
+							</div>
+						</>
+					) : (
+						<></>
+						// All rounds completed
+						// <FactsList facts={} />
+					)}
 				</div>
 				<div className="flex flex-col items-center">
 					{/* Man  */}

@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { kebabToCamel, kebabToPascal } from "@/lib/helpers/formatting";
 import { GameName, GameProps } from "@/lib/types/game";
 import { fetchGameData } from "@/lib/helpers/fetch";
+import { HangmanRoundProps } from "@/lib/types/rounds";
 
 const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
 	if (!game) {
@@ -47,7 +48,10 @@ export async function getStaticProps({ params }: { params: any }) {
 	let gameData = {};
 
 	if (game?.url === GameName.Hangman) {
-		const maskedWords = await fetchGameData(GameName.Hangman, "GET");
+		const maskedWords: HangmanRoundProps = await fetchGameData(
+			GameName.Hangman,
+			"GET"
+		);
 		gameData = { maskedWords };
 	}
 
