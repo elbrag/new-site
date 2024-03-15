@@ -60,8 +60,12 @@ const FirebaseContextProvider = ({
 	const { currentScore, updateFirebaseScore, updateScoreState } = useScore();
 	const { username, updateFirebaseUsername, updateUsernameState } =
 		useUsername();
-	const { currentRoundIndexes, updateCurrentRoundIndexesState } =
-		useContext(RoundContext);
+	const {
+		currentRoundIndexes,
+		updateCurrentRoundIndexesState,
+		completedRoundIndexes,
+		updateCompletedRoundIndexesState,
+	} = useContext(RoundContext);
 	const { errors, updateErrorState } = useContext(ErrorContext);
 	const { progress, updateProgressState } = useContext(ProgressContext);
 
@@ -89,6 +93,13 @@ const FirebaseContextProvider = ({
 			updateCurrentRoundIndexesState(firebaseDatabase, userId);
 		}
 	}, [currentRoundIndexes?.length, updateCurrentRoundIndexesState, userId]);
+
+	// Round completed indexes
+	useEffect(() => {
+		if (userId && firebaseDatabase && !completedRoundIndexes?.length) {
+			updateCompletedRoundIndexesState(firebaseDatabase, userId);
+		}
+	}, [completedRoundIndexes?.length, updateCompletedRoundIndexesState, userId]);
 
 	// Username
 	useEffect(() => {

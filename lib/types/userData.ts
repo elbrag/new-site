@@ -5,4 +5,5 @@ export type UserDataColumn =
 	| "username"
 	| "currentRoundIndexes"
 	| "progress"
-	| "errors";
+	| "errors"
+	| "completedRoundIndexes";

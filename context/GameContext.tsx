@@ -80,7 +80,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		roundLength,
 	} = useContext(RoundContext);
 
-	const { progress, setProgress, getRoundStatus } = useContext(ProgressContext);
+	const { setProgress, getRoundStatus } = useContext(ProgressContext);
 
 	const { updateErrors } = useContext(ErrorContext);
 
@@ -100,15 +100,19 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		// Check if all rounds are completed
 		if (currentRoundIndex === numberOfRounds - 1) {
 			setAllRoundsPassed(true);
+			// Finish round
+			setTimeout(() => {
+				onRoundFinish(firebaseDatabase, userId, game, currentRoundIndex);
+			}, 1000);
 			setTimeout(() => {
 				setAllRoundsPassed(false);
 			}, 5500);
 		} else {
 			// Reset errors
 			updateErrors(firebaseDatabase, userId, game, [], false);
-			// Go to next round
+			// Finish round. Set goToNextRound to true
 			setTimeout(() => {
-				onRoundFinish(firebaseDatabase, userId, game, currentRoundIndex + 1);
+				onRoundFinish(firebaseDatabase, userId, game, currentRoundIndex, true);
 			}, 1000);
 		}
 		// Send score to Firebase
@@ -148,7 +152,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			updateErrors(firebaseDatabase, userId, game, [], false);
 			// Go to next round
 			setTimeout(() => {
-				onRoundFinish(firebaseDatabase, userId, game, currentRoundIndex + 1);
+				onRoundFinish(firebaseDatabase, userId, game, currentRoundIndex, true);
 			}, 1000);
 		}
 	};

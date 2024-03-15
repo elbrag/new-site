@@ -1,4 +1,4 @@
-import { HangmanRoundProps } from "./rounds";
+import { HangmanMaskedRoundProps } from "./rounds";
 
 export enum GameName {
 	Hangman = "hangman",
@@ -14,5 +14,5 @@ export interface GameProps {
 }
 
 export interface HangmanGameData {
-	maskedWords: HangmanRoundProps[];
+	maskedWords: HangmanMaskedRoundProps[];
 }

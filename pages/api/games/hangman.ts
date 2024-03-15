@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import hangman from "../../../lib/data/answers/hangman.json";
-import { HangmanRoundProps } from "@/lib/types/rounds";
+import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
 
 export default function handler(
 	req: NextApiRequest,
@@ -12,7 +12,13 @@ export default function handler(
 		returnData = getMaskedWords();
 	}
 	if (req.method === "POST") {
-		returnData = getLetterFromWords(req.body);
+		if (req.body?.foundRoundIds?.length) {
+			// Request for complete words by round ids
+			returnData = getCompleteWords(req.body.foundRoundIds);
+		} else {
+			// Requesting if word contains letter
+			returnData = getLetterFromWords(req.body);
+		}
 	}
 
 	res.status(200).json(returnData);
@@ -28,7 +34,16 @@ const getMaskedWords = () => {
 			description: round.description,
 			maskedWord: round.answer.split(" ").map((answer) => answer.length),
 		};
-	}) as unknown as HangmanRoundProps;
+	}) as unknown as HangmanMaskedRoundProps;
+};
+
+/**
+ * Get complete words
+ */
+const getCompleteWords = (roundIds: number[]) => {
+	return hangman.filter((round) => {
+		return roundIds.includes(round.roundId);
+	});
 };
 
 /**

@@ -7,6 +7,7 @@
 import useUserData from "@/hooks/firebase/useUserData";
 import { GameName } from "@/lib/types/game";
 import { ProgressProps, ProgressRoundProps } from "@/lib/types/progress";
+import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
 import { Database } from "firebase/database";
 import { createContext, useState } from "react";
 
@@ -20,6 +21,10 @@ interface ProgressContextProps {
 		_progress?: ProgressProps[]
 	) => ProgressRoundProps | null;
 	updateProgressState: (firebaseDatabase: Database, userId: string) => void;
+	getCompletedRoundAnswers: (
+		_game: GameName,
+		maskedWords: HangmanMaskedRoundProps[]
+	) => any;
 }
 
 export const ProgressContext = createContext<ProgressContextProps>({
@@ -28,6 +33,7 @@ export const ProgressContext = createContext<ProgressContextProps>({
 	getGameProgress: () => [],
 	getRoundStatus: () => null,
 	updateProgressState: () => {},
+	getCompletedRoundAnswers: () => {},
 });
 
 interface ProgressContextProviderProps {
@@ -86,6 +92,33 @@ const ProgressContextProvider = ({
 		);
 	};
 
+	/**
+	 * Get completed round answers
+	 */
+	const getCompletedRoundAnswers = (
+		game: GameName,
+		maskedWords: HangmanMaskedRoundProps[]
+	): Number[] => {
+		const progress = getGameProgress(game);
+
+		const completedRoundIds: Number[] = [];
+
+		maskedWords.forEach((words) => {
+			const nrOfChars = words.maskedWord.reduce(
+				(acc: number, nr: number) => acc + nr
+			);
+			progress.forEach((p) => {
+				if (
+					p.completed?.length === nrOfChars &&
+					!completedRoundIds.includes(p.roundId)
+				) {
+					completedRoundIds.push(p.roundId);
+				}
+			});
+		});
+		return completedRoundIds;
+	};
+
 	return (
 		<ProgressContext.Provider
 			value={{
@@ -94,6 +127,7 @@ const ProgressContextProvider = ({
 				getGameProgress,
 				getRoundStatus,
 				updateProgressState,
+				getCompletedRoundAnswers,
 			}}
 		>
 			{children}
