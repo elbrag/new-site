@@ -29,7 +29,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 
 	// States
 	const [finalResult, setFinalResult] = useState<HangmanRevealedRoundProps[]>();
-	const [readyToRender, setReadyToRender] = useState(false);
+	const [readyToRenderGame, setReadyToRenderGame] = useState(false);
 
 	// Context data and functions
 	const { firebaseDatabase, userId } = useContext(FirebaseContext);
@@ -74,7 +74,6 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 			foundRoundIds: completedRoundAnswers,
 		});
 		await setFinalResult(foundAnswers);
-		setReadyToRender(true);
 	};
 
 	/**
@@ -98,7 +97,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 			updateFinalResult();
 		} else {
 			setTimeout(() => {
-				setReadyToRender(true);
+				setReadyToRenderGame(true);
 			}, 1000);
 		}
 	};
@@ -123,7 +122,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	}, [roundComplete]);
 
 	useEffect(() => {
-		if (roundFailed) updateFailedMessage("Ouch, my neck!!");
+		if (roundFailed && !allRoundsPassed) updateFailedMessage("Ouch, my neck!!");
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [roundFailed]);
 
@@ -204,105 +203,105 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		}
 	};
 
+	if (finalResult)
+		return (
+			<FactsList
+				facts={finalResult}
+				heading="Well done! Here's what you found out:"
+			/>
+		);
+
 	return (
 		<div className="hangman min-h-[80vh] flex flex-col justify-center w-full">
-			{readyToRender && (
+			{readyToRenderGame && (
 				<>
-					{finalResult ? (
-						<FactsList facts={finalResult} />
-					) : (
-						<>
-							<div className="flex flex-col justify-center items-center lg:flex-row lg:justify-around gap-4">
-								{/* Game  */}
-								<div className="flex flex-col items-center lg:max-w-3/5">
-									{/* Round */}
-									{maskedWords?.length ? (
-										<AnimatePresence mode="wait">
-											<RoundContent
-												motionKey={`round-${getGameCurrentRoundIndex(
-													GameName.Hangman
-												)}`}
-												roundStatus={getRoundStatus(GameName.Hangman, roundId)}
-												description={
-													maskedWords[
-														getGameCurrentRoundIndex(GameName.Hangman)
-													]?.description
-												}
-												maskedWord={
-													maskedWords[
-														getGameCurrentRoundIndex(GameName.Hangman)
-													].maskedWord
-												}
-											/>
-										</AnimatePresence>
-									) : (
-										<div className="h-16"></div>
-									)}
-									{/* Input + input feedback */}
-									<div className="relative">
-										<LetterInput
-											onClick={(value) => {
-												checkLetter(value);
-											}}
-										/>
-										<AnimatePresence>
-											{infoMessage && (
-												<div className="absolute right-0 top-0 translate-x-full">
-													<InfoMessage text={infoMessage} />
-												</div>
-											)}
-										</AnimatePresence>
-									</div>
-								</div>
-								<div className="flex flex-col items-center">
-									{/* Man  */}
-									<div className="h-[408px]">
-										<HangedMan
-											errorLength={getGameErrors(GameName.Hangman).length}
-										/>
-									</div>
-									{/* Error list */}
-									{!!getGameErrors(GameName.Hangman).length && (
-										<div className="errors my-10">
-											<ul className="flex gap-2 justify-center">
-												{getGameErrors(GameName.Hangman).map(
-													(err: string, i: number) => (
-														<li
-															className="uppercase text-xl lg:text-2xl"
-															key={`error-${i}`}
-														>
-															{err}
-														</li>
-													)
-												)}
-											</ul>
+					<div className="flex flex-col justify-center items-center lg:flex-row lg:justify-around gap-4">
+						{/* Game  */}
+						<div className="flex flex-col items-center lg:max-w-3/5">
+							{/* Round */}
+							{maskedWords?.length ? (
+								<AnimatePresence mode="wait">
+									<RoundContent
+										motionKey={`round-${getGameCurrentRoundIndex(
+											GameName.Hangman
+										)}`}
+										roundStatus={getRoundStatus(GameName.Hangman, roundId)}
+										description={
+											maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
+												?.description
+										}
+										maskedWord={
+											maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
+												.maskedWord
+										}
+									/>
+								</AnimatePresence>
+							) : (
+								<div className="h-16"></div>
+							)}
+							{/* Input + input feedback */}
+							<div className="relative">
+								<LetterInput
+									onClick={(value) => {
+										checkLetter(value);
+									}}
+								/>
+								<AnimatePresence>
+									{infoMessage && (
+										<div className="absolute right-0 top-0 translate-x-full">
+											<InfoMessage text={infoMessage} />
 										</div>
 									)}
-								</div>
-								<AnimatePresence>
-									{successMessage && <SuccessScreen text={successMessage} />}
-								</AnimatePresence>
-								<AnimatePresence>
-									{failedMessage && <FailedScreen text={failedMessage} />}
-									{/* <Confetti /> */}
 								</AnimatePresence>
 							</div>
-							<div className="flex gap-6">
-								{/* <Pagination
+						</div>
+						<div className="flex flex-col items-center">
+							{/* Man  */}
+							<div className="h-[408px]">
+								<HangedMan
+									errorLength={getGameErrors(GameName.Hangman).length}
+								/>
+							</div>
+							{/* Error list */}
+							{!!getGameErrors(GameName.Hangman).length && (
+								<div className="errors my-10">
+									<ul className="flex gap-2 justify-center">
+										{getGameErrors(GameName.Hangman).map(
+											(err: string, i: number) => (
+												<li
+													className="uppercase text-xl lg:text-2xl"
+													key={`error-${i}`}
+												>
+													{err}
+												</li>
+											)
+										)}
+									</ul>
+								</div>
+							)}
+						</div>
+						<AnimatePresence>
+							{successMessage && <SuccessScreen text={successMessage} />}
+						</AnimatePresence>
+						<AnimatePresence>
+							{failedMessage && <FailedScreen text={failedMessage} />}
+							{/* <Confetti /> */}
+						</AnimatePresence>
+					</div>
+					<div className="flex gap-6">
+						{/* <Pagination
 						itemLength={numberOfRounds}
 						onClick={(index) => {
 							onRoundFinish(GameName.Hangman, index);
 						}}
 						activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
 					/> */}
-								<ResetButton
-									onSubmit={() => {
-										resetRound(GameName.Hangman, roundId);
-									}}
-								/>
-							</div>
-						</>
-					)}
+						<ResetButton
+							onSubmit={() => {
+								resetRound(GameName.Hangman, roundId);
+							}}
+						/>
+					</div>
 				</>
 			)}
 		</div>

@@ -87,14 +87,25 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	const { updateUserData } = useUserData();
 
 	/**
-	 * On round complete
+	 * Check if completed
 	 */
-	const onRoundComplete = (game: GameName) => {
-		// Set round complete, just temporary, to show success message
-		setRoundComplete(true);
-		setTimeout(() => {
-			setRoundComplete(false);
-		}, 5500);
+	const checkIfCompleted = (
+		_progress: ProgressProps[],
+		game: GameName,
+		roundId: number
+	) => {
+		const roundStatus = getRoundStatus(game, roundId, _progress);
+		return roundStatus?.completed?.length === roundLength;
+	};
+
+	/**
+	 * On round end
+	 *
+	 * Checks if all rounds have passed
+	 * Calls onRoundFinish (either with or without moving to next round)
+	 * Resets errors
+	 */
+	const onRoundEnd = (game: GameName) => {
 		// Get current round index
 		const currentRoundIndex = getGameCurrentRoundIndex(game);
 		// Check if all rounds are completed
@@ -115,20 +126,23 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				onRoundFinish(firebaseDatabase, userId, game, currentRoundIndex, true);
 			}, 1000);
 		}
-		// Send score to Firebase
-		updateScore(game);
 	};
 
 	/**
-	 * Check if completed
+	 * On round complete
 	 */
-	const checkIfCompleted = (
-		_progress: ProgressProps[],
-		game: GameName,
-		roundId: number
-	) => {
-		const roundStatus = getRoundStatus(game, roundId, _progress);
-		return roundStatus?.completed?.length === roundLength;
+	const onRoundComplete = (game: GameName) => {
+		// Set round complete, just temporary, to show success message
+		setRoundComplete(true);
+		setTimeout(() => {
+			setRoundComplete(false);
+		}, 5500);
+
+		// End round
+		onRoundEnd(game);
+
+		// Send score to Firebase
+		updateScore(game);
 	};
 
 	/**
@@ -140,21 +154,9 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		setTimeout(() => {
 			setRoundFailed(false);
 		}, 5500);
-		// Get current round index
-		const currentRoundIndex = getGameCurrentRoundIndex(game);
-		if (currentRoundIndex === numberOfRounds - 1) {
-			setAllRoundsPassed(true);
-			setTimeout(() => {
-				setAllRoundsPassed(false);
-			}, 5500);
-		} else {
-			// Reset errors
-			updateErrors(firebaseDatabase, userId, game, [], false);
-			// Go to next round
-			setTimeout(() => {
-				onRoundFinish(firebaseDatabase, userId, game, currentRoundIndex, true);
-			}, 1000);
-		}
+
+		// End round
+		onRoundEnd(game);
 	};
 
 	/**
