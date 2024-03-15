@@ -110,6 +110,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		const currentRoundIndex = getGameCurrentRoundIndex(game);
 		// Check if all rounds are completed
 		if (currentRoundIndex === numberOfRounds - 1) {
+			console.log("seems to be the last round");
 			setAllRoundsPassed(true);
 			// Finish round
 			setTimeout(() => {
@@ -132,6 +133,8 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	 * On round complete
 	 */
 	const onRoundComplete = (game: GameName) => {
+		console.log("Round complete");
+
 		// Set round complete, just temporary, to show success message
 		setRoundComplete(true);
 		setTimeout(() => {
@@ -149,6 +152,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	 * On round fail
 	 */
 	const onRoundFail = (game: GameName) => {
+		console.log("Round fail");
 		// Set round failed, just temporary, to show success message
 		setRoundFailed(true);
 		setTimeout(() => {

@@ -33,19 +33,18 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 
 	// Context data and functions
 	const { firebaseDatabase, userId } = useContext(FirebaseContext);
-	const { getRoundStatus, getCompletedRoundAnswers } =
-		useContext(ProgressContext);
+	const { getRoundStatus, getFoundRoundAnswers } = useContext(ProgressContext);
 	const { onRoundFail, updateProgress, resetRound } = useContext(GameContext);
-	const { errors, updateErrors, getGameErrors } = useContext(ErrorContext);
+	const { updateErrors, getGameErrors } = useContext(ErrorContext);
 	const {
 		updateRoundLength,
 		getGameCurrentRoundIndex,
 		roundFailed,
-		numberOfRounds,
 		setNumberOfRounds,
 		allRoundsPassed,
 		roundComplete,
 		currentRoundIndexes,
+		completedRoundIndexes,
 		getGameCompletedRoundIndexes,
 	} = useContext(RoundContext);
 
@@ -66,12 +65,12 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	 * Set final result state after comparing with answers from backend
 	 */
 	const updateFinalResult = async () => {
-		const completedRoundAnswers = await getCompletedRoundAnswers(
+		const foundRoundAnswers = await getFoundRoundAnswers(
 			GameName.Hangman,
 			maskedWords
 		);
 		const foundAnswers = await fetchGameData(GameName.Hangman, "POST", {
-			foundRoundIds: completedRoundAnswers,
+			foundRoundIds: foundRoundAnswers,
 		});
 		await setFinalResult(foundAnswers);
 	};
@@ -81,7 +80,8 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	 */
 	const setRoundState = async () => {
 		const currentRoundIndex = getGameCurrentRoundIndex(GameName.Hangman);
-		setNumberOfRounds(maskedWords.length);
+		const _numberOfRounds = maskedWords.length;
+		setNumberOfRounds(_numberOfRounds);
 		const numberOfLettersInCurrentWord = maskedWords[
 			currentRoundIndex
 		]?.maskedWord?.reduce((acc: number, nr: number) => acc + nr);
@@ -91,8 +91,8 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 			GameName.Hangman
 		);
 		if (
-			currentRoundIndex === numberOfRounds - 1 &&
-			completedRoundIndexes.includes(numberOfRounds - 1)
+			currentRoundIndex === _numberOfRounds - 1 &&
+			completedRoundIndexes.includes(_numberOfRounds - 1)
 		) {
 			updateFinalResult();
 		} else {
@@ -106,7 +106,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	useEffect(() => {
 		setRoundState();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [currentRoundIndexes]);
+	}, [currentRoundIndexes, completedRoundIndexes]);
 
 	/**
 	 * Check for round completion to set success/fail message
@@ -146,20 +146,6 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	}, [getGameCurrentRoundIndex, maskedWords]);
 
 	/**
-	 * Set round fail if error count meets the limit
-	 */
-	useEffect(() => {
-		if (
-			getGameErrors(GameName.Hangman).length &&
-			hangmanPartsInOrder.length === getGameErrors(GameName.Hangman).length &&
-			!roundFailed
-		) {
-			onRoundFail(GameName.Hangman);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [errors]);
-
-	/**
 	 * Check letter
 	 */
 	const checkLetter = async (letter: string) => {
@@ -192,13 +178,21 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 			if (letterMatches) {
 				await updateProgress(GameName.Hangman, roundId, letterMatches);
 			} else {
-				await updateErrors(
+				const newErrors = await updateErrors(
 					firebaseDatabase,
 					userId,
 					GameName.Hangman,
 					letter,
 					true
 				);
+				if (
+					getGameErrors(GameName.Hangman, newErrors).length &&
+					hangmanPartsInOrder.length ===
+						getGameErrors(GameName.Hangman).length &&
+					!roundFailed
+				) {
+					onRoundFail(GameName.Hangman);
+				}
 			}
 		}
 	};

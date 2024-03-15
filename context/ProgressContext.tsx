@@ -21,7 +21,7 @@ interface ProgressContextProps {
 		_progress?: ProgressProps[]
 	) => ProgressRoundProps | null;
 	updateProgressState: (firebaseDatabase: Database, userId: string) => void;
-	getCompletedRoundAnswers: (
+	getFoundRoundAnswers: (
 		_game: GameName,
 		maskedWords: HangmanMaskedRoundProps[]
 	) => any;
@@ -33,7 +33,7 @@ export const ProgressContext = createContext<ProgressContextProps>({
 	getGameProgress: () => [],
 	getRoundStatus: () => null,
 	updateProgressState: () => {},
-	getCompletedRoundAnswers: () => {},
+	getFoundRoundAnswers: () => {},
 });
 
 interface ProgressContextProviderProps {
@@ -95,7 +95,7 @@ const ProgressContextProvider = ({
 	/**
 	 * Get completed round answers
 	 */
-	const getCompletedRoundAnswers = (
+	const getFoundRoundAnswers = (
 		game: GameName,
 		maskedWords: HangmanMaskedRoundProps[]
 	): Number[] => {
@@ -127,7 +127,7 @@ const ProgressContextProvider = ({
 				getGameProgress,
 				getRoundStatus,
 				updateProgressState,
-				getCompletedRoundAnswers,
+				getFoundRoundAnswers,
 			}}
 		>
 			{children}

@@ -20,7 +20,7 @@ import uniq from "lodash/uniq";
 import { createContext, useState } from "react";
 
 interface ErrorContextProps {
-	getGameErrors: (_game: GameName) => string[];
+	getGameErrors: (_game: GameName, _errors?: ErrorProps[]) => string[];
 	errors: ErrorProps[];
 	updateErrors: (
 		firebaseDatabase: FirebaseDatabaseProps,
@@ -28,14 +28,16 @@ interface ErrorContextProps {
 		_game: GameName,
 		error: string | [],
 		merge: boolean
-	) => void;
+	) => Promise<ErrorProps[]>;
 	updateErrorState: (firebaseDatabase: Database, userId: string) => void;
 }
 
 export const ErrorContext = createContext<ErrorContextProps>({
 	getGameErrors: () => [],
 	errors: [],
-	updateErrors: () => {},
+	updateErrors: async () => {
+		return Promise.resolve([]);
+	},
 	updateErrorState: () => {},
 });
 
@@ -69,11 +71,14 @@ const ErrorContextProvider = ({ children }: ErrorContextProviderProps) => {
 		game: GameName,
 		error: string | [],
 		merge: boolean = false
-	) => {
-		if (!firebaseDatabase) return firebaseDatabaseIsMissing;
-		if (!userId) return userIdIsMissing;
+	): Promise<ErrorProps[]> => {
+		if (!firebaseDatabase) throw Error(firebaseDatabaseIsMissing);
+		if (!userId) throw Error(userIdIsMissing);
 
 		const shouldReset = Array.isArray(error) && error.length === 0;
+
+		let newErrorState: any;
+
 		setErrors((prevErrors) => {
 			const existingIndex = prevErrors.findIndex((item) => item.game === game);
 			// If there are already errors for this game
@@ -96,6 +101,7 @@ const ErrorContextProvider = ({ children }: ErrorContextProviderProps) => {
 					"errors",
 					JSON.stringify(updatedErrors)
 				);
+				newErrorState = updatedErrors;
 				return updatedErrors;
 			}
 			const newErrors = [
@@ -108,15 +114,19 @@ const ErrorContextProvider = ({ children }: ErrorContextProviderProps) => {
 				"errors",
 				JSON.stringify(newErrors)
 			);
+			newErrorState = newErrors;
 			return newErrors;
 		});
+
+		return newErrorState;
 	};
 
 	/**
 	 * Get game specific errors
 	 */
-	const getGameErrors = (game: GameName): string[] => {
-		return errors.find((p: ErrorProps) => p.game === game)?.errors ?? [];
+	const getGameErrors = (game: GameName, _errors?: ErrorProps[]): string[] => {
+		const theErrors = _errors ?? errors;
+		return theErrors.find((p: ErrorProps) => p.game === game)?.errors ?? [];
 	};
 
 	return (
