@@ -5,7 +5,10 @@ import dynamic from "next/dynamic";
 import { kebabToCamel, kebabToPascal } from "@/lib/helpers/formatting";
 import { GameName, GameProps } from "@/lib/types/game";
 import { fetchGameData } from "@/lib/helpers/fetch";
-import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
+import {
+	HangmanMaskedRoundProps,
+	MemoryInitialImagesProps,
+} from "@/lib/types/rounds";
 
 const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
 	if (!game) {
@@ -53,6 +56,12 @@ export async function getStaticProps({ params }: { params: any }) {
 			"GET"
 		);
 		gameData = { maskedWords };
+	} else if (game?.url === GameName.Memory) {
+		const initialImages: MemoryInitialImagesProps = await fetchGameData(
+			GameName.Memory,
+			"GET"
+		);
+		gameData = { initialImages };
 	}
 
 	if (!game) {

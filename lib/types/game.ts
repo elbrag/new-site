@@ -1,4 +1,4 @@
-import { HangmanMaskedRoundProps } from "./rounds";
+import { HangmanMaskedRoundProps, MemoryInitialImagesProps } from "./rounds";
 
 export enum GameName {
 	Hangman = "hangman",
@@ -15,4 +15,8 @@ export interface GameProps {
 
 export interface HangmanGameData {
 	maskedWords: HangmanMaskedRoundProps[];
+}
+
+export interface MemoryGameData {
+	initialImages: MemoryInitialImagesProps[];
 }
