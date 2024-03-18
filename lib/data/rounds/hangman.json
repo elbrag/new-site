@@ -1,0 +1,32 @@
+[
+    {
+        "roundId": 1,
+        "description": "Where I got my bachelor's degree",
+        "answer": "Jönköping University"
+    },
+    {
+        "roundId": 2,
+        "description": "My favourite way of css'ing",
+        "answer": "Tailwind CSS"
+    },
+    {
+        "roundId": 3,
+        "description": "One of my best soft skills",
+        "answer": "Clear communication"
+    },
+    {
+        "roundId": 4,
+        "description": "Possibly my backup career",
+        "answer": "Archeology"
+    },
+    {
+        "roundId": 5,
+        "description": "On my playlist while coding",
+        "answer": "The Chemical Brothers"
+    },
+    {
+        "roundId": 6,
+        "description": "The frontend work that makes me go ❤️‍🔥",
+        "answer": "Motion and physics"
+    }
+]

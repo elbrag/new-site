@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import hangman from "../../../lib/data/answers/hangman.json";
+import hangman from "../../../lib/data/rounds/hangman.json";
 import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
 
 export default function handler(
