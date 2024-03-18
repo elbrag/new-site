@@ -57,11 +57,8 @@ export async function getStaticProps({ params }: { params: any }) {
 		);
 		gameData = { maskedWords };
 	} else if (game?.url === GameName.Memory) {
-		const initialImages: MemoryInitialImagesProps = await fetchGameData(
-			GameName.Memory,
-			"GET"
-		);
-		gameData = { initialImages };
+		const cardCount: number = await fetchGameData(GameName.Memory, "GET");
+		gameData = { cardCount };
 	}
 
 	if (!game) {

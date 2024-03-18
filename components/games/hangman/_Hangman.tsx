@@ -1,5 +1,5 @@
 import { fetchGameData } from "@/lib/helpers/fetch";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import LetterInput from "./LetterInput";
 import { GameContext } from "@/context/GameContext";
 import { HangmanGameData, GameName } from "@/lib/types/game";

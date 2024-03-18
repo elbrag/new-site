@@ -2,19 +2,16 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 interface MemoryCardProps {
-	image: string;
-	id: string;
+	cardData?: any;
 	flipped: boolean;
 	onClick: () => void;
 }
 
 const MemoryCard: React.FC<MemoryCardProps> = ({
-	image,
-	id,
+	cardData,
 	flipped,
 	onClick,
 }) => {
-	console.log(id);
 	return (
 		<a
 			onClick={onClick}
@@ -34,17 +31,22 @@ const MemoryCard: React.FC<MemoryCardProps> = ({
 					className="front w-full h-full absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
 					style={{ backfaceVisibility: "hidden" }}
 				>
-					<Image
-						className="min-h-full object-cover"
-						src={`/static/images/memory/${image}.jpg`}
-						alt=""
-						width={500}
-						height={500}
-					/>
+					{cardData?.images?.length && (
+						<Image
+							className="min-h-full object-cover"
+							src={`/static/images/memory/${cardData.images[0].url}.jpg`}
+							alt=""
+							width={500}
+							height={500}
+						/>
+					)}
 				</div>
 				<div
 					className="back w-full h-full absolute top-0 left-0 bg-military"
-					style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+					style={{
+						backfaceVisibility: "hidden",
+						transform: "rotateY(180deg)",
+					}}
 				></div>
 			</motion.div>
 		</a>

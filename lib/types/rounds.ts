@@ -25,7 +25,7 @@ export interface HangmanRevealedRoundProps extends RoundProps {
 
 export interface MemoryInitialImagesProps {
 	roundId: string;
-	image: string;
+	imageUrl: string;
 }
 
 export interface MemoryRevealedCardsProps extends RoundProps {}

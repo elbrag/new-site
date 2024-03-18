@@ -4,7 +4,7 @@ import { GameName } from "../types/game";
  * Fetch game data wrapper
  */
 export const fetchGameData = async (
-	endpoint: GameName,
+	endpoint: string,
 	method: "POST" | "GET" = "POST",
 	bodyData?: any
 ): Promise<any> => {

@@ -18,5 +18,5 @@ export interface HangmanGameData {
 }
 
 export interface MemoryGameData {
-	initialImages: MemoryInitialImagesProps[];
+	cardCount: number;
 }
