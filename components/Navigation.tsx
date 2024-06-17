@@ -1,6 +1,7 @@
 import Link from "next/link";
-import Icon, { IconColors, IconTypes } from "./ui/Icon";
+import { SvgImageColors, SvgImageMotifs } from "./ui/SvgImage";
 import Breadcrumbs from "./Breadcrumbs";
+import SvgImage from "./ui/SvgImage";
 
 export default function Navigation() {
 	return (
@@ -8,24 +9,18 @@ export default function Navigation() {
 			<nav className="flex justify-start items-end">
 				<div className="flex flex-col md:flex-row md:items-center">
 					<Link href="/" aria-label="Home" className="block mr-2vw md:mr-3vw">
-						<Icon
-							icon={IconTypes.Logo}
+						<SvgImage
+							image={SvgImageMotifs.Logo}
 							width={8}
 							height={3}
 							inVw={true}
-							color={IconColors.Military}
+							color={SvgImageColors.Military}
 							smallScaleFactor={1.25}
 							mediumScaleFactor={1}
 						/>
 					</Link>
 					<Breadcrumbs />
 				</div>
-				{/* <h1
-					className="text-5xl lg:text-6xl leading-none text-border uppercase tracking-wide drop-shadow-text text-paper"
-					style={{ WebkitTextStroke: "0.125vw black" }}
-				>
-					The get to know me game
-				</h1> */}
 			</nav>
 		</header>
 	);

@@ -1,29 +1,42 @@
 import React from "react";
 import Logo from "../../public/static/images/logo.svg";
+import Puzzle from "../../public/static/images/covers/puzzle.svg";
 import ComingSoon from "../../public/static/images/comingsoon.svg";
+import Hangman from "../../public/static/images/covers/hangman.svg";
+import Memory from "../../public/static/images/covers/memory.svg";
+import SendResults from "../../public/static/images/covers/sendResults.svg";
+
 import styled from "styled-components";
 import tailwindConfig from "../../tailwindSettings";
 
-const icons = {
+const svgImages = {
 	logo: Logo,
 	comingSoon: ComingSoon,
+	puzzle: Puzzle,
+	hangman: Hangman,
+	memory: Memory,
+	sendResults: SendResults,
 };
 
-export enum IconTypes {
+export enum SvgImageMotifs {
 	Logo = "logo",
 	ComingSoon = "comingSoon",
+	Puzzle = "puzzle",
+	Hangman = "hangman",
+	Memory = "memory",
+	SendResults = "sendResults",
 }
 
-export enum IconColors {
+export enum SvgImageColors {
 	Military = "military",
 	Black = "black",
 	Lime = "lime",
 	Cream = "cream",
 }
 
-interface IconProps {
-	icon: IconTypes;
-	color?: IconColors;
+interface SvgImageProps {
+	image: SvgImageMotifs;
+	color?: SvgImageColors;
 	width?: number;
 	height?: number;
 	smallScaleFactor?: number;
@@ -31,35 +44,35 @@ interface IconProps {
 	inVw?: boolean;
 }
 
-const Icon: React.FC<IconProps> = ({
-	icon = IconTypes.Logo,
-	color = IconColors.Black,
+const SvgImage: React.FC<SvgImageProps> = ({
+	image = SvgImageMotifs.Logo,
+	color = SvgImageColors.Black,
 	width = 24,
 	height = 24,
 	smallScaleFactor,
 	mediumScaleFactor,
 	inVw = false,
 }) => {
-	const IconElement = icons[icon];
+	const SvgImageElement = svgImages[image];
 	const suffix = inVw ? "vw" : "px";
 
 	return (
-		<StyledIcon
+		<StyledSvgImage
 			$width={width}
 			$height={height}
 			$suffix={suffix}
 			$smallScaleFactor={smallScaleFactor}
 			$mediumScaleFactor={mediumScaleFactor}
-			className={`icon flex items-center justify-center transition-size duration-500 ease-bouncy-1 `}
+			className={`svg-image flex items-center justify-center transition-size duration-500 ease-bouncy-1 `}
 		>
-			<IconElement className={`text-${color} w-full h-full`} />
-		</StyledIcon>
+			<SvgImageElement className={`text-${color} w-full h-full`} />
+		</StyledSvgImage>
 	);
 };
 
-export default Icon;
+export default SvgImage;
 
-const StyledIcon = styled.div<{
+const StyledSvgImage = styled.div<{
 	$width: number;
 	$height: number;
 	$suffix: string;
