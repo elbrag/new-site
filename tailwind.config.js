@@ -82,6 +82,9 @@ module.exports = {
 			rotate: {
 				4: "4deg",
 				5: "5deg",
+				8: "8deg",
+				10: "10deg",
+				20: "20deg",
 			},
 			transitionDuration: {
 				400: "400ms",
@@ -106,6 +109,12 @@ module.exports = {
 				2: 2,
 			},
 			maxWidth: {
+				...distances,
+			},
+			width: {
+				...distances,
+			},
+			height: {
 				...distances,
 			},
 			minHeight: { ...distances },
