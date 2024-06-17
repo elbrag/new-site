@@ -33,7 +33,7 @@ const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
 	);
 	return (
 		<div>
-			<div className="px-6 lg:px-12 flex flex-col items-center justify-center">
+			<div className="px-6 lg:px-12 py-16 flex flex-col items-center justify-center">
 				<div className="w-full">
 					{/* @ts-ignore */}
 					<GameComponent gameData={gameData} />

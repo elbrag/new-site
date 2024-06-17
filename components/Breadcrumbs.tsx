@@ -16,7 +16,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({}) => {
 	const slashClasses = "mx-2";
 
 	return (
-		<div className="flex flex-col justify-center min-h-9">
+		<div className="flex flex-col justify-center md:min-h-9">
 			<ul className="flex">
 				{currentGame ? (
 					<>

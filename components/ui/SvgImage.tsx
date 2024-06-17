@@ -41,7 +41,7 @@ interface SvgImageProps {
 	height?: number;
 	smallScaleFactor?: number;
 	mediumScaleFactor?: number;
-	inVw?: boolean;
+	suffix?: "vw" | "px" | "%";
 }
 
 const SvgImage: React.FC<SvgImageProps> = ({
@@ -51,10 +51,9 @@ const SvgImage: React.FC<SvgImageProps> = ({
 	height = 24,
 	smallScaleFactor,
 	mediumScaleFactor,
-	inVw = false,
+	suffix = "px",
 }) => {
 	const SvgImageElement = svgImages[image];
-	const suffix = inVw ? "vw" : "px";
 
 	return (
 		<StyledSvgImage

@@ -110,6 +110,9 @@ module.exports = {
 			},
 			minHeight: { ...distances },
 			textUnderlineOffset: { 3: "3px", 5: "5px" },
+			screens: {
+				xs: "480px",
+			},
 		},
 	},
 	plugins: [],

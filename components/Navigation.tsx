@@ -13,7 +13,7 @@ export default function Navigation() {
 							image={SvgImageMotifs.Logo}
 							width={8}
 							height={3}
-							inVw={true}
+							suffix="vw"
 							color={SvgImageColors.Military}
 							smallScaleFactor={1.25}
 							mediumScaleFactor={1}
