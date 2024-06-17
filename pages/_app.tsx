@@ -5,7 +5,6 @@ import Navigation from "@/components/Navigation";
 import { Dela_Gothic_One, Alegreya } from "next/font/google";
 import GameContextProvider from "@/context/GameContext";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import FirebaseContextProvider from "@/context/FirebaseContext";
 import RoundContextProvider from "@/context/RoundContext";
 import ProgressContextProvider from "@/context/ProgressContext";
