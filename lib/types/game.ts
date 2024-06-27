@@ -1,4 +1,4 @@
-import { HangmanMaskedRoundProps, MemoryInitialImagesProps } from "./rounds";
+import { HangmanMaskedRoundProps } from "./rounds";
 
 export enum GameName {
 	Hangman = "hangman",

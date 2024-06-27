@@ -1,14 +1,9 @@
 import gamesData from "../lib/data/gamesData.json";
-import { GameContext } from "@/context/GameContext";
-import { useContext } from "react";
 import dynamic from "next/dynamic";
 import { kebabToCamel, kebabToPascal } from "@/lib/helpers/formatting";
 import { GameName, GameProps } from "@/lib/types/game";
 import { fetchGameData } from "@/lib/helpers/fetch";
-import {
-	HangmanMaskedRoundProps,
-	MemoryInitialImagesProps,
-} from "@/lib/types/rounds";
+import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
 
 const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
 	if (!game) {

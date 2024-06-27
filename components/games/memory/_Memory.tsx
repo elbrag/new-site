@@ -1,7 +1,8 @@
 import { GameName, MemoryGameData } from "@/lib/types/game";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MemoryCard from "./MemoryCard";
 import { fetchGameData } from "@/lib/helpers/fetch";
+import { MemoryRoundProps } from "@/lib/types/rounds";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -9,27 +10,51 @@ interface MemoryProps {
 
 const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	const { cardCount } = gameData;
-	const [card1Data, setCard1Data] = useState<any>(null);
-	const [card2Data, setCard2Data] = useState<any>(null);
+	const [card1Data, setCard1Data] = useState<MemoryRoundProps | null>(null);
+	const [card2Data, setCard2Data] = useState<MemoryRoundProps | null>(null);
 	const [flippedCard1, setFlippedCard1] = useState<number | null>(null);
 	const [flippedCard2, setFlippedCard2] = useState<number | null>(null);
 
-	const flipCards = (index: number) => {
+	const timeoutTime = 200;
+
+	/**
+	 * Match watcher
+	 */
+	useEffect(() => {
+		console.log(card1Data, card2Data);
+		if (
+			card1Data != null &&
+			card2Data != null &&
+			card1Data.roundId === card2Data.roundId
+		) {
+			setTimeout(() => {
+				alert("It's a match!");
+			}, timeoutTime);
+		}
+	}, [card1Data, card2Data]);
+
+	/**
+	 * Check and flip cards
+	 */
+	const checkAndFlipCards = (index: number) => {
 		if (flippedCard1 === null) {
-			setCardToFlipped(1, index);
+			flipCard(1, index);
 		} else if (flippedCard2 === null) {
-			setCardToFlipped(2, index);
+			flipCard(2, index);
 		}
 	};
 
-	const setCardToFlipped = async (number: 1 | 2, index: number) => {
+	/**
+	 * Flip card
+	 */
+	const flipCard = async (number: 1 | 2, index: number) => {
 		const _cardData = await fetchGameData(GameName.Memory, "POST", {
 			cardIndex: index,
 		});
-		await setTimeout(() => {
+		setTimeout(() => {
 			number === 1 ? setCard1Data(_cardData) : setCard2Data(_cardData);
 			number === 1 ? setFlippedCard1(index) : setFlippedCard2(index);
-		}, 200);
+		}, timeoutTime);
 	};
 
 	/**
@@ -37,13 +62,16 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	 */
 	const onCardClick = async (index: number) => {
 		if (index === flippedCard1 || index === flippedCard2) {
+			console.log("do nothing");
 			return;
-		} else if (flippedCard1 && flippedCard2) {
+		} else if (flippedCard1 != null && flippedCard2 != null) {
 			setFlippedCard1(null);
 			setFlippedCard2(null);
-			setCardToFlipped(1, index);
+			setCard1Data(null);
+			setCard2Data(null);
+			flipCard(1, index);
 		} else {
-			flipCards(index);
+			checkAndFlipCards(index);
 		}
 	};
 

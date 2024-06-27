@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import memory from "../../../lib/data/rounds/memory.json";
+import { MemoryRoundProps } from "@/lib/types/rounds";
 
 export default function handler(
 	req: NextApiRequest,
@@ -30,7 +31,7 @@ const getCardCount = () => {
 	return memory.length * 2;
 };
 
-const getCardData = (reqBody: any) => {
+const getCardData = (reqBody: any): MemoryRoundProps | undefined => {
 	return memory.find((card) =>
 		card.images[0].slotIndexes?.includes(reqBody.cardIndex)
 	);

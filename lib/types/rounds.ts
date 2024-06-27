@@ -11,7 +11,7 @@ export interface CompletedRoundIndexesProps {
 }
 
 export interface RoundProps {
-	roundId: string;
+	roundId: number;
 	description: string;
 }
 
@@ -23,9 +23,14 @@ export interface HangmanRevealedRoundProps extends RoundProps {
 	answer: string;
 }
 
-export interface MemoryInitialImagesProps {
-	roundId: string;
-	imageUrl: string;
+export interface MemoryImageProps {
+	url: string;
+	slotIndexes?: number[];
+}
+
+export interface MemoryRoundProps extends RoundProps {
+	subtitle?: string;
+	images: MemoryImageProps[];
 }
 
 export interface MemoryRevealedCardsProps extends RoundProps {}
