@@ -16,7 +16,7 @@ const MemoryCard: React.FC<MemoryCardProps> = ({
 	return (
 		<a
 			onClick={onClick}
-			className="w-36 h-52 block cursor-pointer"
+			className="w-32 h-44 md:w-36 md:h-52 block cursor-pointer m-auto"
 			style={{ perspective: "1000px" }}
 		>
 			<motion.div
