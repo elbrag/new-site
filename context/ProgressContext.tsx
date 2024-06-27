@@ -14,7 +14,10 @@ import { createContext, useState } from "react";
 interface ProgressContextProps {
 	progress: ProgressProps[];
 	setProgress: (progress: any) => void;
-	getGameProgress: (_game: GameName) => ProgressRoundProps[];
+	getGameProgress: (
+		_game: GameName,
+		progress?: ProgressProps[]
+	) => ProgressRoundProps[];
 	getRoundStatus: (
 		_game: GameName,
 		roundId: number,
@@ -94,6 +97,8 @@ const ProgressContextProvider = ({
 
 	/**
 	 * Get completed round answers
+	 *
+	 * Hangman only
 	 */
 	const getFoundRoundAnswers = (
 		game: GameName,

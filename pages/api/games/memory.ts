@@ -13,26 +13,25 @@ export default function handler(
 	}
 
 	if (req.method === "POST") {
+		if (req.body.foundMatchesIds?.length) {
+			returnData = getMatchedCardsData(req.body.foundMatchesIds) ?? {};
+		}
 		if (req.body.cardIndex !== undefined) {
-			returnData = getCardData(req.body) ?? {};
+			returnData = getCardData(req.body.cardIndex) ?? {};
 		}
 	}
 
 	res.status(200).json(returnData);
 }
 
-// const getInitialImages = () => {
-// 	return memory.map((round) => {
-// 		return { roundId: round.roundId, imageUrl: round.images[0].url };
-// 	});
-// };
-
 const getCardCount = () => {
 	return memory.length * 2;
 };
 
-const getCardData = (reqBody: any): MemoryRoundProps | undefined => {
-	return memory.find((card) =>
-		card.images[0].slotIndexes?.includes(reqBody.cardIndex)
-	);
+const getMatchedCardsData = (foundMatchesIds: number[]): MemoryRoundProps[] => {
+	return memory.filter((card) => foundMatchesIds?.includes(card.roundId));
+};
+
+const getCardData = (cardIndex: number): MemoryRoundProps | undefined => {
+	return memory.find((card) => card.images[0].slotIndexes?.includes(cardIndex));
 };

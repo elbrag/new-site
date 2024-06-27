@@ -1,5 +1,5 @@
 import { GameName, MemoryGameData } from "@/lib/types/game";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import MemoryCard from "./MemoryCard";
 import { fetchGameData } from "@/lib/helpers/fetch";
 import { MemoryRoundProps } from "@/lib/types/rounds";
@@ -8,6 +8,8 @@ import useInfoMessage from "@/hooks/useInfoMessage";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import FailedScreen from "@/components/ui/FailedScreen";
 import { GameContext } from "@/context/GameContext";
+import { ProgressContext } from "@/context/ProgressContext";
+import { ProgressProps } from "@/lib/types/progress";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -19,12 +21,14 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 
 	// Context data and functions
 	const { updateProgress } = useContext(GameContext);
+	const { progress, getGameProgress } = useContext(ProgressContext);
 
 	// States
 	const [card1Data, setCard1Data] = useState<MemoryRoundProps | null>(null);
 	const [card2Data, setCard2Data] = useState<MemoryRoundProps | null>(null);
 	const [activeCard1, setActiveCard1] = useState<number | null>(null);
 	const [activeCard2, setActiveCard2] = useState<number | null>(null);
+	const [foundCardData, setFoundCardData] = useState<MemoryRoundProps[]>([]);
 
 	// Hooks
 	const {
@@ -37,6 +41,25 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	} = useInfoMessage();
 
 	/**
+	 * On progress state update
+	 */
+	const onProgressUpdate = useCallback(async (progress: ProgressProps[]) => {
+		const gameProgress = await getGameProgress(GameName.Memory, progress);
+		const foundMatchesIds = gameProgress.map((match) => match.roundId);
+		const foundMatchesData = await fetchGameData(GameName.Memory, "POST", {
+			foundMatchesIds,
+		});
+		setFoundCardData(foundMatchesData);
+	}, []);
+
+	/**
+	 * Progress state watcher
+	 */
+	useEffect(() => {
+		onProgressUpdate(progress);
+	}, [progress]);
+
+	/**
 	 * Match watcher
 	 */
 	useEffect(() => {
@@ -45,7 +68,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 			card2Data != null &&
 			card1Data.roundId === card2Data.roundId
 		) {
-			setTimeout(() => {
+			setTimeout(async () => {
 				alert("It's a match!");
 				updateProgress(GameName.Memory, card1Data.roundId, true);
 			}, timeoutTime);
@@ -93,19 +116,29 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 		}
 	};
 
+	const getCardData = (index: number) => {
+		const dataFound = foundCardData.length
+			? foundCardData.find((data) =>
+					data.images.some(
+						(image) => image.slotIndexes && image.slotIndexes.includes(index)
+					)
+			  )
+			: false;
+		if (dataFound) return dataFound;
+
+		return activeCard1 === index
+			? card1Data
+			: activeCard2 === index
+			? card2Data
+			: null;
+	};
+
 	return (
 		<div>
 			<div className="md:px-6 lg:px-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center">
 				{Array.from({ length: cardCount }).map((card, index) => (
 					<MemoryCard
-						flipped={activeCard1 === index || activeCard2 === index}
-						cardData={
-							activeCard1 === index
-								? card1Data
-								: activeCard2 === index
-								? card2Data
-								: null
-						}
+						cardData={getCardData(index)}
 						key={`card-${index}`}
 						onClick={() => onCardClick(index)}
 					></MemoryCard>

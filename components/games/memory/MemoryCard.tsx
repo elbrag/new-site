@@ -4,15 +4,10 @@ import styled from "styled-components";
 
 interface MemoryCardProps {
 	cardData?: any;
-	flipped: boolean;
 	onClick: () => void;
 }
 
-const MemoryCard: React.FC<MemoryCardProps> = ({
-	cardData,
-	flipped,
-	onClick,
-}) => {
+const MemoryCard: React.FC<MemoryCardProps> = ({ cardData, onClick }) => {
 	return (
 		<a
 			onClick={onClick}
@@ -21,9 +16,9 @@ const MemoryCard: React.FC<MemoryCardProps> = ({
 		>
 			<motion.div
 				initial={{ transform: "rotateY(180deg)" }}
-				animate={{ transform: flipped ? "rotateY(0)" : "rotateY(180deg)" }}
+				animate={{ transform: cardData ? "rotateY(0)" : "rotateY(180deg)" }}
 				transition={{
-					delay: flipped ? 0.2 : 0,
+					delay: cardData ? 0.2 : 0,
 				}}
 				className="inner relative h-full w-full"
 				style={{ transformStyle: "preserve-3d" }}
