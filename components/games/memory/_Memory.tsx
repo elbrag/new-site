@@ -1,8 +1,13 @@
 import { GameName, MemoryGameData } from "@/lib/types/game";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MemoryCard from "./MemoryCard";
 import { fetchGameData } from "@/lib/helpers/fetch";
 import { MemoryRoundProps } from "@/lib/types/rounds";
+import { AnimatePresence } from "framer-motion";
+import useInfoMessage from "@/hooks/useInfoMessage";
+import SuccessScreen from "@/components/ui/SuccessScreen";
+import FailedScreen from "@/components/ui/FailedScreen";
+import { GameContext } from "@/context/GameContext";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -10,18 +15,31 @@ interface MemoryProps {
 
 const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	const { cardCount } = gameData;
+	const timeoutTime = 200;
+
+	// Context data and functions
+	const { updateProgress } = useContext(GameContext);
+
+	// States
 	const [card1Data, setCard1Data] = useState<MemoryRoundProps | null>(null);
 	const [card2Data, setCard2Data] = useState<MemoryRoundProps | null>(null);
-	const [flippedCard1, setFlippedCard1] = useState<number | null>(null);
-	const [flippedCard2, setFlippedCard2] = useState<number | null>(null);
+	const [activeCard1, setActiveCard1] = useState<number | null>(null);
+	const [activeCard2, setActiveCard2] = useState<number | null>(null);
 
-	const timeoutTime = 200;
+	// Hooks
+	const {
+		infoMessage,
+		updateInfoMessage,
+		successMessage,
+		updateSuccessMessage,
+		failedMessage,
+		updateFailedMessage,
+	} = useInfoMessage();
 
 	/**
 	 * Match watcher
 	 */
 	useEffect(() => {
-		console.log(card1Data, card2Data);
 		if (
 			card1Data != null &&
 			card2Data != null &&
@@ -29,31 +47,32 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 		) {
 			setTimeout(() => {
 				alert("It's a match!");
+				updateProgress(GameName.Memory, card1Data.roundId, true);
 			}, timeoutTime);
 		}
 	}, [card1Data, card2Data]);
 
 	/**
-	 * Check and flip cards
+	 * Check and activate cards
 	 */
-	const checkAndFlipCards = (index: number) => {
-		if (flippedCard1 === null) {
-			flipCard(1, index);
-		} else if (flippedCard2 === null) {
-			flipCard(2, index);
+	const checkAndActivateCards = (index: number) => {
+		if (activeCard1 === null) {
+			activateCard(1, index);
+		} else if (activeCard2 === null) {
+			activateCard(2, index);
 		}
 	};
 
 	/**
 	 * Flip card
 	 */
-	const flipCard = async (number: 1 | 2, index: number) => {
+	const activateCard = async (number: 1 | 2, index: number) => {
 		const _cardData = await fetchGameData(GameName.Memory, "POST", {
 			cardIndex: index,
 		});
 		setTimeout(() => {
 			number === 1 ? setCard1Data(_cardData) : setCard2Data(_cardData);
-			number === 1 ? setFlippedCard1(index) : setFlippedCard2(index);
+			number === 1 ? setActiveCard1(index) : setActiveCard2(index);
 		}, timeoutTime);
 	};
 
@@ -61,17 +80,16 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	 * On card click
 	 */
 	const onCardClick = async (index: number) => {
-		if (index === flippedCard1 || index === flippedCard2) {
-			console.log("do nothing");
+		if (index === activeCard1 || index === activeCard2) {
 			return;
-		} else if (flippedCard1 != null && flippedCard2 != null) {
-			setFlippedCard1(null);
-			setFlippedCard2(null);
+		} else if (activeCard1 != null && activeCard2 != null) {
+			setActiveCard1(null);
+			setActiveCard2(null);
 			setCard1Data(null);
 			setCard2Data(null);
-			flipCard(1, index);
+			activateCard(1, index);
 		} else {
-			checkAndFlipCards(index);
+			checkAndActivateCards(index);
 		}
 	};
 
@@ -80,11 +98,11 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 			<div className="md:px-6 lg:px-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center">
 				{Array.from({ length: cardCount }).map((card, index) => (
 					<MemoryCard
-						flipped={flippedCard1 === index || flippedCard2 === index}
+						flipped={activeCard1 === index || activeCard2 === index}
 						cardData={
-							flippedCard1 === index
+							activeCard1 === index
 								? card1Data
-								: flippedCard2 === index
+								: activeCard2 === index
 								? card2Data
 								: null
 						}
@@ -92,6 +110,13 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 						onClick={() => onCardClick(index)}
 					></MemoryCard>
 				))}
+				<AnimatePresence>
+					{successMessage && <SuccessScreen text={successMessage} />}
+				</AnimatePresence>
+				<AnimatePresence>
+					{failedMessage && <FailedScreen text={failedMessage} />}
+					{/* <Confetti /> */}
+				</AnimatePresence>
 			</div>
 		</div>
 	);

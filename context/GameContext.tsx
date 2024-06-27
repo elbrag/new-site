@@ -10,6 +10,7 @@ import { GameName, GameProps } from "@/lib/types/game";
 
 import {
 	HangmanProgressCompletedProps,
+	MemoryProgressCompletedProps,
 	ProgressProps,
 	ProgressRoundProps,
 } from "@/lib/types/progress";
@@ -31,7 +32,7 @@ interface GameContextProps {
 	updateProgress: (
 		_game: GameName,
 		roundId: number,
-		completed: HangmanProgressCompletedProps[]
+		completed: HangmanProgressCompletedProps[] | MemoryProgressCompletedProps
 	) => void;
 	scoreMessage: string | null;
 	onRoundFail: (_game: GameName) => void;
@@ -95,7 +96,14 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		roundId: number
 	) => {
 		const roundStatus = getRoundStatus(game, roundId, _progress);
-		return roundStatus?.completed?.length === roundLength;
+		// For array types of progress
+		if (Array.isArray(roundStatus?.completed)) {
+			return roundStatus?.completed?.length === roundLength;
+		}
+		// For bool types of progress
+		else if (typeof roundStatus?.completed === "boolean") {
+			return roundStatus?.completed === true;
+		}
 	};
 
 	/**
@@ -169,7 +177,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	const updateProgress = async (
 		game: GameName,
 		roundId: number,
-		completed: HangmanProgressCompletedProps[] | []
+		completed: HangmanProgressCompletedProps[] | MemoryProgressCompletedProps
 	) => {
 		if (!firebaseDatabase) return firebaseDatabaseIsMissing;
 		if (!userId) return userIdIsMissing;
@@ -199,12 +207,25 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 									rounds: item.rounds.map(
 										(progressItem: ProgressRoundProps) => {
 											if (progressItem.roundId === roundId) {
-												return {
-													...progressItem,
-													completed: shouldReset
-														? []
-														: [...progressItem.completed, ...completed],
-												};
+												// For array types of progress
+												if (
+													Array.isArray(progressItem?.completed) &&
+													Array.isArray(completed)
+												) {
+													return {
+														...progressItem,
+														completed: shouldReset
+															? []
+															: [...progressItem.completed, ...completed],
+													};
+												}
+												// For bool types of progress
+												else {
+													return {
+														...progressItem,
+														completed: shouldReset ? false : completed,
+													};
+												}
 											}
 											return progressItem;
 										}

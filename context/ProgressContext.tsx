@@ -108,12 +108,16 @@ const ProgressContextProvider = ({
 				(acc: number, nr: number) => acc + nr
 			);
 			progress.forEach((p) => {
-				if (
-					p.completed?.length === nrOfChars &&
-					!completedRoundIds.includes(p.roundId)
-				) {
-					completedRoundIds.push(p.roundId);
+				// For array types of progress
+				if (Array.isArray(p.completed)) {
+					if (
+						p.completed?.length === nrOfChars &&
+						!completedRoundIds.includes(p.roundId)
+					) {
+						completedRoundIds.push(p.roundId);
+					}
 				}
+				// Not relevant for bool types of progress
 			});
 		});
 		return completedRoundIds;

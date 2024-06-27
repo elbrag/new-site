@@ -7,10 +7,12 @@ export interface ProgressProps {
 
 export interface ProgressRoundProps {
 	roundId: number;
-	completed: HangmanProgressCompletedProps[]; // TODO: Add alternatives for other games;
+	completed: HangmanProgressCompletedProps[] | MemoryProgressCompletedProps; // TODO: Add alternatives for other games;
 }
 
 export interface HangmanProgressCompletedProps {
 	letter: string;
 	index: number;
 }
+
+export type MemoryProgressCompletedProps = boolean;

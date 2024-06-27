@@ -141,7 +141,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	 */
 	useEffect(() => {
 		setRoundId(
-			parseInt(maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]?.roundId)
+			maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]?.roundId
 		);
 	}, [getGameCurrentRoundIndex, maskedWords]);
 
@@ -157,7 +157,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		let roundStatus =
 			getRoundStatus(GameName.Hangman, roundId)?.completed || [];
 		// Check if letter already has been tried
-		const alreadyFound = roundStatus.some(
+		const alreadyFound = (roundStatus as HangmanProgressCompletedProps[]).some(
 			(round: HangmanProgressCompletedProps) => round.letter === letter
 		);
 		const alreadyErrored = getGameErrors(GameName.Hangman).includes(letter);
