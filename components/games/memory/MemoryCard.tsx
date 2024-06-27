@@ -16,7 +16,7 @@ const MemoryCard: React.FC<MemoryCardProps> = ({
 	return (
 		<a
 			onClick={onClick}
-			className="w-36 h-52 block cursor-pointer rounded-md overflow-hidden"
+			className="w-36 h-52 block cursor-pointer"
 			style={{ perspective: "1000px" }}
 		>
 			<motion.div
@@ -29,7 +29,7 @@ const MemoryCard: React.FC<MemoryCardProps> = ({
 				style={{ transformStyle: "preserve-3d" }}
 			>
 				<div
-					className="front w-full h-full absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+					className="front w-full h-full absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md overflow-hidden"
 					style={{ backfaceVisibility: "hidden" }}
 				>
 					{cardData?.images?.length && (
@@ -43,7 +43,7 @@ const MemoryCard: React.FC<MemoryCardProps> = ({
 					)}
 				</div>
 				<StyledBackside
-					className="back w-full h-full absolute top-0 left-0"
+					className="back w-full h-full absolute top-0 left-0 rounded-md overflow-hidden"
 					style={{
 						backfaceVisibility: "hidden",
 						transform: "rotateY(180deg)",
