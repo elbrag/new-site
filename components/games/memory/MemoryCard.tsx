@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
+import styled from "styled-components";
 
 interface MemoryCardProps {
 	cardData?: any;
@@ -15,7 +16,7 @@ const MemoryCard: React.FC<MemoryCardProps> = ({
 	return (
 		<a
 			onClick={onClick}
-			className="w-36 h-52 block cursor-pointer"
+			className="w-36 h-52 block cursor-pointer rounded-md overflow-hidden"
 			style={{ perspective: "1000px" }}
 		>
 			<motion.div
@@ -41,16 +42,29 @@ const MemoryCard: React.FC<MemoryCardProps> = ({
 						/>
 					)}
 				</div>
-				<div
-					className="back w-full h-full absolute top-0 left-0 bg-military"
+				<StyledBackside
+					className="back w-full h-full absolute top-0 left-0"
 					style={{
 						backfaceVisibility: "hidden",
 						transform: "rotateY(180deg)",
 					}}
-				></div>
+				></StyledBackside>
 			</motion.div>
 		</a>
 	);
 };
 
 export default MemoryCard;
+
+const StyledBackside = styled.div`
+	border: 0.5rem solid #3c4d39;
+
+	--s: 20px; /* Pattern size*/
+	--c1: #3c4d39;
+	--c2: #485945;
+
+	--g: #0000 45%, var(--c1) 46% 54%, #0000 55%;
+	background: linear-gradient(50deg, var(--g)),
+		linear-gradient(-50deg, var(--g)) var(--c2);
+	background-size: var(--s) calc(tan(50deg) * var(--s));
+`;
