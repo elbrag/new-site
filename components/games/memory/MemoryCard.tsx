@@ -53,13 +53,38 @@ export default MemoryCard;
 
 const StyledBackside = styled.div`
 	border: 0.5rem solid #3c4d39;
-
 	--s: 20px; /* Pattern size*/
 	--c1: #3c4d39;
 	--c2: #485945;
-
 	--g: #0000 45%, var(--c1) 46% 54%, #0000 55%;
 	background: linear-gradient(50deg, var(--g)),
 		linear-gradient(-50deg, var(--g)) var(--c2);
 	background-size: var(--s) calc(tan(50deg) * var(--s));
+	&:after {
+		content: "?";
+		position: absolute;
+		border-radius: 100%;
+		color: #485945;
+		background-color: #5efc5b;
+		font-size: 1.25rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 2rem;
+		height: 2rem;
+		border: 0.125rem solid #5efc5b;
+	}
+	&:before {
+		content: "?";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 100%;
+		height: 100%;
+		border: 0.075rem solid #5efc5b;
+	}
 `;
