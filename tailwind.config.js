@@ -4,6 +4,7 @@ const distances = {
 	18: "4.5rem",
 	128: "32rem",
 	144: "36rem",
+	184: "46rem",
 	"0125vw": "0.125vw",
 	"015vw": "0.15vw",
 	"1vw": "1vw",

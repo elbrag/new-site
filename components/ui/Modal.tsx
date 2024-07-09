@@ -3,9 +3,10 @@ import { motion } from "framer-motion";
 interface ModalProps {
 	children: React.ReactNode;
 	onClose: () => void;
+	className?: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
+const Modal: React.FC<ModalProps> = ({ children, onClose, className }) => {
 	return (
 		<div className="modal text-military fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-1">
 			{/* Modal container */}
@@ -16,7 +17,9 @@ const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
 				exit={{ rotate: -10, scale: 0 }}
 				transition={{ duration: 0.5 }}
 			>
-				<div className="bg-paper py-4 px-6 lg:py-8 lg:px-12 w-screen max-w-144 flex flex-col items-center rounded-xl z-1">
+				<div
+					className={`bg-paper py-4 px-6 lg:py-8 lg:px-12 w-screen max-w-144 flex flex-col items-center rounded-xl z-1 ${className}`}
+				>
 					{/* Content */}
 					{children}
 				</div>

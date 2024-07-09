@@ -3,13 +3,15 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import MemoryCard from "./MemoryCard";
 import { fetchGameData } from "@/lib/helpers/fetch";
 import { MemoryRoundProps } from "@/lib/types/rounds";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import FailedScreen from "@/components/ui/FailedScreen";
 import { GameContext } from "@/context/GameContext";
 import { ProgressContext } from "@/context/ProgressContext";
 import { ProgressProps } from "@/lib/types/progress";
+import Modal from "@/components/ui/Modal";
+import Image from "next/image";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -29,6 +31,8 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	const [activeCard1, setActiveCard1] = useState<number | null>(null);
 	const [activeCard2, setActiveCard2] = useState<number | null>(null);
 	const [foundCardData, setFoundCardData] = useState<MemoryRoundProps[]>([]);
+	const [modalCardContent, setModalCardContent] =
+		useState<MemoryRoundProps | null>(null);
 
 	// Hooks
 	const {
@@ -68,9 +72,13 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 			card2Data != null &&
 			card1Data.roundId === card2Data.roundId
 		) {
+			// It's a match
 			setTimeout(async () => {
-				alert("It's a match!");
+				// Update progress and score
+				// TODO: Don't give score on refresh, only on match made
 				updateProgress(GameName.Memory, card1Data.roundId, true);
+				// Set card as currently viewing in modal
+				setModalCardContent(card1Data);
 			}, timeoutTime);
 		}
 	}, [card1Data, card2Data]);
@@ -103,15 +111,24 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	 * On card click
 	 */
 	const onCardClick = async (index: number) => {
-		if (index === activeCard1 || index === activeCard2) {
+		// Already found: Show card data in modal
+		if (getCardData(index)) {
+			setModalCardContent(getCardData(index));
+		}
+		// Clicked card already flipped
+		else if (index === activeCard1 || index === activeCard2) {
 			return;
-		} else if (activeCard1 != null && activeCard2 != null) {
+		}
+		// Both cards already flipped
+		else if (activeCard1 != null && activeCard2 != null) {
 			setActiveCard1(null);
 			setActiveCard2(null);
 			setCard1Data(null);
 			setCard2Data(null);
 			activateCard(1, index);
-		} else {
+		}
+		// Flip card and check for matches
+		else {
 			checkAndActivateCards(index);
 		}
 	};
@@ -136,6 +153,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	return (
 		<div>
 			<div className="md:px-6 lg:px-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center">
+				{/* Cards */}
 				{Array.from({ length: cardCount }).map((card, index) => (
 					<MemoryCard
 						cardData={getCardData(index)}
@@ -146,9 +164,51 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 				<AnimatePresence>
 					{successMessage && <SuccessScreen text={successMessage} />}
 				</AnimatePresence>
+				<AnimatePresence>{/* <Confetti /> */}</AnimatePresence>
+				{/* Modal */}
 				<AnimatePresence>
-					{failedMessage && <FailedScreen text={failedMessage} />}
-					{/* <Confetti /> */}
+					{modalCardContent && (
+						<Modal
+							onClose={() => setModalCardContent(null)}
+							className="overflow-hidden max-w-184"
+						>
+							<h2 className="text-xl lg:text-2xl mb-10 uppercase">
+								It's a match!
+							</h2>
+							<div className="mb-6 flex flex-col justify-center">
+								<h3 className="mb-8 text-center">
+									{modalCardContent.description}
+								</h3>
+								<p>{modalCardContent.subtitle && modalCardContent.subtitle}</p>
+								<ul className="h-44 md:h-52 flex gap-6 justify-center">
+									{modalCardContent?.images?.length &&
+										modalCardContent?.images.map((image, i) => (
+											<motion.li
+												className="w-32 md:w-36 h-full rounded-md overflow-hidden"
+												key={`found-img-${i}`}
+												initial={{ transform: "rotateY(180deg)" }}
+												animate={{
+													transform: modalCardContent
+														? "rotateY(0)"
+														: "rotateY(180deg)",
+												}}
+												transition={{
+													delay: i * timeoutTime,
+												}}
+											>
+												<Image
+													className="min-h-full object-cover"
+													src={`/static/images/memory/${image.url}.jpg`}
+													alt=""
+													width={500}
+													height={500}
+												/>
+											</motion.li>
+										))}
+								</ul>
+							</div>
+						</Modal>
+					)}
 				</AnimatePresence>
 			</div>
 		</div>
