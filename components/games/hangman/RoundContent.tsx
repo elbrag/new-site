@@ -24,9 +24,11 @@ const RoundContent: React.FC<RoundContentProps> = ({
 	 * Get letter to show in slot
 	 */
 	const letterToShow = (index: number) => {
-		const match = roundStatus?.completed.find(
-			(c: HangmanProgressCompletedProps) => c.index === index
-		);
+		const match = Array.isArray(roundStatus?.completed)
+			? roundStatus?.completed.find(
+					(c: HangmanProgressCompletedProps) => c.index === index
+			  )
+			: null;
 		return match?.letter ?? null;
 	};
 
