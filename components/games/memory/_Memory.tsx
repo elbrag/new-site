@@ -12,6 +12,7 @@ import { ProgressContext } from "@/context/ProgressContext";
 import { ProgressProps } from "@/lib/types/progress";
 import Modal from "@/components/ui/Modal";
 import Image from "next/image";
+import { getRandomRotation } from "@/lib/helpers/effects";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -180,31 +181,48 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 									{modalCardContent.description}
 								</h3>
 								<p>{modalCardContent.subtitle && modalCardContent.subtitle}</p>
-								<ul className="h-44 md:h-52 flex gap-6 justify-center">
-									{modalCardContent?.images?.length &&
-										modalCardContent?.images.map((image, i) => (
-											<motion.li
-												className="w-32 md:w-36 h-full rounded-md overflow-hidden"
-												key={`found-img-${i}`}
-												initial={{ transform: "rotateY(180deg)" }}
-												animate={{
-													transform: modalCardContent
-														? "rotateY(0)"
-														: "rotateY(180deg)",
-												}}
-												transition={{
-													delay: i * timeoutTime,
-												}}
-											>
-												<Image
-													className="min-h-full object-cover"
-													src={`/static/images/memory/${image.url}.jpg`}
-													alt=""
-													width={500}
-													height={500}
-												/>
-											</motion.li>
-										))}
+								<ul
+									className={`relative mx-auto h-44 md:h-52 grid place-items-center grid-cols-${modalCardContent?.images.length}`}
+									style={{
+										gridTemplateColumns: `repeat(${modalCardContent?.images.length}, 11rem)`,
+									}}
+								>
+									<AnimatePresence>
+										{modalCardContent?.images?.length &&
+											modalCardContent?.images.map((image, i) => (
+												<motion.li
+													className={`w-44 h-inherit flex justify-center ${
+														i === 0 ? "z-1" : "absolute left-0 z-0"
+													}`}
+													key={`found-img-${i}`}
+												>
+													<motion.div
+														className={` w-32 md:w-36 h-inherit rounded-md overflow-hidden `}
+														initial={{
+															rotateZ: 0,
+															x: 0,
+															transformOrigin: "50% 50%",
+														}}
+														animate={{
+															rotateZ: getRandomRotation(),
+															x: `calc(11rem * ${i})`,
+															transformOrigin: "50% 50%",
+														}}
+														transition={{
+															delay: 0.5 + i * (timeoutTime / 1000),
+														}}
+													>
+														<Image
+															className="min-h-full object-cover"
+															src={`/static/images/memory/${image.url}.jpg`}
+															alt=""
+															width={500}
+															height={500}
+														/>
+													</motion.div>
+												</motion.li>
+											))}
+									</AnimatePresence>
 								</ul>
 							</div>
 						</Modal>

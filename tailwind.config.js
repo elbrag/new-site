@@ -14,6 +14,7 @@ const distances = {
 	"2/3": "66.67%",
 	"3/5": "60%",
 	"80vh": "80vh",
+	inherit: "inherit",
 };
 const shadows = {
 	text: "0 3px 3px 0px rgba(0, 0, 0, 0.3)",
@@ -129,6 +130,7 @@ module.exports = {
 	safelist: [
 		{ pattern: /font-/ },
 		{ pattern: /scale-/, variants: ["md", "lg"] },
+		{ pattern: /grid-cols-/, variants: ["md", "lg"] },
 		{ pattern: /text-/ },
 		{ pattern: /w-/, variants: ["md", "lg"] },
 		{ pattern: /h-/, variants: ["md", "lg"] },
