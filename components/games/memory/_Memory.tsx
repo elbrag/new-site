@@ -197,7 +197,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 													key={`found-img-${i}`}
 												>
 													<motion.div
-														className={` w-32 md:w-36 h-inherit rounded-md overflow-hidden `}
+														className={`w-32 md:w-36 h-inherit rounded-md overflow-hidden `}
 														initial={{
 															rotateZ: 0,
 															x: 0,
