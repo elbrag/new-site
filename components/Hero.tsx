@@ -3,11 +3,11 @@ import { FontList } from "@/pages/_app";
 export default function Hero() {
 	const fontNames = Object.keys(FontList);
 	const text = "Ellen Brage";
-	const splitText = text.split("").map((l, i) => (
-		<span className={`font-${fontNames[i]}`} key={`hero-text-${i}`}>
-			{l}
-		</span>
-	));
+	// const splitText = text.split("").map((l, i) => (
+	// 	<span className={`font-${fontNames[i]}`} key={`hero-text-${i}`}>
+	// 		{l}
+	// 	</span>
+	// ));
 
 	return (
 		<div className="hero h-full w-full flex items-center justify-center flex-grow">

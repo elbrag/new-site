@@ -174,7 +174,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 							className="overflow-hidden max-w-184"
 						>
 							<h2 className="text-xl lg:text-2xl mb-10 uppercase">
-								It's a match!
+								It&apos;s a match!
 							</h2>
 							<div className="mb-6 flex flex-col justify-center">
 								<h3 className="mb-8 text-center">

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 interface BreadcrumbsProps {}
 
-const Breadcrumbs: React.FC<BreadcrumbsProps> = ({}) => {
+const Breadcrumbs: React.FC<BreadcrumbsProps> = () => {
 	const router = useRouter();
 
 	const currentGame = gamesData.find(

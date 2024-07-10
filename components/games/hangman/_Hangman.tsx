@@ -154,7 +154,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 			updateInfoMessage("Please enter a letter");
 			return;
 		}
-		let roundStatus =
+		const roundStatus =
 			getRoundStatus(GameName.Hangman, roundId)?.completed || [];
 		// Check if letter already has been tried
 		const alreadyFound = (roundStatus as HangmanProgressCompletedProps[]).some(

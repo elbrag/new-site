@@ -103,10 +103,10 @@ const ProgressContextProvider = ({
 	const getFoundRoundAnswers = (
 		game: GameName,
 		maskedWords: HangmanMaskedRoundProps[]
-	): Number[] => {
+	): number[] => {
 		const progress = getGameProgress(game);
 
-		const completedRoundIds: Number[] = [];
+		const completedRoundIds: number[] = [];
 
 		maskedWords.forEach((words) => {
 			const nrOfChars = words.maskedWord.reduce(

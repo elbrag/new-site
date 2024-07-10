@@ -1,5 +1,4 @@
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
 
 const Signup: React.FC = () => {
 	const signup = (e: any) => {

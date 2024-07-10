@@ -4,7 +4,7 @@ import shuffle from "lodash/shuffle";
 
 interface ConfettiProps {}
 
-const Confetti: React.FC<ConfettiProps> = ({}) => {
+const Confetti: React.FC<ConfettiProps> = () => {
 	const confettiColors = [
 		"blue",
 		"green",
@@ -26,7 +26,7 @@ const Confetti: React.FC<ConfettiProps> = ({}) => {
 	};
 
 	return (
-		<div className="confetti hidden w-screen h-screen flex justify-center items-center">
+		<div className="confetti hidden w-screen h-screen  justify-center items-center">
 			<div className="flex items-center justify-center">
 				{getConfettiArray().map((color, i) => (
 					<motion.span

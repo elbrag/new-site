@@ -1,5 +1,3 @@
-import { GameName } from "../types/game";
-
 /**
  * Fetch game data wrapper
  */

@@ -2,7 +2,7 @@ import { GameContext } from "@/context/GameContext";
 import React, { useContext } from "react";
 import GameCard from "./GameCard";
 
-const GameBoard: React.FC = ({}) => {
+const GameBoard: React.FC = () => {
 	const { gameUrls } = useContext(GameContext);
 
 	return (
