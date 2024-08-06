@@ -8,7 +8,7 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ children, onClose, className }) => {
 	return (
-		<div className="modal text-military fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-1">
+		<div className="modal text-military fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-10">
 			{/* Modal container */}
 			<motion.div
 				className="relative"

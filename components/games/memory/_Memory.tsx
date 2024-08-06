@@ -55,6 +55,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 			foundMatchesIds,
 		});
 		setFoundCardData(foundMatchesData);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	/**
@@ -62,6 +63,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	 */
 	useEffect(() => {
 		onProgressUpdate(progress);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [progress]);
 
 	/**
@@ -82,6 +84,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 				setModalCardContent(card1Data);
 			}, timeoutTime);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [card1Data, card2Data]);
 
 	/**
@@ -190,13 +193,14 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 									<AnimatePresence>
 										{modalCardContent?.images?.length &&
 											modalCardContent?.images.map((image, i) => (
-												<motion.li
+												<li
 													className={`w-44 h-inherit flex justify-center ${
 														i === 0 ? "z-1" : "absolute left-0 z-0"
 													}`}
-													key={`found-img-${i}`}
+													key={`found-img-li-${i}`}
 												>
 													<motion.div
+														key={`found-img-container-${i}`}
 														className={`w-32 md:w-36 h-inherit rounded-md overflow-hidden `}
 														initial={{
 															rotateZ: 0,
@@ -209,7 +213,9 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 															transformOrigin: "50% 50%",
 														}}
 														transition={{
-															delay: 0.5 + i * (timeoutTime / 1000),
+															duration: 0.6,
+															delay: i * 0.5 * (timeoutTime / 1000),
+															ease: [0.42, 0, 0.58, 1],
 														}}
 													>
 														<Image
@@ -220,7 +226,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 															height={500}
 														/>
 													</motion.div>
-												</motion.li>
+												</li>
 											))}
 									</AnimatePresence>
 								</ul>
