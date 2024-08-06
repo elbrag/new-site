@@ -36,14 +36,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 		useState<MemoryRoundProps | null>(null);
 
 	// Hooks
-	const {
-		infoMessage,
-		updateInfoMessage,
-		successMessage,
-		updateSuccessMessage,
-		failedMessage,
-		updateFailedMessage,
-	} = useInfoMessage();
+	const { successMessage } = useInfoMessage();
 
 	/**
 	 * On progress state update
@@ -70,15 +63,16 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	 * Match watcher
 	 */
 	useEffect(() => {
+		const gameProgress = getGameProgress(GameName.Memory, progress);
 		if (
 			card1Data != null &&
 			card2Data != null &&
-			card1Data.roundId === card2Data.roundId
+			card1Data.roundId === card2Data.roundId &&
+			!gameProgress.some((p) => p.roundId === card1Data.roundId)
 		) {
 			// It's a match
 			setTimeout(async () => {
 				// Update progress and score
-				// TODO: Don't give score on refresh, only on match made
 				updateProgress(GameName.Memory, card1Data.roundId, true);
 				// Set card as currently viewing in modal
 				setModalCardContent(card1Data);
@@ -208,7 +202,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 															transformOrigin: "50% 50%",
 														}}
 														animate={{
-															rotateZ: getRandomRotation(),
+															rotateZ: Math.random() * (12 - -12) + -12,
 															x: `calc(11rem * ${i})`,
 															transformOrigin: "50% 50%",
 														}}
