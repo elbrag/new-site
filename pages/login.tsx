@@ -1,15 +1,33 @@
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { FirebaseContext } from "@/context/FirebaseContext";
 import { checkPassword } from "@/lib/helpers/fetch";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { redirect } from "next/navigation";
 
 const Login: React.FC = () => {
 	const [password, setPassword] = useState<string>("");
+	// const { startFirebaseInit } = useContext(FirebaseContext);
+	const [failed, setFailed] = useState(false);
+	const [success, setSuccess] = useState(true);
+	const [loading, setLoading] = useState(false);
 
 	const login = async () => {
+		setSuccess(false);
+		setFailed(false);
+		setLoading(true);
+
 		const loginResult = await checkPassword({ input: password });
+
 		if (loginResult.status === 200) {
-			// asyncInitFirebase();
+			setSuccess(true);
+			setLoading(false);
+			setTimeout(() => {
+				// startFirebaseInit();
+			}, 1000);
+		} else {
+			setFailed(true);
+			setLoading(false);
 		}
 	};
 
@@ -23,7 +41,6 @@ const Login: React.FC = () => {
 				<div className="mt-10">
 					<form>
 						{
-							/* <Input label="Username" className="mb-6" />*/
 							<Input
 								label="Password"
 								type="password"
@@ -34,8 +51,16 @@ const Login: React.FC = () => {
 						}
 
 						<div className="flex flex-col items-center">
-							<div className="mb-6">
-								<Button label="Log in" onClick={() => login()} />
+							<div className="mb-6 text-center">
+								<Button
+									label={loading ? "Logging in…" : "Log in"}
+									onClick={() => login()}
+								/>
+								{failed && (
+									<p className="mt-4">
+										Sorry, that&apos;s not right. Please try again.
+									</p>
+								)}
 							</div>
 						</div>
 					</form>

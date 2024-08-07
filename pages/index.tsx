@@ -1,14 +1,12 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import GameBoard from "@/components/GameBoard";
 import Login from "./login";
+import { FirebaseContext } from "@/context/FirebaseContext";
 
 const Home: React.FC = () => {
-	return (
-		<>
-			<Login />
-			{/* <GameBoard /> */}
-		</>
-	);
+	const { userId } = useContext(FirebaseContext);
+
+	return <>{userId ? <GameBoard /> : <Login />}</>;
 };
 
 export default Home;
