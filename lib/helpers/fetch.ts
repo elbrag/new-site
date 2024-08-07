@@ -27,3 +27,26 @@ export const fetchGameData = async (
 		throw error;
 	}
 };
+
+export const checkPassword = async (bodyData?: any): Promise<any> => {
+	let data = {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	};
+
+	if (bodyData) data = { ...data, ...{ body: JSON.stringify(bodyData) } };
+
+	try {
+		const response = await fetch(
+			`${process.env.NEXT_PUBLIC_SITE_URL}/api/password`,
+			data
+		);
+		const _response = await response;
+		return _response;
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+};

@@ -1,10 +1,12 @@
 import React from "react";
 import GameBoard from "@/components/GameBoard";
+import Login from "./login";
 
 const Home: React.FC = () => {
 	return (
 		<>
-			<GameBoard />
+			<Login />
+			{/* <GameBoard /> */}
 		</>
 	);
 };
