@@ -4,13 +4,20 @@ interface ModalProps {
 	children: React.ReactNode;
 	onClose: () => void;
 	className?: string;
+	motionKey: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ children, onClose, className }) => {
+const Modal: React.FC<ModalProps> = ({
+	children,
+	onClose,
+	className,
+	motionKey,
+}) => {
 	return (
 		<div className="modal text-military fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-10">
 			{/* Modal container */}
 			<motion.div
+				key={motionKey}
 				className="relative"
 				initial={{ rotate: -10, scale: 0 }}
 				animate={{ rotate: 0, scale: 1 }}

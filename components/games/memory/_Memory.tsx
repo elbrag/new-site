@@ -1,5 +1,11 @@
 import { GameName, MemoryGameData } from "@/lib/types/game";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 import MemoryCard from "./MemoryCard";
 import { fetchGameData } from "@/lib/helpers/fetch";
 import { MemoryRoundProps } from "@/lib/types/rounds";
@@ -12,7 +18,7 @@ import { ProgressContext } from "@/context/ProgressContext";
 import { ProgressProps } from "@/lib/types/progress";
 import Modal from "@/components/ui/Modal";
 import Image from "next/image";
-import { getRandomRotation } from "@/lib/helpers/effects";
+import { createRandomRotationsArray } from "@/lib/helpers/effects";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -35,8 +41,18 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	const [modalCardContent, setModalCardContent] =
 		useState<MemoryRoundProps | null>(null);
 
+	// Rotations need to be memoized, otherwise the random rotation function triggers a re-render
+	const rotationValues = useMemo(() => {
+		const rotations = createRandomRotationsArray();
+		return rotations;
+	}, []);
+
 	// Hooks
 	const { successMessage } = useInfoMessage();
+
+	useEffect(() => {
+		console.log("rerender");
+	}, []);
 
 	/**
 	 * On progress state update
@@ -73,7 +89,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 			// It's a match
 			setTimeout(async () => {
 				// Update progress and score
-				updateProgress(GameName.Memory, card1Data.roundId, true);
+				await updateProgress(GameName.Memory, card1Data.roundId, true);
 				// Set card as currently viewing in modal
 				setModalCardContent(card1Data);
 			}, timeoutTime);
@@ -169,6 +185,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 						<Modal
 							onClose={() => setModalCardContent(null)}
 							className="overflow-hidden max-w-184"
+							motionKey="memory-modal"
 						>
 							<h2 className="text-xl lg:text-2xl mb-10 uppercase">
 								It&apos;s a match!
@@ -185,8 +202,9 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 									}}
 								>
 									<AnimatePresence>
-										{modalCardContent?.images?.length &&
-											modalCardContent?.images.map((image, i) => (
+										{modalCardContent?.images.map((image, i) => {
+											const rotation = rotationValues[i];
+											return (
 												<li
 													className={`w-44 h-inherit flex justify-center ${
 														i === 0 ? "z-1" : "absolute left-0 z-0"
@@ -202,7 +220,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 															transformOrigin: "50% 50%",
 														}}
 														animate={{
-															rotateZ: Math.random() * (12 - -12) + -12,
+															rotateZ: rotation,
 															x: `calc(11rem * ${i})`,
 															transformOrigin: "50% 50%",
 														}}
@@ -221,7 +239,8 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 														/>
 													</motion.div>
 												</li>
-											))}
+											);
+										})}
 									</AnimatePresence>
 								</ul>
 							</div>

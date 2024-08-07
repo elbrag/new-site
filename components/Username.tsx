@@ -29,7 +29,7 @@ export default function Username() {
 			/>
 			<AnimatePresence>
 				{showModal && (
-					<Modal onClose={() => setShowModal(false)}>
+					<Modal onClose={() => setShowModal(false)} motionKey="username-modal">
 						<h2 className="text-xl lg:text-2xl mb-10 uppercase">
 							Update username
 						</h2>
