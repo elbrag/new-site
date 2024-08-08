@@ -41,6 +41,17 @@ const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
 export default GamePage;
 
 export async function getStaticProps({ params }: { params: any }) {
+	const userLoggedIn = false;
+
+	if (!userLoggedIn) {
+		return {
+			redirect: {
+				destination: "/login",
+				permanent: false,
+			},
+		};
+	}
+
 	const game = gamesData.find((game) => game.url === params.slug[0]);
 
 	let gameData = {};
@@ -75,3 +86,23 @@ export async function getStaticPaths() {
 	}));
 	return { paths, fallback: false };
 }
+
+// export const getServerSideProps = async (
+// 	context: GetServerSidePropsContext
+// ): Promise<GetServerSidePropsResult<any>> => {
+// 	// const userLoggedIn: boolean = await checkUserLoggedIn();
+// 	const userLoggedIn = false;
+
+// 	if (!userLoggedIn) {
+// 		return {
+// 			redirect: {
+// 				destination: "/login",
+// 				permanent: false,
+// 			},
+// 		};
+// 	}
+
+// 	return {
+// 		props: {},
+// 	};
+// };

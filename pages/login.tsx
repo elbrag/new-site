@@ -1,9 +1,8 @@
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { FirebaseContext } from "@/context/FirebaseContext";
+// import { FirebaseContext } from "@/context/FirebaseContext";
 import { checkPassword } from "@/lib/helpers/fetch";
-import { useContext, useState } from "react";
-import { redirect } from "next/navigation";
+import { useState } from "react";
 
 const Login: React.FC = () => {
 	const [password, setPassword] = useState<string>("");
