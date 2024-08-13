@@ -1,12 +1,13 @@
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-// import { FirebaseContext } from "@/context/FirebaseContext";
+import { FirebaseContext } from "@/context/FirebaseContext";
 import { checkPassword } from "@/lib/helpers/fetch";
-import { useState } from "react";
+import { redirect } from "next/dist/server/api-utils";
+import { FormEvent, useContext, useState } from "react";
 
 const Login: React.FC = () => {
 	const [password, setPassword] = useState<string>("");
-	// const { startFirebaseInit } = useContext(FirebaseContext);
+	const { initFirebase } = useContext(FirebaseContext);
 	const [failed, setFailed] = useState(false);
 	const [success, setSuccess] = useState(true);
 	const [loading, setLoading] = useState(false);
@@ -21,8 +22,9 @@ const Login: React.FC = () => {
 		if (loginResult.status === 200) {
 			setSuccess(true);
 			setLoading(false);
+			initFirebase(true);
 			setTimeout(() => {
-				// startFirebaseInit();
+				//
 			}, 1000);
 		} else {
 			setFailed(true);
@@ -38,7 +40,12 @@ const Login: React.FC = () => {
 				</h1>
 				<p className="text-lg lg:text-xl">Do you have a password?</p>
 				<div className="mt-10">
-					<form>
+					<form
+						onSubmit={(e: FormEvent) => {
+							e.preventDefault();
+							login();
+						}}
+					>
 						{
 							<Input
 								label="Password"

@@ -30,6 +30,7 @@ let firebaseApp: FirebaseApp | undefined;
 let firebaseDatabase: Database;
 
 interface FirebaseContextProps {
+	initFirebase: (withSignIn?: boolean) => void;
 	firebaseDatabase: FirebaseDatabaseProps;
 	userId: FirebaseUserIdProps;
 	currentScore: number;
@@ -39,6 +40,7 @@ interface FirebaseContextProps {
 }
 
 export const FirebaseContext = createContext<FirebaseContextProps>({
+	initFirebase: () => {},
 	firebaseDatabase: undefined,
 	userId: null,
 	currentScore: 0,
@@ -157,7 +159,7 @@ const FirebaseContextProvider = ({
 	 * Set user id
 	 * Clean up
 	 */
-	const initFirebase = async () => {
+	const initFirebase = async (withSignIn: boolean = false) => {
 		if (!firebaseApp) {
 			const firebaseConfig = {
 				apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -177,9 +179,11 @@ const FirebaseContextProvider = ({
 					await setUserId(user.uid);
 					await setSignedIn(true);
 				} else {
-					console.log("No user found, attempting to sign in anonymously...");
-					await setPersistence(auth, browserLocalPersistence);
-					signInToFirebase(auth);
+					if (withSignIn) {
+						console.log("No user found, attempting to sign in anonymously...");
+						await setPersistence(auth, browserLocalPersistence);
+						signInToFirebase(auth);
+					}
 				}
 			});
 			return unsubscribe;
@@ -212,6 +216,7 @@ const FirebaseContextProvider = ({
 	return (
 		<FirebaseContext.Provider
 			value={{
+				initFirebase,
 				firebaseDatabase,
 				userId,
 				currentScore,
