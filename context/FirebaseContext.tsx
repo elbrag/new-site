@@ -25,6 +25,7 @@ import {
 import { RoundContext } from "./RoundContext";
 import { ErrorContext } from "./ErrorContext";
 import { ProgressContext } from "./ProgressContext";
+import { firebaseConfig } from "@/lib/helpers/firebase";
 
 let firebaseApp: FirebaseApp | undefined;
 let firebaseDatabase: Database;
@@ -161,11 +162,6 @@ const FirebaseContextProvider = ({
 	 */
 	const initFirebase = async (withSignIn: boolean = false) => {
 		if (!firebaseApp) {
-			const firebaseConfig = {
-				apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-				databaseURL:
-					"https://eb-portfolio-game-default-rtdb.europe-west1.firebasedatabase.app",
-			};
 			firebaseApp = initializeApp(firebaseConfig);
 			firebaseDatabase = getDatabase(firebaseApp);
 		}

@@ -2,10 +2,11 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { FirebaseContext } from "@/context/FirebaseContext";
 import { checkPassword } from "@/lib/helpers/fetch";
-import { redirect } from "next/dist/server/api-utils";
+import { useRouter } from "next/navigation";
 import { FormEvent, useContext, useState } from "react";
 
 const Login: React.FC = () => {
+	const router = useRouter();
 	const [password, setPassword] = useState<string>("");
 	const { initFirebase } = useContext(FirebaseContext);
 	const [failed, setFailed] = useState(false);
@@ -24,7 +25,7 @@ const Login: React.FC = () => {
 			setLoading(false);
 			initFirebase(true);
 			setTimeout(() => {
-				//
+				router.push("/");
 			}, 1000);
 		} else {
 			setFailed(true);

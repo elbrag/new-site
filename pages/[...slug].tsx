@@ -4,6 +4,9 @@ import { kebabToCamel, kebabToPascal } from "@/lib/helpers/formatting";
 import { GameName, GameProps } from "@/lib/types/game";
 import { fetchGameData } from "@/lib/helpers/fetch";
 import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "@/lib/helpers/firebase";
 
 const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
 	if (!game) {
@@ -41,15 +44,25 @@ const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
 export default GamePage;
 
 export async function getStaticProps({ params }: { params: any }) {
-	const userLoggedIn = false;
+	const firebaseApp = initializeApp(firebaseConfig);
+	const auth = getAuth(firebaseApp);
 
-	if (!userLoggedIn) {
-		return {
-			redirect: {
-				destination: "/login",
-				permanent: false,
-			},
-		};
+	const redirect = {
+		redirect: {
+			destination: "/login",
+			permanent: false,
+		},
+	};
+
+	if (firebaseApp) {
+		const unsubscribe = onAuthStateChanged(auth, async (user) => {
+			if (!user) {
+				return redirect;
+			}
+		});
+		unsubscribe();
+	} else {
+		return redirect;
 	}
 
 	const game = gamesData.find((game) => game.url === params.slug[0]);
@@ -86,23 +99,3 @@ export async function getStaticPaths() {
 	}));
 	return { paths, fallback: false };
 }
-
-// export const getServerSideProps = async (
-// 	context: GetServerSidePropsContext
-// ): Promise<GetServerSidePropsResult<any>> => {
-// 	// const userLoggedIn: boolean = await checkUserLoggedIn();
-// 	const userLoggedIn = false;
-
-// 	if (!userLoggedIn) {
-// 		return {
-// 			redirect: {
-// 				destination: "/login",
-// 				permanent: false,
-// 			},
-// 		};
-// 	}
-
-// 	return {
-// 		props: {},
-// 	};
-// };
