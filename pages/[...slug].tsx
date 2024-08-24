@@ -4,6 +4,17 @@ import { kebabToCamel, kebabToPascal } from "@/lib/helpers/formatting";
 import { GameName, GameProps } from "@/lib/types/game";
 import { fetchGameData } from "@/lib/helpers/fetch";
 import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "@/lib/helpers/firebase";
+import { getCookie } from "@/lib/helpers/cookies";
+import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
+import {
+	GetServerSideProps,
+	GetServerSidePropsContext,
+	GetStaticPropsContext,
+} from "next/types";
+import { useEffect } from "react";
 
 const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
 	if (!game) {
@@ -26,6 +37,7 @@ const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
 			),
 		}
 	);
+
 	return (
 		<div>
 			<div className="px-6 lg:px-12 py-16 flex flex-col items-center justify-center">
@@ -40,38 +52,48 @@ const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
 
 export default GamePage;
 
-export async function getStaticProps({ params }: { params: any }) {
-	const game = gamesData.find((game) => game.url === params.slug[0]);
+export const getServerSideProps: GetServerSideProps = async (
+	context: GetServerSidePropsContext
+) => {
+	const { req, params } = context;
 
-	let gameData = {};
+	const cookieString =
+		getCookie(req.headers.cookie ?? "", "firebaseToken") ?? "";
+	const token = cookieString?.length
+		? await firebaseAdmin.auth().verifyIdToken(cookieString)
+		: false;
 
-	if (game?.url === GameName.Hangman) {
-		const maskedWords: HangmanMaskedRoundProps = await fetchGameData(
-			GameName.Hangman,
-			"GET"
-		);
-		gameData = { maskedWords };
-	} else if (game?.url === GameName.Memory) {
-		const cardCount: number = await fetchGameData(GameName.Memory, "GET");
-		gameData = { cardCount };
+	if (!token) {
+		return {
+			redirect: {
+				destination: "/login",
+				permanent: false,
+			},
+		};
 	}
+
+	const game = gamesData.find((game) => game.url === params?.slug?.[0]);
 
 	if (!game) {
 		return {
 			notFound: true,
 		};
 	}
+
+	let gameData = {};
+
+	if (game?.url === GameName.Hangman) {
+		const maskedWords = await fetchGameData(GameName.Hangman, "GET");
+		gameData = { maskedWords };
+	} else if (game?.url === GameName.Memory) {
+		const cardCount = await fetchGameData(GameName.Memory, "GET");
+		gameData = { cardCount };
+	}
+
 	return {
 		props: {
 			game,
 			gameData,
 		},
 	};
-}
-
-export async function getStaticPaths() {
-	const paths = gamesData.map((game) => ({
-		params: { slug: [game.url] },
-	}));
-	return { paths, fallback: false };
-}
+};

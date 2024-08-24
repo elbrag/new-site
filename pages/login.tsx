@@ -1,16 +1,27 @@
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { FirebaseContext } from "@/context/FirebaseContext";
+import { getCookie } from "@/lib/helpers/cookies";
 import { checkPassword } from "@/lib/helpers/fetch";
-import { useContext, useState } from "react";
-import { redirect } from "next/navigation";
+import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
+import { useRouter } from "next/navigation";
+import {
+	GetServerSidePropsContext,
+	GetServerSidePropsResult,
+} from "next/types";
+import { FormEvent, useContext, useEffect, useState } from "react";
 
 const Login: React.FC = () => {
+	const router = useRouter();
 	const [password, setPassword] = useState<string>("");
-	// const { startFirebaseInit } = useContext(FirebaseContext);
+	const { initFirebase, userId } = useContext(FirebaseContext);
 	const [failed, setFailed] = useState(false);
 	const [success, setSuccess] = useState(true);
 	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		if (userId) router.push("/");
+	}, [router, userId]);
 
 	const login = async () => {
 		setSuccess(false);
@@ -22,8 +33,11 @@ const Login: React.FC = () => {
 		if (loginResult.status === 200) {
 			setSuccess(true);
 			setLoading(false);
+			initFirebase(true);
+			console.log("Login successful");
 			setTimeout(() => {
-				// startFirebaseInit();
+				console.log("routing");
+				router.push("/");
 			}, 1000);
 		} else {
 			setFailed(true);
@@ -39,7 +53,12 @@ const Login: React.FC = () => {
 				</h1>
 				<p className="text-lg lg:text-xl">Do you have a password?</p>
 				<div className="mt-10">
-					<form>
+					<form
+						onSubmit={(e: FormEvent) => {
+							e.preventDefault();
+							login();
+						}}
+					>
 						{
 							<Input
 								label="Password"
@@ -71,3 +90,28 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+
+export const getServerSideProps = async (
+	context: GetServerSidePropsContext
+): Promise<GetServerSidePropsResult<any>> => {
+	const { req } = context;
+	const cookieString =
+		getCookie(req.headers.cookie ?? "", "firebaseToken") ?? "";
+
+	const token = cookieString?.length
+		? await firebaseAdmin.auth().verifyIdToken(cookieString)
+		: false;
+
+	const redirect = {
+		redirect: {
+			destination: "/",
+			permanent: false,
+		},
+	};
+
+	if (token) return redirect;
+
+	return {
+		props: {},
+	};
+};
