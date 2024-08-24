@@ -7,7 +7,7 @@
 
 import { createContext, useContext } from "react";
 import { FirebaseApp, FirebaseError, initializeApp } from "firebase/app";
-import { Database, getDatabase } from "firebase/database";
+import { Database, getDatabase, Unsubscribe } from "firebase/database";
 import {
 	getAuth,
 	signInAnonymously,
@@ -193,7 +193,7 @@ const FirebaseContextProvider = ({
 	 * Keep Firebase initiated
 	 */
 	useEffect(() => {
-		let unsubscribe: any;
+		let unsubscribe: Unsubscribe | undefined;
 		const asyncInitFirebase = async () => {
 			if (!isInitialized) {
 				unsubscribe = await initFirebase();

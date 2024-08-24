@@ -13,7 +13,9 @@ import { createContext, useState } from "react";
 
 interface ProgressContextProps {
 	progress: ProgressProps[];
-	setProgress: (progress: ProgressProps[]) => void;
+	setProgress: (
+		progress: (prevProgress: ProgressProps[]) => ProgressProps[]
+	) => void;
 	getGameProgress: (
 		_game: GameName,
 		progress?: ProgressProps[]
