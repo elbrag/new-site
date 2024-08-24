@@ -1,9 +1,10 @@
+import { MemoryRoundProps } from "@/lib/types/rounds";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import styled from "styled-components";
 
 interface MemoryCardProps {
-	cardData?: any;
+	cardData?: MemoryRoundProps | null;
 	onClick: () => void;
 }
 

@@ -6,7 +6,7 @@
  */
 
 import { createContext, useContext } from "react";
-import { FirebaseApp, initializeApp } from "firebase/app";
+import { FirebaseApp, FirebaseError, initializeApp } from "firebase/app";
 import { Database, getDatabase } from "firebase/database";
 import {
 	getAuth,
@@ -27,7 +27,7 @@ import { RoundContext } from "./RoundContext";
 import { ErrorContext } from "./ErrorContext";
 import { ProgressContext } from "./ProgressContext";
 import { firebaseConfig } from "@/lib/helpers/firebase";
-import { getCookie, setCookie } from "@/lib/helpers/cookies";
+import { setCookie } from "@/lib/helpers/cookies";
 import { useRouter } from "next/router";
 
 let firebaseApp: FirebaseApp | undefined;
@@ -150,10 +150,9 @@ const FirebaseContextProvider = ({
 			.then(() => {
 				setSignedIn(true);
 			})
-			.catch((error: any) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-				console.error(errorCode, errorMessage);
+			.catch((error: FirebaseError) => {
+				const { code, message } = error;
+				console.error(code, message);
 			});
 	};
 

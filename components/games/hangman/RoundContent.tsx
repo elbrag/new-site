@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 interface RoundContentProps {
 	motionKey: string;
 	description: string;
-	maskedWord: any;
+	maskedWord: number[];
 	roundStatus: ProgressRoundProps | null;
 }
 

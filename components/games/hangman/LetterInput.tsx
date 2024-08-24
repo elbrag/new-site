@@ -1,5 +1,5 @@
 import Button from "@/components/ui/Button";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 
 interface LetterInputProps {
 	onClick: (inputValue: string) => void;
@@ -8,7 +8,7 @@ interface LetterInputProps {
 const LetterInput: React.FC<LetterInputProps> = ({ onClick }) => {
 	const [inputValue, setInputValue] = useState("");
 
-	const handleInputChange = (e: any) => {
+	const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const value = e.currentTarget.value;
 
 		if (value === "" || value.match(/^[A-Öa-ö]$/)) {

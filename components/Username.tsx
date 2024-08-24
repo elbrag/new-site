@@ -1,5 +1,5 @@
 import { GameContext } from "@/context/GameContext";
-import { useContext, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import Button from "./ui/Button";
 import { AnimatePresence } from "framer-motion";
 import Modal from "./ui/Modal";
@@ -10,7 +10,10 @@ export default function Username() {
 	const { username, updateUsernameInFirebase } = useContext(GameContext);
 	const [inputValue, setInputValue] = useState(username ?? "");
 
-	const onUsernameSubmit = async (e: any) => {
+	/**
+	 * On username submit
+	 */
+	const onUsernameSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 		await updateUsernameInFirebase(inputValue);
 		setShowModal(false);
