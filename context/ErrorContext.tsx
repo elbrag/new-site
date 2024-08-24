@@ -46,7 +46,7 @@ interface ErrorContextProviderProps {
 }
 
 const ErrorContextProvider = ({ children }: ErrorContextProviderProps) => {
-	const [errors, setErrors] = useState<any[]>([]);
+	const [errors, setErrors] = useState<ErrorProps[]>([]);
 	const { updateUserData, getUserData } = useUserData();
 
 	/**
@@ -77,17 +77,18 @@ const ErrorContextProvider = ({ children }: ErrorContextProviderProps) => {
 
 		const shouldReset = Array.isArray(error) && error.length === 0;
 
-		let newErrorState: any;
+		let newErrorState: ErrorProps[] = [];
 
 		setErrors((prevErrors) => {
 			const existingIndex = prevErrors.findIndex((item) => item.game === game);
+			const flattenedError = Array.isArray(error) ? error : [error];
 			// If there are already errors for this game
 			if (existingIndex !== -1) {
 				const updatedErrors = prevErrors.map((item, index) => {
 					if (index === existingIndex) {
 						const mergedErrors = merge
-							? uniq([...item.errors, error])
-							: [...item.errors, error];
+							? uniq([...item.errors, ...flattenedError])
+							: [...item.errors, ...flattenedError];
 						return {
 							...item,
 							errors: shouldReset ? [] : mergedErrors,
@@ -104,9 +105,10 @@ const ErrorContextProvider = ({ children }: ErrorContextProviderProps) => {
 				newErrorState = updatedErrors;
 				return updatedErrors;
 			}
+
 			const newErrors = [
 				...prevErrors,
-				{ game: game, errors: shouldReset ? [] : [error] },
+				{ game: game, errors: shouldReset ? [] : flattenedError },
 			];
 			updateUserData(
 				firebaseDatabase,

@@ -13,7 +13,7 @@ import { createContext, useState } from "react";
 
 interface ProgressContextProps {
 	progress: ProgressProps[];
-	setProgress: (progress: any) => void;
+	setProgress: (progress: ProgressProps[]) => void;
 	getGameProgress: (
 		_game: GameName,
 		progress?: ProgressProps[]
@@ -27,7 +27,7 @@ interface ProgressContextProps {
 	getFoundRoundAnswers: (
 		_game: GameName,
 		maskedWords: HangmanMaskedRoundProps[]
-	) => any;
+	) => number[];
 }
 
 export const ProgressContext = createContext<ProgressContextProps>({
@@ -36,7 +36,7 @@ export const ProgressContext = createContext<ProgressContextProps>({
 	getGameProgress: () => [],
 	getRoundStatus: () => null,
 	updateProgressState: () => {},
-	getFoundRoundAnswers: () => {},
+	getFoundRoundAnswers: () => [],
 });
 
 interface ProgressContextProviderProps {
