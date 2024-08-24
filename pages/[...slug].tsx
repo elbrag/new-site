@@ -1,22 +1,20 @@
 import gamesData from "../lib/data/gamesData.json";
 import dynamic from "next/dynamic";
 import { kebabToCamel, kebabToPascal } from "@/lib/helpers/formatting";
-import { GameName, GameProps } from "@/lib/types/game";
+import { GameData, GameName, GameProps } from "@/lib/types/game";
 import { fetchGameData } from "@/lib/helpers/fetch";
-import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "@/lib/helpers/firebase";
 import { getCookie } from "@/lib/helpers/cookies";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
-import {
-	GetServerSideProps,
-	GetServerSidePropsContext,
-	GetStaticPropsContext,
-} from "next/types";
-import { useEffect } from "react";
+import { GetServerSideProps, GetServerSidePropsContext } from "next/types";
+import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
 
-const GamePage = ({ game, gameData }: { game: GameProps; gameData: any }) => {
+const GamePage = ({
+	game,
+	gameData,
+}: {
+	game: GameProps;
+	gameData: GameData;
+}) => {
 	if (!game) {
 		return <div>Game not found</div>;
 	}
@@ -80,7 +78,7 @@ export const getServerSideProps: GetServerSideProps = async (
 		};
 	}
 
-	let gameData = {};
+	let gameData: GameData = {};
 
 	if (game?.url === GameName.Hangman) {
 		const maskedWords = await fetchGameData(GameName.Hangman, "GET");

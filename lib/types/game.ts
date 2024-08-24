@@ -1,5 +1,10 @@
 import { HangmanMaskedRoundProps } from "./rounds";
 
+export type GameData =
+	| { maskedWords: HangmanMaskedRoundProps[] }
+	| { cardCount: MemoryGameData["cardCount"] }
+	| object;
+
 export enum GameName {
 	Hangman = "hangman",
 	Memory = "memory",

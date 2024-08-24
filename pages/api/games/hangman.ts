@@ -50,7 +50,7 @@ const getCompleteWords = (roundIds: number[]) => {
  * Get letter from words
  * returns the letter(s) if it is in words, otherwise false
  */
-const getLetterFromWords = (reqBody: any) => {
+const getLetterFromWords = (reqBody: NextApiRequest["body"]) => {
 	const { roundId, letter } = reqBody;
 	if (!roundId || !letter) {
 		throw new Error();
