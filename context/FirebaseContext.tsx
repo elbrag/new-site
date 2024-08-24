@@ -153,7 +153,7 @@ const FirebaseContextProvider = ({
 			.catch((error: any) => {
 				const errorCode = error.code;
 				const errorMessage = error.message;
-				console.log(errorCode, errorMessage);
+				console.error(errorCode, errorMessage);
 			});
 	};
 
@@ -175,13 +175,13 @@ const FirebaseContextProvider = ({
 			const auth = getAuth(firebaseApp);
 			const unsubscribe = onAuthStateChanged(auth, async (user) => {
 				if (user) {
-					console.log("User is already signed in:", user.uid);
+					// console.log("User is already signed in:", user.uid);
 					await setUserId(user.uid);
 					await setSignedIn(true);
 					const token = await user.getIdToken();
 					setCookie("firebaseToken", token, 30);
 				} else if (withSignIn) {
-					console.log("No user found, attempting to sign in anonymously...");
+					// console.log("No user found, attempting to sign in anonymously...");
 					await setPersistence(auth, browserLocalPersistence);
 					signInToFirebase(auth);
 				}

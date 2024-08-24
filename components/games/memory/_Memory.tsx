@@ -50,10 +50,6 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	// Hooks
 	const { successMessage } = useInfoMessage();
 
-	useEffect(() => {
-		console.log("rerender");
-	}, []);
-
 	/**
 	 * On progress state update
 	 */

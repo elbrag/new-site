@@ -34,9 +34,7 @@ const Login: React.FC = () => {
 			setSuccess(true);
 			setLoading(false);
 			initFirebase(true);
-			console.log("Login successful");
 			setTimeout(() => {
-				console.log("routing");
 				router.push("/");
 			}, 1000);
 		} else {
