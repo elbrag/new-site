@@ -9,16 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@types/node": "20.14.2",
-    "@types/react": "18.3.3",
+    "@types/node": "22.5.0",
+    "@types/react": "18.3.4",
     "@types/react-dom": "18.3.0",
-    "autoprefixer": "10.4.19",
+    "autoprefixer": "10.4.20",
     "firebase": "^10.13.0",
     "firebase-admin": "^12.4.0",
     "framer-motion": "^11.3.30",
     "lodash": "^4.17.21",
     "next": "14.2.6",
-    "postcss": "8.4.38",
+    "postcss": "8.4.41",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "styled-components": "^6.1.12",
@@ -31,7 +31,7 @@
     "@types/next": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^8.2.0",
     "babel-plugin-styled-components": "^2.1.4",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.4"
+    "eslint": "^9.9.1",
+    "eslint-config-next": "^14.2.6"
   }
 }
