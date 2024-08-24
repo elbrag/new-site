@@ -14,6 +14,7 @@ import {
 	onAuthStateChanged,
 	setPersistence,
 	browserLocalPersistence,
+	Auth,
 } from "firebase/auth";
 import { useEffect, useState } from "react";
 import useScore from "@/hooks/firebase/useScore";
@@ -26,6 +27,8 @@ import { RoundContext } from "./RoundContext";
 import { ErrorContext } from "./ErrorContext";
 import { ProgressContext } from "./ProgressContext";
 import { firebaseConfig } from "@/lib/helpers/firebase";
+import { getCookie, setCookie } from "@/lib/helpers/cookies";
+import { useRouter } from "next/router";
 
 let firebaseApp: FirebaseApp | undefined;
 let firebaseDatabase: Database;
@@ -59,6 +62,8 @@ const FirebaseContextProvider = ({
 }: FirebaseContextProviderProps) => {
 	const [userId, setUserId] = useState<string | null>(null);
 	const [signedIn, setSignedIn] = useState(false);
+	const [isInitialized, setIsInitialized] = useState(false);
+	const router = useRouter();
 
 	const { currentScore, updateFirebaseScore, updateScoreState } = useScore();
 	const { username, updateFirebaseUsername, updateUsernameState } =
@@ -139,7 +144,7 @@ const FirebaseContextProvider = ({
 	/**
 	 * Sign in anonymously to Firebase
 	 */
-	const signInToFirebase = (auth: any) => {
+	const signInToFirebase = (auth: Auth) => {
 		if (signedIn) return;
 		signInAnonymously(auth)
 			.then(() => {
@@ -168,38 +173,35 @@ const FirebaseContextProvider = ({
 
 		if (firebaseApp) {
 			const auth = getAuth(firebaseApp);
-
 			const unsubscribe = onAuthStateChanged(auth, async (user) => {
 				if (user) {
 					console.log("User is already signed in:", user.uid);
 					await setUserId(user.uid);
 					await setSignedIn(true);
-				} else {
-					if (withSignIn) {
-						console.log("No user found, attempting to sign in anonymously...");
-						await setPersistence(auth, browserLocalPersistence);
-						signInToFirebase(auth);
-					}
+					const token = await user.getIdToken();
+					setCookie("firebaseToken", token, 30);
+				} else if (withSignIn) {
+					console.log("No user found, attempting to sign in anonymously...");
+					await setPersistence(auth, browserLocalPersistence);
+					signInToFirebase(auth);
 				}
 			});
 			return unsubscribe;
 		}
 	};
 
-	const [isInitialized, setIsInitialized] = useState(false);
-
+	/**
+	 * Keep Firebase initiated
+	 */
 	useEffect(() => {
 		let unsubscribe: any;
-
 		const asyncInitFirebase = async () => {
 			if (!isInitialized) {
 				unsubscribe = await initFirebase();
 				await setIsInitialized(true);
 			}
 		};
-
 		asyncInitFirebase();
-
 		// Clean up
 		return () => {
 			if (unsubscribe) {
