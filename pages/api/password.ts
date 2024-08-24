@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default function handler(
 	req: NextApiRequest,
-	res: NextApiResponse<any>
+	res: NextApiResponse<string>
 ) {
 	const { input } = req.body;
 	if (input === process.env.NEXT_PUBLIC_LOGIN_PASS) {

@@ -28,7 +28,9 @@ export const fetchGameData = async (
 	}
 };
 
-export const checkPassword = async (bodyData?: any): Promise<any> => {
+export const checkPassword = async (bodyData?: {
+	input: string;
+}): Promise<Response> => {
 	let data = {
 		method: "POST",
 		headers: {

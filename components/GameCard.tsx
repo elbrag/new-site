@@ -46,9 +46,11 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 			} ${crop ? "overflow-hidden" : "z-1"}`}
 			href={locked ? "" : url}
 		>
-			<div className={getImageContainerClasses()}>
-				<SvgImage width={100} height={100} suffix="%" image={coverImage} />
-			</div>
+			{coverImage && (
+				<div className={getImageContainerClasses()}>
+					<SvgImage width={100} height={100} suffix="%" image={coverImage} />
+				</div>
+			)}
 		</Link>
 	);
 };

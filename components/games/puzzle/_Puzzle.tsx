@@ -1,7 +1,7 @@
 import React from "react";
 
 interface PuzzleProps {
-	gameData: any;
+	gameData: [];
 }
 
 const Puzzle: React.FC<PuzzleProps> = ({ gameData }) => {

@@ -1,7 +1,7 @@
 import React from "react";
 
 interface SendResultsProps {
-	gameData: any;
+	gameData: [];
 }
 
 const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
