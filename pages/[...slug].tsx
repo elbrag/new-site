@@ -54,21 +54,25 @@ export const getServerSideProps: GetServerSideProps = async (
 	context: GetServerSidePropsContext
 ) => {
 	const { req, params } = context;
-
 	const cookieString =
 		getCookie(req.headers.cookie ?? "", "firebaseToken") ?? "";
-	const token = cookieString?.length
-		? await firebaseAdmin.auth().verifyIdToken(cookieString)
-		: false;
+	let token;
 
-	if (!token) {
+	try {
+		token = cookieString.length
+			? await firebaseAdmin.auth().verifyIdToken(cookieString)
+			: false;
+	} catch (error) {
+		console.error("Token verification failed:", error);
+		token = false;
+	}
+	if (!token)
 		return {
 			redirect: {
 				destination: "/login",
 				permanent: false,
 			},
 		};
-	}
 
 	const game = gamesData.find((game) => game.url === params?.slug?.[0]);
 
