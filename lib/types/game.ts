@@ -10,6 +10,7 @@ export enum GameName {
 	Memory = "memory",
 	Puzzle = "puzzle",
 	SendResults = "send-results",
+	ComingSoon = "coming-soon",
 }
 
 export interface GameProps {

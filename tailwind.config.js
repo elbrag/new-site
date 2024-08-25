@@ -7,6 +7,8 @@ const distances = {
 	184: "46rem",
 	"0125vw": "0.125vw",
 	"015vw": "0.15vw",
+	"025vw": "0.25vw",
+	"0375vw": "0.375vw",
 	"1vw": "1vw",
 	"2vw": "2vw",
 	"3vw": "3vw",
@@ -55,6 +57,7 @@ module.exports = {
 			},
 		},
 		fontSize: {
+			"7xl": "5.375vw",
 			"6xl": "4.25vw",
 			"5xl": "4vw",
 			"4xl": "2.5rem",
@@ -129,6 +132,7 @@ module.exports = {
 	plugins: [],
 	safelist: [
 		{ pattern: /font-/ },
+		{ pattern: /border-/, variants: ["sm", "md", "lg"] },
 		{ pattern: /scale-/, variants: ["md", "lg"] },
 		{ pattern: /grid-cols-/, variants: ["md", "lg"] },
 		{ pattern: /text-/ },
