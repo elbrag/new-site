@@ -1,5 +1,5 @@
 import { GameContext } from "@/context/GameContext";
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import Button from "./ui/Button";
 import { AnimatePresence } from "framer-motion";
 import Modal from "./ui/Modal";
@@ -9,6 +9,29 @@ export default function Username() {
 	const [showModal, setShowModal] = useState(false);
 	const { username, updateUsernameInFirebase } = useContext(GameContext);
 	const [inputValue, setInputValue] = useState(username ?? "");
+
+	/**
+	 * Set input value to username from context if it exists
+	 */
+	useEffect(() => {
+		if (username && !inputValue) setInputValue(username);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	/**
+	 * Focus input field when modal is open
+	 */
+	useEffect(() => {
+		if (showModal)
+			(document.querySelector("input#username") as HTMLInputElement)?.focus();
+	}, [showModal]);
+
+	/**
+	 * On button click
+	 */
+	const onButtonClick = () => {
+		setShowModal(true);
+	};
 
 	/**
 	 * On username submit
@@ -25,11 +48,7 @@ export default function Username() {
 			<div className="min-w-12 relative ml-2 mr-4 flex justify-center text-lg mb-1">
 				{username}
 			</div>
-			<Button
-				buttonStyle="link"
-				label="Change"
-				onClick={() => setShowModal(true)}
-			/>
+			<Button buttonStyle="link" label="Change" onClick={onButtonClick} />
 			<AnimatePresence>
 				{showModal && (
 					<Modal onClose={() => setShowModal(false)} motionKey="username-modal">
@@ -38,6 +57,7 @@ export default function Username() {
 						</h2>
 						<form onSubmit={(e) => onUsernameSubmit(e)}>
 							<Input
+								id="username"
 								label="Username"
 								className="mb-10"
 								value={inputValue}
