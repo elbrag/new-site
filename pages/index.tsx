@@ -25,18 +25,22 @@ export const getServerSideProps = async (
 	const cookieString =
 		getCookie(req.headers.cookie ?? "", "firebaseToken") ?? "";
 
-	const token = cookieString?.length
-		? await firebaseAdmin.auth().verifyIdToken(cookieString)
-		: false;
-
-	const redirect = {
-		redirect: {
-			destination: "/login",
-			permanent: false,
-		},
-	};
-
-	if (!token) return redirect;
+	let token;
+	try {
+		token = cookieString.length
+			? await firebaseAdmin.auth().verifyIdToken(cookieString)
+			: false;
+	} catch (error) {
+		console.error("Token verification failed:", error);
+		token = false;
+	}
+	if (!token)
+		return {
+			redirect: {
+				destination: "/login",
+				permanent: false,
+			},
+		};
 
 	return {
 		props: {},

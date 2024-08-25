@@ -15,6 +15,7 @@ import {
 	setPersistence,
 	browserLocalPersistence,
 	Auth,
+	onIdTokenChanged,
 } from "firebase/auth";
 import { useEffect, useState } from "react";
 import useScore from "@/hooks/firebase/useScore";
@@ -185,6 +186,14 @@ const FirebaseContextProvider = ({
 					signInToFirebase(auth);
 				}
 			});
+
+			onIdTokenChanged(auth, async (user) => {
+				if (user) {
+					const token = await user.getIdToken();
+					setCookie("firebaseToken", token, 30);
+				}
+			});
+
 			return unsubscribe;
 		}
 	};
