@@ -41,6 +41,7 @@ interface SvgImageProps {
 	height?: number;
 	smallScaleFactor?: number;
 	mediumScaleFactor?: number;
+	largeScaleFactor?: number;
 	suffix?: "vw" | "px" | "%";
 }
 
@@ -51,6 +52,7 @@ const SvgImage: React.FC<SvgImageProps> = ({
 	height = 24,
 	smallScaleFactor,
 	mediumScaleFactor,
+	largeScaleFactor,
 	suffix = "px",
 }) => {
 	const SvgImageElement = svgImages[image];
@@ -62,6 +64,7 @@ const SvgImage: React.FC<SvgImageProps> = ({
 			$suffix={suffix}
 			$smallScaleFactor={smallScaleFactor}
 			$mediumScaleFactor={mediumScaleFactor}
+			$largeScaleFactor={largeScaleFactor}
 			className={`svg-image flex items-center justify-center transition-size duration-500 ease-bouncy-1 `}
 		>
 			<SvgImageElement className={`text-${color} w-full h-full`} />
@@ -77,16 +80,23 @@ const StyledSvgImage = styled.div<{
 	$suffix: string;
 	$smallScaleFactor?: number;
 	$mediumScaleFactor?: number;
+	$largeScaleFactor?: number;
 }>`
 	width: ${(props) => `${props.$width}${props.$suffix}`};
 	height: ${(props) => `${props.$height}${props.$suffix}`};
+	@media (max-width: ${tailwindConfig.theme.screens.lg}) {
+		width: ${(props) =>
+			`${props.$width * (props.$largeScaleFactor || 1)}${props.$suffix}`};
+		height: ${(props) =>
+			`${props.$height * (props.$largeScaleFactor || 1)}${props.$suffix}`};
+	}
 	@media (max-width: ${tailwindConfig.theme.screens.md}) {
 		width: ${(props) =>
 			`${props.$width * (props.$mediumScaleFactor || 1)}${props.$suffix}`};
 		height: ${(props) =>
 			`${props.$height * (props.$mediumScaleFactor || 1)}${props.$suffix}`};
 	}
-	@media (max-width: ${tailwindConfig.theme.screens.sm}) {
+	@media (max-width: 480px) {
 		width: ${(props) =>
 			`${props.$width * (props.$smallScaleFactor || 1)}${props.$suffix}`};
 		height: ${(props) =>
