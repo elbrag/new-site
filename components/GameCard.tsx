@@ -3,6 +3,7 @@ import Link from "next/link";
 import SvgImage, { SvgImageMotifs } from "./ui/SvgImage";
 import { getEnumValue, kebabToPascal } from "@/lib/helpers/formatting";
 import { GameName } from "@/lib/types/game";
+import styled from "styled-components";
 
 interface GameCardProps {
 	url: string;
@@ -28,10 +29,10 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 				break;
 			case GameName.Puzzle:
 				classes +=
-					"w-[200%] h-[200%] -translate-x-[80%] hover:-translate-x-[20%]";
+					"w-[180%] h-[180%] -translate-x-[80%] hover:-translate-x-[20%]";
 				break;
 			case GameName.SendResults:
-				classes += "w-[110%] h-[110%] hover:scale-110 hover:rotate-20";
+				classes += "rotate-5 w-[105%] h-[105%] hover:scale-110 hover:rotate-20";
 				break;
 			case GameName.ComingSoon:
 				classes += "flex justify-center items-center";
@@ -43,8 +44,8 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 	const crop = !locked && url != GameName.SendResults && url != GameName.Memory;
 
 	return (
-		<Link
-			className={`game-card border-military border-0375vw xs:border-025vw  md:border-015vw rounded-lg h-full aspect-square md:aspect-auto flex items-center justify-center relative ${
+		<StyledLink
+			className={`game-card border-military border-2 rounded-lg h-full aspect-square md:aspect-auto flex items-center justify-center relative ${
 				locked ? "bg-cream" : "bg-lime"
 			} ${crop ? "overflow-hidden" : "z-1"}`}
 			href={locked ? "" : url}
@@ -60,8 +61,18 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 					<></>
 				)}
 			</div>
-		</Link>
+		</StyledLink>
 	);
 };
 
 export default GameCard;
+
+const StyledLink = styled(Link)`
+	svg {
+		path,
+		circle {
+			stroke-width: 2px;
+			stroke: #3c4d39;
+		}
+	}
+`;
