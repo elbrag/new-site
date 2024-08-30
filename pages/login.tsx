@@ -19,9 +19,9 @@ const Login: React.FC = () => {
 	const [success, setSuccess] = useState(true);
 	const [loading, setLoading] = useState(false);
 
-	useEffect(() => {
-		if (userId) router.push("/");
-	}, [router, userId]);
+	// useEffect(() => {
+	// 	if (userId) router.push("/");
+	// }, [router, userId]);
 
 	const login = async () => {
 		setSuccess(false);
