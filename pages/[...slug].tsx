@@ -56,15 +56,16 @@ export const getServerSideProps: GetServerSideProps = async (
 	const { req, params } = context;
 	const cookieString =
 		getCookie(req.headers.cookie ?? "", "firebaseToken") ?? "";
-	let token;
+
+	let token = null;
 
 	try {
 		token = cookieString.length
 			? await firebaseAdmin?.auth()?.verifyIdToken(cookieString)
-			: false;
+			: null;
 	} catch (error) {
 		console.error("Token verification failed:", error);
-		token = false;
+		token = null;
 	}
 	if (!token)
 		return {
