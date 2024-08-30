@@ -12,6 +12,7 @@ import {
 	getDatabase,
 	ref,
 	set,
+	get,
 	Unsubscribe,
 } from "firebase/database";
 import {
@@ -210,8 +211,24 @@ const FirebaseContextProvider = ({
 				console.log("onIdTokenChanged", user);
 				if (user) {
 					console.log("has user ", user);
+					console.log("signedIn", signedIn);
+					console.log("userId", userId);
+
 					const token = await user.getIdToken();
 					setCookie("firebaseToken", token, 30);
+
+					const userRef = ref(firebaseDatabase, `users/${user.uid}`);
+					get(userRef)
+						.then((snapshot) => {
+							if (snapshot.exists()) {
+								console.log("snapshot", snapshot.val());
+							} else {
+								console.log("No data available");
+							}
+						})
+						.catch((error) => {
+							console.error(error);
+						});
 				} else {
 					console.log("No user");
 					setCookie("firebaseToken", "", 30);
