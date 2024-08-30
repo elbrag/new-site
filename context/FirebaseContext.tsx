@@ -216,6 +216,7 @@ const FirebaseContextProvider = ({
 
 					const token = await user.getIdToken();
 					setCookie("firebaseToken", token, 30);
+					setUserId(user.uid);
 
 					const userRef = ref(firebaseDatabase, `users/${user.uid}`);
 					get(userRef)
