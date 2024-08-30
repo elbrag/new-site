@@ -207,8 +207,9 @@ const FirebaseContextProvider = ({
 			});
 
 			onIdTokenChanged(auth, async (user) => {
-				console.log("onIdTokenChanged");
+				console.log("onIdTokenChanged", user);
 				if (user) {
+					console.log("has user ", user);
 					const token = await user.getIdToken();
 					setCookie("firebaseToken", token, 30);
 				} else {
