@@ -186,21 +186,21 @@ const FirebaseContextProvider = ({
 
 		if (firebaseApp) {
 			const auth = getAuth(firebaseApp);
-			console.log("auth:: ", auth);
+			// console.log("auth:: ", auth);
 			const unsubscribe = onAuthStateChanged(auth, async (user) => {
-				console.log("onAuthStateChanged");
+				// console.log("onAuthStateChanged");
 				if (user) {
-					console.log("User is already signed in:", user.uid);
+					// console.log("User is already signed in:", user.uid);
 					await setUserId(user.uid);
 					await setSignedIn(true);
 					const token = await user.getIdToken();
 					setCookie("firebaseToken", token, 30);
 				} else if (withSignIn) {
-					console.log("Signing in");
+					// console.log("Signing in");
 					await setPersistence(auth, browserLocalPersistence);
 					signInToFirebase(auth);
 				} else {
-					console.log("No user");
+					// console.log("No user");
 					setCookie("firebaseToken", "", 30);
 					await signOut(auth);
 					router.push("/login");
@@ -208,30 +208,30 @@ const FirebaseContextProvider = ({
 			});
 
 			onIdTokenChanged(auth, async (user) => {
-				console.log("onIdTokenChanged", user);
+				// console.log("onIdTokenChanged", user);
 				if (user) {
-					console.log("has user ", user);
-					console.log("signedIn", signedIn);
-					console.log("userId", userId);
+					// console.log("has user ", user);
+					// console.log("signedIn", signedIn);
+					// console.log("userId", userId);
 
 					const token = await user.getIdToken();
 					setCookie("firebaseToken", token, 30);
 					setUserId(user.uid);
 
-					const userRef = ref(firebaseDatabase, `users/${user.uid}`);
-					get(userRef)
-						.then((snapshot) => {
-							if (snapshot.exists()) {
-								console.log("snapshot", snapshot.val());
-							} else {
-								console.log("No data available");
-							}
-						})
-						.catch((error) => {
-							console.error(error);
-						});
+					// const userRef = ref(firebaseDatabase, `users/${user.uid}`);
+					// get(userRef)
+					// 	.then((snapshot) => {
+					// 		if (snapshot.exists()) {
+					// 			console.log("snapshot", snapshot.val());
+					// 		} else {
+					// 			console.log("No data available");
+					// 		}
+					// 	})
+					// 	.catch((error) => {
+					// 		console.error(error);
+					// 	});
 				} else {
-					console.log("No user");
+					// console.log("No user");
 					setCookie("firebaseToken", "", 30);
 					router.push("/login");
 				}
