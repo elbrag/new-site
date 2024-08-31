@@ -4,10 +4,12 @@ import Button from "./ui/Button";
 import { AnimatePresence } from "framer-motion";
 import Modal from "./ui/Modal";
 import Input from "./ui/Input";
+import { FirebaseContext } from "@/context/FirebaseContext";
 
 export default function Username() {
 	const [showModal, setShowModal] = useState(false);
 	const { username, updateUsernameInFirebase } = useContext(GameContext);
+	const { signedIn } = useContext(FirebaseContext);
 	const [inputValue, setInputValue] = useState(username ?? "");
 
 	/**
@@ -42,7 +44,7 @@ export default function Username() {
 		setShowModal(false);
 	};
 
-	return (
+	return signedIn ? (
 		<div className="flex items-center">
 			<p className="uppercase text-lg font-alegreya">Username:</p>
 			<div className="min-w-12 relative ml-2 mr-4 flex justify-center text-lg mb-1">
@@ -74,5 +76,7 @@ export default function Username() {
 				)}
 			</AnimatePresence>
 		</div>
+	) : (
+		<></>
 	);
 }

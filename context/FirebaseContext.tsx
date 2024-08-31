@@ -49,6 +49,7 @@ interface FirebaseContextProps {
 	currentScore: number;
 	updateScoreInFirebase: (incoming: number) => void;
 	username: string | null;
+	signedIn: boolean;
 	updateUsernameInFirebase: (username: string) => void;
 }
 
@@ -56,6 +57,7 @@ export const FirebaseContext = createContext<FirebaseContextProps>({
 	initFirebase: () => {},
 	firebaseDatabase: undefined,
 	userId: null,
+	signedIn: false,
 	currentScore: 0,
 	updateScoreInFirebase: () => {},
 	username: null,
@@ -217,6 +219,7 @@ const FirebaseContextProvider = ({
 					const token = await user.getIdToken();
 					setCookie("firebaseToken", token, 30);
 					setUserId(user.uid);
+					setSignedIn(true);
 
 					// const userRef = ref(firebaseDatabase, `users/${user.uid}`);
 					// get(userRef)
@@ -268,6 +271,7 @@ const FirebaseContextProvider = ({
 				initFirebase,
 				firebaseDatabase,
 				userId,
+				signedIn,
 				currentScore,
 				updateScoreInFirebase,
 				username,
