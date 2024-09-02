@@ -6,6 +6,8 @@ interface ButtonProps {
 	href?: string;
 	isSubmit?: boolean;
 	buttonStyle?: "button" | "link";
+	mimickHover?: boolean;
+	mimickActive?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -14,12 +16,36 @@ const Button: React.FC<ButtonProps> = ({
 	href,
 	isSubmit = false,
 	buttonStyle = "button",
+	mimickHover,
+	mimickActive,
 }) => {
-	const activeButtonClasses =
-		"active:shadow-button-click active:translate-x-px active:translate-y-[2px] active:shadow-military active:border-military active:text-military";
-	const hoverButtonClasses =
-		"hover:shadow-button-hover hover:-translate-y-[2px] hover:-translate-x-[2px]";
-	const buttonClasses = `px-6 py-3 uppercase lg:text-lg border-2 rounded-lg shadow-button transition-all origin-left bg-lime text-military ease-bouncy-2 ${hoverButtonClasses} ${activeButtonClasses}`;
+	const activeButtonClasses = [
+		"shadow-button-click",
+		"translate-x-px",
+		"translate-y-[2px]",
+		"shadow-military",
+		"border-military",
+		"text-military",
+	];
+
+	const _activeButtonClasses = activeButtonClasses.map((className) =>
+		mimickActive ? className : `active:${className}`
+	);
+
+	const hoverButtonClasses = [
+		"shadow-button-hover",
+		"-translate-y-[2px]",
+		"-translate-x-[2px]",
+	];
+
+	const _hoverButtonClasses = hoverButtonClasses.map((className) =>
+		mimickHover ? className : `hover:${className}`
+	);
+
+	const buttonClasses = `px-6 py-3 uppercase lg:text-lg border-2 rounded-lg shadow-button 
+	transition-all origin-left bg-lime text-military ease-bouncy-2 ${_hoverButtonClasses.join(
+		" "
+	)} ${_activeButtonClasses.join(" ")}`;
 
 	const activeLinkClasses = `active:text-lime active:scale-100`;
 	const hoverLinkClasses = `hover:rotate-4 hover:scale-110`;

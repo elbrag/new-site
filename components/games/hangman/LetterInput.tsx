@@ -14,6 +14,7 @@ interface LetterInputProps {
 const LetterInput: React.FC<LetterInputProps> = ({ onClick }) => {
 	const [inputValue, setInputValue] = useState("");
 	const input = useRef<HTMLInputElement | null>(null);
+	const [mimickActive, setMimickActive] = useState(false);
 
 	useEffect(() => {
 		focusInput();
@@ -35,7 +36,11 @@ const LetterInput: React.FC<LetterInputProps> = ({ onClick }) => {
 	 */
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "Enter" || e.keyCode === 13) {
+			setMimickActive(true);
 			onSubmit();
+			setTimeout(() => {
+				setMimickActive(false);
+			}, 200);
 		}
 	};
 
@@ -67,7 +72,12 @@ const LetterInput: React.FC<LetterInputProps> = ({ onClick }) => {
 				onKeyDown={handleKeyDown}
 				value={inputValue}
 			/>
-			<Button label="Guess" onClick={onSubmit} />
+			<Button
+				label="Guess"
+				onClick={onSubmit}
+				mimickActive={mimickActive}
+				mimickHover={inputValue?.length > 0}
+			/>
 		</div>
 	);
 };
