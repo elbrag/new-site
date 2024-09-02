@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { kebabToCamel, kebabToPascal } from "@/lib/helpers/formatting";
 import { GameData, GameName, GameProps } from "@/lib/types/game";
 import { fetchGameData } from "@/lib/helpers/fetch";
-import { getCookie } from "@/lib/helpers/cookies";
+import { CookieNames, getCookie } from "@/lib/helpers/cookies";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
 import { GetServerSideProps, GetServerSidePropsContext } from "next/types";
 import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
@@ -55,7 +55,7 @@ export const getServerSideProps: GetServerSideProps = async (
 ) => {
 	const { req, params } = context;
 	const cookieString =
-		getCookie(req.headers.cookie ?? "", "firebaseToken") ?? "";
+		getCookie(CookieNames.FirebaseToken, req.headers.cookie ?? "") ?? "";
 
 	let token = null;
 

@@ -36,7 +36,7 @@ import { RoundContext } from "./RoundContext";
 import { ErrorContext } from "./ErrorContext";
 import { ProgressContext } from "./ProgressContext";
 import { firebaseConfig } from "@/lib/helpers/firebase";
-import { setCookie } from "@/lib/helpers/cookies";
+import { CookieNames, setCookie } from "@/lib/helpers/cookies";
 import { useRouter } from "next/router";
 
 let firebaseApp: FirebaseApp | undefined;
@@ -196,14 +196,14 @@ const FirebaseContextProvider = ({
 					await setUserId(user.uid);
 					await setSignedIn(true);
 					const token = await user.getIdToken();
-					setCookie("firebaseToken", token, 30);
+					setCookie(CookieNames.FirebaseToken, token, 30);
 				} else if (withSignIn) {
 					// console.log("Signing in");
 					await setPersistence(auth, browserLocalPersistence);
 					signInToFirebase(auth);
 				} else {
 					// console.log("No user");
-					setCookie("firebaseToken", "", 30);
+					setCookie(CookieNames.FirebaseToken, "", 30);
 					await signOut(auth);
 					router.push("/login");
 				}
@@ -217,7 +217,7 @@ const FirebaseContextProvider = ({
 					// console.log("userId", userId);
 
 					const token = await user.getIdToken();
-					setCookie("firebaseToken", token, 30);
+					setCookie(CookieNames.FirebaseToken, token, 30);
 					setUserId(user.uid);
 					setSignedIn(true);
 
@@ -235,7 +235,7 @@ const FirebaseContextProvider = ({
 					// 	});
 				} else {
 					// console.log("No user");
-					setCookie("firebaseToken", "", 30);
+					setCookie(CookieNames.FirebaseToken, "", 30);
 					router.push("/login");
 				}
 			});

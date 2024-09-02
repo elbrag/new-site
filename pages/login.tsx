@@ -1,7 +1,7 @@
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { FirebaseContext } from "@/context/FirebaseContext";
-import { getCookie } from "@/lib/helpers/cookies";
+import { CookieNames, getCookie } from "@/lib/helpers/cookies";
 import { checkPassword } from "@/lib/helpers/fetch";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
 import { useRouter } from "next/navigation";
@@ -103,7 +103,7 @@ export const getServerSideProps = async (
 ): Promise<GetServerSidePropsResult<any>> => {
 	const { req } = context;
 	const cookieString =
-		getCookie(req.headers.cookie ?? "", "firebaseToken") ?? "";
+		getCookie(CookieNames.FirebaseToken, req.headers.cookie ?? "") ?? "";
 
 	const token = cookieString?.length
 		? await firebaseAdmin?.auth()?.verifyIdToken(cookieString)

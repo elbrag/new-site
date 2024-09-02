@@ -7,7 +7,7 @@ import {
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "@/lib/helpers/firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getCookie } from "@/lib/helpers/cookies";
+import { CookieNames, getCookie } from "@/lib/helpers/cookies";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
 
 const Home: React.FC = () => {
@@ -23,7 +23,7 @@ export const getServerSideProps = async (
 ): Promise<GetServerSidePropsResult<any>> => {
 	const { req } = context;
 	const cookieString =
-		getCookie(req.headers.cookie ?? "", "firebaseToken") ?? "";
+		getCookie(CookieNames.FirebaseToken, req.headers.cookie ?? "") ?? "";
 
 	let token = null;
 

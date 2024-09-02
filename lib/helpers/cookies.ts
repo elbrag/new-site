@@ -1,7 +1,14 @@
 /**
+ * Cookie names enum
+ */
+export enum CookieNames {
+	FirebaseToken = "firebaseToken",
+}
+
+/**
  * Set cookie
  */
-export const setCookie = (name: string, value: string, days: number) => {
+export const setCookie = (name: CookieNames, value: string, days: number) => {
 	let expires = "";
 	if (days) {
 		const date = new Date();
@@ -14,7 +21,7 @@ export const setCookie = (name: string, value: string, days: number) => {
 /**
  * Get cookie
  */
-export const getCookie = (cookieString: string, name: string) => {
+export const getCookie = (name: CookieNames, cookieString: string) => {
 	const nameEQ = name + "=";
 	const ca = cookieString.split(";");
 	for (let i = 0; i < ca.length; i++) {
