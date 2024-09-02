@@ -14,6 +14,7 @@ import { FormEvent, useContext, useEffect, useState } from "react";
 const Login: React.FC = () => {
 	const router = useRouter();
 	const [password, setPassword] = useState<string>("");
+	const [honey, setHoney] = useState<string>("");
 	const { initFirebase, userId } = useContext(FirebaseContext);
 	const [failed, setFailed] = useState(false);
 	const [success, setSuccess] = useState(true);
@@ -24,6 +25,7 @@ const Login: React.FC = () => {
 	// }, [router, userId]);
 
 	const login = async () => {
+		if (honey.length) return;
 		setSuccess(false);
 		setFailed(false);
 		setLoading(true);
@@ -32,10 +34,10 @@ const Login: React.FC = () => {
 
 		if (loginResult.status === 200) {
 			setSuccess(true);
-			setLoading(false);
 			initFirebase(true);
 			setTimeout(() => {
 				router.push("/");
+				setLoading(false);
 			}, 1000);
 		} else {
 			setFailed(true);
@@ -58,13 +60,20 @@ const Login: React.FC = () => {
 						}}
 					>
 						{
-							<Input
-								label="Password"
-								type="password"
-								className="mb-10"
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-							/>
+							<>
+								<Input
+									label="Password"
+									type="password"
+									className="mb-10"
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+								/>
+								<input
+									className="hidden"
+									value={honey}
+									onChange={(e) => setHoney(e.target.value)}
+								/>
+							</>
 						}
 
 						<div className="flex flex-col items-center">
