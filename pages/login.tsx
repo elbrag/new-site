@@ -1,7 +1,7 @@
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { FirebaseContext } from "@/context/FirebaseContext";
-import { CookieNames, getCookie } from "@/lib/helpers/cookies";
+import { CookieNames, getCookie, setCookie } from "@/lib/helpers/cookies";
 import { checkPassword } from "@/lib/helpers/fetch";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
 import { useRouter } from "next/navigation";
@@ -101,21 +101,51 @@ export default Login;
 export const getServerSideProps = async (
 	context: GetServerSidePropsContext
 ): Promise<GetServerSidePropsResult<any>> => {
-	const { req } = context;
+	const { req, res } = context;
 	const cookieString =
 		getCookie(CookieNames.FirebaseToken, req.headers.cookie ?? "") ?? "";
 
-	const token = cookieString?.length
-		? await firebaseAdmin?.auth()?.verifyIdToken(cookieString)
-		: false;
+	let token = null;
 
-	if (token)
+	try {
+		token = cookieString?.length
+			? await firebaseAdmin?.auth()?.verifyIdToken(cookieString)
+			: null;
+
+		if (cookieString && !token) {
+			res.setHeader(
+				"Set-Cookie",
+				`${CookieNames.FirebaseToken}=; Max-Age=0; path=/`
+			);
+			return {
+				redirect: {
+					destination: "/login",
+					permanent: false,
+				},
+			};
+		}
+	} catch (e) {
+		console.log("Error checking token: ", e);
+		res.setHeader(
+			"Set-Cookie",
+			`${CookieNames.FirebaseToken}=; Max-Age=0; path=/`
+		);
+		return {
+			redirect: {
+				destination: "/login",
+				permanent: false,
+			},
+		};
+	}
+
+	if (token) {
 		return {
 			redirect: {
 				destination: "/",
 				permanent: false,
 			},
 		};
+	}
 
 	return {
 		props: {},
