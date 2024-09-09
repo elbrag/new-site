@@ -9,6 +9,9 @@ import FirebaseContextProvider from "@/context/FirebaseContext";
 import RoundContextProvider from "@/context/RoundContext";
 import ProgressContextProvider from "@/context/ProgressContext";
 import ErrorContextProvider from "@/context/ErrorContext";
+import Head from "next/head";
+import gamesData from "../lib/data/gamesData.json";
+import { useEffect, useState } from "react";
 
 const delaGothicOne = Dela_Gothic_One({
 	weight: "400",
@@ -29,14 +32,31 @@ export const FontList = {
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const router = useRouter();
+	const [title, setTitle] = useState("");
 	//@ts-ignore
 	const fonts = Object.keys(FontList).map((key) => FontList[key]);
+	const isHome = router.asPath === "/";
+
+	useEffect(() => {
+		const getTitle = () => {
+			if (isHome) return "Pick a game!";
+			const path = router.asPath.split("/")[1];
+			if (path === "login") return "Login";
+			const gamePathMatch = gamesData.find((game) => game.url === path);
+			if (gamePathMatch) return gamePathMatch.title;
+			return "";
+		};
+		setTitle(getTitle());
+	}, [router.asPath, isHome]);
 
 	return (
 		<>
+			<Head>
+				<title>EB {title.length ? `| ${title}` : title}</title>
+			</Head>
 			<main
 				className={`min-h-screen flex flex-col  text-military font-dela ${
-					router.asPath === "/" ? "md:h-screen" : ""
+					isHome ? "md:h-screen" : ""
 				} ${fonts.join(" ")}`}
 			>
 				<Navigation />

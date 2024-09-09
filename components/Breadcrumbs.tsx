@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import gamesData from "../lib/data/gamesData.json";
-import { GameProps } from "@/lib/types/game";
 import Link from "next/link";
 
 interface BreadcrumbsProps {}
