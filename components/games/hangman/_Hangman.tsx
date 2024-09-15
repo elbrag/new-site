@@ -262,7 +262,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 								/>
 								<AnimatePresence>
 									{infoMessage && (
-										<div className="absolute right-0 top-0 translate-x-full">
+										<div className="absolute -bottom-4 translate-y-full md:translate-y-0 translate-x-1/2 -left-5 w-full md:left-0 md:right-0 md:top-0 md:translate-x-full">
 											<InfoMessage text={infoMessage} />
 										</div>
 									)}

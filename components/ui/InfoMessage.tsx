@@ -13,7 +13,7 @@ const InfoMessage: React.FC<InfoMessageProps> = ({ text }) => {
 			animate={{ rotate: 10, scale: 1 }}
 			exit={{ rotate: -30, scale: 0 }}
 			transition={{ duration: 0.5 }}
-			className="absolute top-0 left-0 px-6 py-4 rounded-xl bg-lime max-w-40 min-w-40"
+			className="absolute top-0 left-0 py-3 px-4 sm:px-6 sm:py-4 rounded-xl bg-lime max-w-40 min-w-40 text-sm sm:text-base"
 		>
 			{text}
 		</motion.div>
