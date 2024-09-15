@@ -10,11 +10,11 @@ export default function CurrentScore() {
 
 	return (
 		<div className={`current-score ${!signedIn && "opacity-0"}`}>
-			<div className="flex items-center gap-2">
-				<p className="uppercase text-lg font-alegreya">Score:</p>
+			<div className="flex items-center gap-2 leading-none">
+				<p className="uppercase sm:text-lg font-alegreya">Score:</p>
 				<span className="relative">
 					<p
-						className={`text-lg mb-1 ${
+						className={`sm:text-lg mb-1 ${
 							scoreMessage ? "opacity-0" : "opacity-100"
 						}`}
 					>

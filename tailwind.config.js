@@ -2,6 +2,7 @@
 
 const distances = {
 	18: "4.5rem",
+	19: "4.75rem",
 	128: "32rem",
 	144: "36rem",
 	184: "46rem",
