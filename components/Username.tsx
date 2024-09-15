@@ -11,6 +11,7 @@ export default function Username() {
 	const { username, updateUsernameInFirebase } = useContext(GameContext);
 	const { signedIn } = useContext(FirebaseContext);
 	const [inputValue, setInputValue] = useState(username ?? "");
+	const [mimickActive, setMimickActive] = useState(false);
 
 	/**
 	 * Set input value to username from context if it exists
@@ -41,7 +42,9 @@ export default function Username() {
 	const onUsernameSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 		await updateUsernameInFirebase(inputValue);
-		setShowModal(false);
+		setTimeout(() => {
+			setShowModal(false);
+		}, 100);
 	};
 
 	return signedIn ? (
@@ -57,7 +60,7 @@ export default function Username() {
 						<h2 className="text-xl lg:text-2xl mb-10 uppercase">
 							Update username
 						</h2>
-						<form onSubmit={(e) => onUsernameSubmit(e)}>
+						<form onSubmit={(e) => e.preventDefault()}>
 							<Input
 								id="username"
 								label="Username"
@@ -66,10 +69,16 @@ export default function Username() {
 								onChange={(e) => {
 									setInputValue(e.target.value);
 								}}
+								onClickEnter={onUsernameSubmit}
+								setMimickActive={setMimickActive}
 							/>
-
 							<div className="mb-8 flex justify-center">
-								<Button label="Update" isSubmit={true} />
+								<Button
+									label="Update"
+									onClick={onUsernameSubmit}
+									mimickActive={mimickActive}
+									mimickHover={inputValue?.length > 0}
+								/>
 							</div>
 						</form>
 					</Modal>

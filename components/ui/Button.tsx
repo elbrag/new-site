@@ -23,13 +23,10 @@ const Button: React.FC<ButtonProps> = ({
 		"shadow-button-click",
 		"translate-x-px",
 		"translate-y-[2px]",
-		"shadow-military",
-		"border-military",
-		"text-military",
 	];
 
 	const _activeButtonClasses = activeButtonClasses.map((className) =>
-		mimickActive ? className : `active:${className}`
+		mimickActive ? `${className} active:${className}` : `active:${className}`
 	);
 
 	const hoverButtonClasses = [
@@ -39,7 +36,7 @@ const Button: React.FC<ButtonProps> = ({
 	];
 
 	const _hoverButtonClasses = hoverButtonClasses.map((className) =>
-		mimickHover ? className : `hover:${className}`
+		mimickHover ? `${className} hover:${className}` : `hover:${className}`
 	);
 
 	const buttonClasses = `px-6 py-3 uppercase lg:text-lg border-2 rounded-lg shadow-button 

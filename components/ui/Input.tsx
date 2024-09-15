@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent } from "react";
+import React, { ChangeEvent, FormEvent, KeyboardEvent, useState } from "react";
 
 interface InputProps {
 	id?: string;
@@ -8,7 +8,8 @@ interface InputProps {
 	placeholder?: string;
 	className?: string;
 	onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-	onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
+	onClickEnter?: (e: FormEvent<Element>) => void;
+	setMimickActive?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -19,8 +20,20 @@ const Input: React.FC<InputProps> = ({
 	placeholder,
 	className,
 	onChange,
-	onKeyDown,
+	onClickEnter,
+	setMimickActive,
 }) => {
+	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+		if (!onClickEnter) return;
+		if (e.key === "Enter" || e.keyCode === 13) {
+			if (setMimickActive) setMimickActive(true);
+			onClickEnter(e);
+			setTimeout(() => {
+				if (setMimickActive) setMimickActive(false);
+			}, 200);
+		}
+	};
+
 	return (
 		<label className={`w-full block ${className}`}>
 			<div className="mb-1.5 font-alegreya uppercase">{label}</div>
@@ -31,7 +44,7 @@ const Input: React.FC<InputProps> = ({
 				placeholder={placeholder}
 				value={value}
 				onChange={onChange}
-				onKeyDown={onKeyDown}
+				onKeyDown={handleKeyDown}
 			/>
 		</label>
 	);

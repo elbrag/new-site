@@ -9,7 +9,7 @@ import {
 	GetServerSidePropsContext,
 	GetServerSidePropsResult,
 } from "next/types";
-import { FormEvent, useContext, useState, KeyboardEvent } from "react";
+import { FormEvent, useContext, useState } from "react";
 
 const Login: React.FC = () => {
 	const router = useRouter();
@@ -20,16 +20,6 @@ const Login: React.FC = () => {
 	const [success, setSuccess] = useState(true);
 	const [loading, setLoading] = useState(false);
 	const [mimickActive, setMimickActive] = useState(false);
-
-	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === "Enter" || e.keyCode === 13) {
-			setMimickActive(true);
-			login();
-			setTimeout(() => {
-				setMimickActive(false);
-			}, 200);
-		}
-	};
 
 	const login = async () => {
 		if (honey.length) return;
@@ -74,7 +64,8 @@ const Login: React.FC = () => {
 									className="mb-10"
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
-									onKeyDown={handleKeyDown}
+									onClickEnter={login}
+									setMimickActive={setMimickActive}
 								/>
 								<input
 									className="hidden"
