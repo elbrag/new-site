@@ -38,7 +38,9 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = () => {
 					</>
 				) : (
 					<>
-						<li className={`${crumbClasses} text-xl-sans`}>Pick a game</li>
+						<li className={`${crumbClasses} text-md sm:text-xl-sans`}>
+							Pick a game
+						</li>
 					</>
 				)}
 			</ul>
