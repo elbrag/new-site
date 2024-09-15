@@ -6,7 +6,7 @@ interface LetterSlotProps {
 
 const LetterSlot: React.FC<LetterSlotProps> = ({ letter = null }) => {
 	return (
-		<div className="w-8 lg:w-10 h-16 flex items-end justify-center text-xl lg:text-2xl">
+		<div className="w-6 sm:w-8 lg:w-10 h-16 flex items-end justify-center text-lg sm:text-xl lg:text-2xl">
 			{letter && <p>{letter.toUpperCase()}</p>}
 		</div>
 	);

@@ -41,7 +41,9 @@ const RoundContent: React.FC<RoundContentProps> = ({
 			transition={{ duration: 0.5 }}
 			key={motionKey}
 		>
-			<h2 className="text-center font-alegreya text-lg mb-10">{description}</h2>
+			<h2 className="text-center font-alegreya text-md md:text-lg mb-10">
+				{description}
+			</h2>
 			<div className="words flex gap-6 mb-16 flex-wrap justify-center">
 				{(() => {
 					let indexOutOfTotal = 0;

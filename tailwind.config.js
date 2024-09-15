@@ -46,6 +46,8 @@ module.exports = {
 			lime: "#5EFC5B",
 			cream: "#F7EBDB",
 			paper: "#FFFCF7",
+			line1: "#e2e2e2",
+			line2: "#e8e8e8",
 			confetti: {
 				blue: "#8FD0FF",
 				green: "#82FF80",
@@ -66,6 +68,7 @@ module.exports = {
 			xl: "1.5rem",
 			"xl-sans": "1.35rem",
 			lg: "1.25rem",
+			md: "1.125rem",
 			base: "1rem",
 			sm: "0.875rem",
 		},

@@ -18,6 +18,7 @@ import { ProgressContext } from "@/context/ProgressContext";
 import ResetButton from "./ResetButton";
 import FactsList from "@/components/ui/FactsList";
 import { HangmanRevealedRoundProps } from "@/lib/types/rounds";
+import Pagination from "./Pagination";
 
 interface HangmanProps {
 	gameData: HangmanGameData;
@@ -40,6 +41,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		updateRoundLength,
 		getGameCurrentRoundIndex,
 		roundFailed,
+		numberOfRounds,
 		setNumberOfRounds,
 		allRoundsPassed,
 		roundComplete,
@@ -208,10 +210,17 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	return (
 		<div className="hangman min-h-[80vh] flex flex-col justify-center w-full">
 			{readyToRenderGame && (
-				<>
-					<div className="flex flex-col justify-center items-center lg:flex-row lg:justify-around gap-4">
-						{/* Game  */}
-						<div className="flex flex-col items-center lg:max-w-3/5">
+				<div className="flex flex-col justify-center items-center lg:flex-row lg:justify-around gap-4 lg:mb-[10vh]">
+					{/* Game  */}
+
+					<div className="flex flex-col lg:max-w-3/5 border rounded-lg border-line1 p-4 pb-10 bg-paper w-full">
+						<div className="mb-6 lg:mb-8">
+							<Pagination
+								itemLength={numberOfRounds}
+								activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
+							/>
+						</div>
+						<div className="flex flex-col items-center">
 							{/* Round */}
 							{maskedWords?.length ? (
 								<AnimatePresence mode="wait">
@@ -249,54 +258,38 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 								</AnimatePresence>
 							</div>
 						</div>
-						<div className="flex flex-col items-center">
-							{/* Man  */}
-							<div className="h-[408px]">
-								<HangedMan
-									errorLength={getGameErrors(GameName.Hangman).length}
-								/>
-							</div>
-							{/* Error list */}
-							{!!getGameErrors(GameName.Hangman).length && (
-								<div className="errors my-10">
-									<ul className="flex gap-2 justify-center">
-										{getGameErrors(GameName.Hangman).map(
-											(err: string, i: number) => (
-												<li
-													className="uppercase text-xl lg:text-2xl"
-													key={`error-${i}`}
-												>
-													{err}
-												</li>
-											)
-										)}
-									</ul>
-								</div>
-							)}
+					</div>
+					<div className="flex flex-col items-center">
+						{/* Man  */}
+						<div className="h-[408px]">
+							<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
 						</div>
-						<AnimatePresence>
-							{successMessage && <SuccessScreen text={successMessage} />}
-						</AnimatePresence>
-						<AnimatePresence>
-							{failedMessage && <FailedScreen text={failedMessage} />}
-							{/* <Confetti /> */}
-						</AnimatePresence>
+						{/* Error list */}
+						{!!getGameErrors(GameName.Hangman).length && (
+							<div className="errors my-10">
+								<ul className="flex gap-2 justify-center">
+									{getGameErrors(GameName.Hangman).map(
+										(err: string, i: number) => (
+											<li
+												className="uppercase text-xl lg:text-2xl"
+												key={`error-${i}`}
+											>
+												{err}
+											</li>
+										)
+									)}
+								</ul>
+							</div>
+						)}
 					</div>
-					<div className="flex gap-6">
-						{/* <Pagination
-						itemLength={numberOfRounds}
-						onClick={(index) => {
-							onRoundFinish(GameName.Hangman, index);
-						}}
-						activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
-					/> */}
-						<ResetButton
-							onSubmit={() => {
-								resetRound(GameName.Hangman, roundId);
-							}}
-						/>
-					</div>
-				</>
+					<AnimatePresence>
+						{successMessage && <SuccessScreen text={successMessage} />}
+					</AnimatePresence>
+					<AnimatePresence>
+						{failedMessage && <FailedScreen text={failedMessage} />}
+						{/* <Confetti /> */}
+					</AnimatePresence>
+				</div>
 			)}
 		</div>
 	);
