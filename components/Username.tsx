@@ -55,11 +55,11 @@ export default function Username() {
 	};
 
 	return signedIn ? (
-		<div className="flex items-center">
-			<p className="uppercase sm:text-lg font-alegreya leading-none">
+		<div className="flex items-center mb-1 md:mb-0.5">
+			<p className="uppercase sm:text-lg font-alegreya leading-none mt-1">
 				Username:
 			</p>
-			<div className="min-w-12 relative ml-2 mr-4 flex justify-center sm:text-lg mb-1 leading-none">
+			<div className="min-w-12 relative ml-2 mr-4 flex justify-center sm:text-lg leading-none">
 				{username}
 			</div>
 			<Button buttonStyle="link" label="Change" onClick={onButtonClick} />
