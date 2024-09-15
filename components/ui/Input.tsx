@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, KeyboardEvent } from "react";
 
 interface InputProps {
 	id?: string;
@@ -8,6 +8,7 @@ interface InputProps {
 	placeholder?: string;
 	className?: string;
 	onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+	onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -18,6 +19,7 @@ const Input: React.FC<InputProps> = ({
 	placeholder,
 	className,
 	onChange,
+	onKeyDown,
 }) => {
 	return (
 		<label className={`w-full block ${className}`}>
@@ -29,6 +31,7 @@ const Input: React.FC<InputProps> = ({
 				placeholder={placeholder}
 				value={value}
 				onChange={onChange}
+				onKeyDown={onKeyDown}
 			/>
 		</label>
 	);

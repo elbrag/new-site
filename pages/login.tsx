@@ -1,7 +1,7 @@
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { FirebaseContext } from "@/context/FirebaseContext";
-import { CookieNames, getCookie, setCookie } from "@/lib/helpers/cookies";
+import { CookieNames, getCookie } from "@/lib/helpers/cookies";
 import { checkPassword } from "@/lib/helpers/fetch";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,7 @@ import {
 	GetServerSidePropsContext,
 	GetServerSidePropsResult,
 } from "next/types";
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useState, KeyboardEvent } from "react";
 
 const Login: React.FC = () => {
 	const router = useRouter();
@@ -19,10 +19,17 @@ const Login: React.FC = () => {
 	const [failed, setFailed] = useState(false);
 	const [success, setSuccess] = useState(true);
 	const [loading, setLoading] = useState(false);
+	const [mimickActive, setMimickActive] = useState(false);
 
-	// useEffect(() => {
-	// 	if (userId) router.push("/");
-	// }, [router, userId]);
+	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter" || e.keyCode === 13) {
+			setMimickActive(true);
+			login();
+			setTimeout(() => {
+				setMimickActive(false);
+			}, 200);
+		}
+	};
 
 	const login = async () => {
 		if (honey.length) return;
@@ -67,6 +74,7 @@ const Login: React.FC = () => {
 									className="mb-10"
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
+									onKeyDown={handleKeyDown}
 								/>
 								<input
 									className="hidden"
@@ -81,6 +89,8 @@ const Login: React.FC = () => {
 								<Button
 									label={loading ? "Logging in…" : "Log in"}
 									onClick={() => login()}
+									mimickActive={mimickActive}
+									mimickHover={password?.length > 0}
 								/>
 								{failed && (
 									<p className="mt-4">
