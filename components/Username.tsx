@@ -1,5 +1,5 @@
 import { GameContext } from "@/context/GameContext";
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useCallback, useContext, useEffect, useState } from "react";
 import Button from "./ui/Button";
 import { AnimatePresence } from "framer-motion";
 import Modal from "./ui/Modal";
@@ -16,8 +16,12 @@ export default function Username() {
 	/**
 	 * Set input value to username from context if it exists
 	 */
-	useEffect(() => {
+	const presetInputValue = useCallback(() => {
 		if (username && !inputValue) setInputValue(username);
+	}, [inputValue, username]);
+
+	useEffect(() => {
+		presetInputValue();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -25,8 +29,11 @@ export default function Username() {
 	 * Focus input field when modal is open
 	 */
 	useEffect(() => {
-		if (showModal)
+		if (showModal) {
 			(document.querySelector("input#username") as HTMLInputElement)?.focus();
+			presetInputValue();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [showModal]);
 
 	/**
