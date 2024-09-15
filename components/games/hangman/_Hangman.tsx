@@ -62,6 +62,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 
 	// States
 	const [roundId, setRoundId] = useState(0);
+	const [signalError, setSignalError] = useState(false);
 
 	/**
 	 * Set final result state after comparing with answers from backend
@@ -177,9 +178,12 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 				letter,
 				roundId,
 			});
+			// Match made
 			if (letterMatches) {
 				await updateProgress(GameName.Hangman, roundId, letterMatches);
-			} else {
+			}
+			// No match
+			else {
 				const newErrors = await updateErrors(
 					firebaseDatabase,
 					userId,
@@ -187,6 +191,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 					letter,
 					true
 				);
+				// Failed the whole round
 				if (
 					getGameErrors(GameName.Hangman, newErrors).length &&
 					hangmanPartsInOrder.length ===
@@ -194,6 +199,12 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 					!roundFailed
 				) {
 					onRoundFail(GameName.Hangman);
+				} else {
+					// Show that error occurred
+					setSignalError(true);
+					setTimeout(() => {
+						setSignalError(false);
+					}, 600);
 				}
 			}
 		}
@@ -259,13 +270,17 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 							</div>
 						</div>
 					</div>
-					<div className="flex flex-col items-center lg:col-span-2 border rounded-lg border-line1 bg-paper p-4">
+					<div
+						className={`flex flex-col items-center lg:col-span-2 border rounded-lg border-line1 p-4 transition-colors duration-200 ease-in-out ${
+							signalError ? "bg-lime" : "bg-paper"
+						}`}
+					>
 						{/* Man  */}
 						<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
 						{/* Error list */}
 						{!!getGameErrors(GameName.Hangman).length && (
 							<div className="errors my-10">
-								<ul className="flex gap-2 justify-center">
+								<ul className="flex gap-2 justify-center flex-wrap">
 									{getGameErrors(GameName.Hangman).map(
 										(err: string, i: number) => (
 											<li
