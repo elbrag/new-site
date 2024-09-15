@@ -210,17 +210,17 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	return (
 		<div className="hangman min-h-[80vh] flex flex-col justify-center w-full">
 			{readyToRenderGame && (
-				<div className="flex flex-col justify-center items-center lg:flex-row lg:justify-around gap-4 lg:mb-[10vh]">
+				<div className="grid lg:grid-cols-5 gap-4 lg:mb-[10vh]">
 					{/* Game  */}
 
-					<div className="flex flex-col lg:max-w-3/5 border rounded-lg border-line1 p-4 pb-10 bg-paper w-full">
+					<div className="lg:col-span-3 flex flex-col border rounded-lg border-line1 p-4 pb-10 bg-paper w-full">
 						<div className="mb-6 lg:mb-8">
 							<Pagination
 								itemLength={numberOfRounds}
 								activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
 							/>
 						</div>
-						<div className="flex flex-col items-center">
+						<div className="flex flex-col items-center w-full">
 							{/* Round */}
 							{maskedWords?.length ? (
 								<AnimatePresence mode="wait">
@@ -259,11 +259,9 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 							</div>
 						</div>
 					</div>
-					<div className="flex flex-col items-center">
+					<div className="flex flex-col items-center lg:col-span-2 border rounded-lg border-line1 bg-paper p-4">
 						{/* Man  */}
-						<div className="h-[408px]">
-							<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
-						</div>
+						<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
 						{/* Error list */}
 						{!!getGameErrors(GameName.Hangman).length && (
 							<div className="errors my-10">

@@ -28,6 +28,7 @@ const HangedMan: React.FC<HangedManProps> = ({ errorLength }) => {
 
 	return (
 		<svg
+			className="h-[300px] w-[225px] md:h-[408px] md:w-[305px]"
 			width="305"
 			height="408"
 			viewBox="0 0 305 408"
