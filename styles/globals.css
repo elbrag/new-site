@@ -19,6 +19,11 @@
 	}
 }
 
+body,
+html {
+	overflow-x: hidden;
+}
+
 body {
 	@apply bg-military;
 }

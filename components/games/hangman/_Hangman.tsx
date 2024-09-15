@@ -225,7 +225,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 					{/* Game  */}
 
 					<div className="lg:col-span-3 flex flex-col border rounded-lg border-line1 p-4 pb-10 bg-paper w-full">
-						<div className="mb-6 lg:mb-8">
+						<div className="mb-4 lg:mb-8">
 							<Pagination
 								itemLength={numberOfRounds}
 								activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
@@ -271,7 +271,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 						</div>
 					</div>
 					<div
-						className={`flex flex-col items-center lg:col-span-2 border rounded-lg border-line1 p-4 transition-colors duration-200 ease-in-out ${
+						className={`flex flex-col items-center lg:col-span-2 border rounded-lg border-line1 p-4 sm:pt-8 transition-colors duration-200 ease-in-out ${
 							signalError ? "bg-lime" : "bg-paper"
 						}`}
 					>
@@ -279,7 +279,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 						<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
 						{/* Error list */}
 						{!!getGameErrors(GameName.Hangman).length && (
-							<div className="errors my-10">
+							<div className="errors mt-8 mb-4 sm:mt-10 sm:mb-6">
 								<ul className="flex gap-2 justify-center flex-wrap">
 									{getGameErrors(GameName.Hangman).map(
 										(err: string, i: number) => (

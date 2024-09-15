@@ -10,7 +10,7 @@ const Pagination: React.FC<PaginationProps> = ({
 	activeItemIndex,
 }) => {
 	return (
-		<div>
+		<div className="leading-none text-sm sm:text-base">
 			{activeItemIndex + 1} / {itemLength}
 		</div>
 	);
