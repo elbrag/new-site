@@ -39,7 +39,7 @@ const useInfoMessage = () => {
 		if (message !== null) {
 			timeoutRef.current = setTimeout(() => {
 				setInfoMessage(null);
-			}, 5000);
+			}, 4000);
 		}
 	};
 

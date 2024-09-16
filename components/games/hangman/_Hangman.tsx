@@ -131,7 +131,11 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 
 	useEffect(() => {
 		if (allRoundsPassed) {
-			updateSuccessMessage("That was the last round! Good job!");
+			updateSuccessMessage(
+				roundFailed
+					? "That was the last round. You did your best <3"
+					: "That was the last round! Good job!"
+			);
 			setTimeout(() => {
 				updateFinalResult();
 			}, 3000);
@@ -194,8 +198,8 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 				// Failed the whole round
 				if (
 					getGameErrors(GameName.Hangman, newErrors).length &&
-					hangmanPartsInOrder.length ===
-						getGameErrors(GameName.Hangman).length &&
+					getGameErrors(GameName.Hangman).length >=
+						hangmanPartsInOrder.length - 1 &&
 					!roundFailed
 				) {
 					onRoundFail(GameName.Hangman);
@@ -223,7 +227,6 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 			{readyToRenderGame && (
 				<div className="grid lg:grid-cols-5 gap-4 lg:mb-[10vh]">
 					{/* Game  */}
-
 					<div className="lg:col-span-3 flex flex-col border rounded-lg border-line1 p-4 pb-10 bg-paper w-full">
 						<div className="mb-4 lg:mb-8">
 							<Pagination
