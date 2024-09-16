@@ -202,7 +202,9 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 						hangmanPartsInOrder.length - 1 &&
 					!roundFailed
 				) {
-					onRoundFail(GameName.Hangman);
+					setTimeout(() => {
+						onRoundFail(GameName.Hangman);
+					}, 2000);
 				} else {
 					// Show that error occurred
 					setSignalError(true);
