@@ -1,32 +1,37 @@
 [
     {
         "roundId": 1,
-        "description": "Where I got my bachelor's degree",
-        "answer": "Jönköping University"
+        "description": "Frontend work that nourishes my soul",
+        "answer": "Motion and physics"
     },
     {
         "roundId": 2,
-        "description": "My favourite way of css'ing",
-        "answer": "Tailwind CSS"
+        "description": "A VS code extension I shall not go without",
+        "answer": "Highlight matching tag"
     },
     {
         "roundId": 3,
-        "description": "One of my best soft skills",
-        "answer": "Clear communication"
+        "description": "Where I got my degree",
+        "answer": "Jönköping University"
     },
     {
         "roundId": 4,
-        "description": "Possibly my backup career",
-        "answer": "Archeology"
+        "description": "My favourite way of css:ing",
+        "answer": "Tailwind CSS"
     },
     {
         "roundId": 5,
-        "description": "On my playlist while coding",
-        "answer": "The Chemical Brothers"
+        "description": "If I wasn't a developer, I might have gone into",
+        "answer": "Archeology"
     },
     {
         "roundId": 6,
-        "description": "The frontend work that makes me go ❤️‍🔥",
-        "answer": "Motion and physics"
+        "description": "Music genre that fuels my coding",
+        "answer": "French Indietronica"
+    },
+    {
+        "roundId": 7,
+        "description": "A dream client of mine",
+        "answer": "Fair Wear Foundation"
     }
 ]
