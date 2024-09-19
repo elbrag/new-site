@@ -23,8 +23,8 @@ const FactsList: React.FC<FactsListProps> = ({ facts, heading }) => {
 						}}
 						key={`fact-${fact.roundId}`}
 					>
-						<h3 className="text-lg lg:text-xl mb-4">{fact.description}</h3>
-						<p className="text-md">{fact.answer}</p>
+						<h3 className="text-base mb-2">{fact.description}</h3>
+						<p className="text-lg lg:text-xl">✨ {fact.answer} ✨</p>
 					</motion.li>
 				))}
 			</ul>

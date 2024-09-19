@@ -15,7 +15,6 @@ import { FirebaseContext } from "@/context/FirebaseContext";
 import { RoundContext } from "@/context/RoundContext";
 import { ErrorContext } from "@/context/ErrorContext";
 import { ProgressContext } from "@/context/ProgressContext";
-import ResetButton from "./ResetButton";
 import FactsList from "@/components/ui/FactsList";
 import { HangmanRevealedRoundProps } from "@/lib/types/rounds";
 import Pagination from "./Pagination";
@@ -35,7 +34,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	// Context data and functions
 	const { firebaseDatabase, userId } = useContext(FirebaseContext);
 	const { getRoundStatus, getFoundRoundAnswers } = useContext(ProgressContext);
-	const { onRoundFail, updateProgress, resetRound } = useContext(GameContext);
+	const { onRoundFail, updateProgress } = useContext(GameContext);
 	const { updateErrors, getGameErrors } = useContext(ErrorContext);
 	const {
 		updateRoundLength,
