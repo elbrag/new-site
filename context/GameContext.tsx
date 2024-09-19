@@ -164,7 +164,9 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		}, 5500);
 
 		// End round
-		onRoundEnd(game);
+		setTimeout(() => {
+			onRoundEnd(game);
+		}, 3000);
 	};
 
 	/**

@@ -9,17 +9,22 @@ import {
 	GetServerSidePropsContext,
 	GetServerSidePropsResult,
 } from "next/types";
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 
 const Login: React.FC = () => {
 	const router = useRouter();
 	const [password, setPassword] = useState<string>("");
 	const [honey, setHoney] = useState<string>("");
-	const { initFirebase, userId } = useContext(FirebaseContext);
+	const { initFirebase, signedIn } = useContext(FirebaseContext);
 	const [failed, setFailed] = useState(false);
 	const [success, setSuccess] = useState(true);
 	const [loading, setLoading] = useState(false);
 	const [mimickActive, setMimickActive] = useState(false);
+
+	useEffect(() => {
+		if (signedIn) router.push("/");
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [signedIn]);
 
 	const login = async () => {
 		if (honey.length) return;

@@ -65,7 +65,7 @@ const HangedMan: React.FC<HangedManProps> = ({ errorLength }) => {
 							baseFrequency="0"
 							numOctaves="3"
 							result="turbulence_3"
-							data-filterId="3"
+							data-filterid="3"
 						/>
 						<feDisplacementMap
 							xChannelSelector="R"
