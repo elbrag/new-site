@@ -19,6 +19,8 @@ import { ProgressProps } from "@/lib/types/progress";
 import Modal from "@/components/ui/Modal";
 import Image from "next/image";
 import { createRandomRotationsArray } from "@/lib/helpers/effects";
+import InfoMessage from "@/components/ui/InfoMessage";
+import { memoryFailMessages } from "@/lib/helpers/messages";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -48,7 +50,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	}, []);
 
 	// Hooks
-	const { successMessage } = useInfoMessage();
+	const { infoMessage, updateInfoMessage, successMessage } = useInfoMessage();
 
 	/**
 	 * On progress state update
@@ -76,20 +78,29 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	 */
 	useEffect(() => {
 		const gameProgress = getGameProgress(GameName.Memory, progress);
-		if (
-			card1Data != null &&
-			card2Data != null &&
-			card1Data.roundId === card2Data.roundId &&
-			!gameProgress.some((p) => p.roundId === card1Data.roundId)
-		) {
-			// It's a match
-			setTimeout(async () => {
-				// Update progress and score
-				await updateProgress(GameName.Memory, card1Data.roundId, true);
-				// Set card as currently viewing in modal
-				setModalCardContent(card1Data);
-			}, timeoutTime);
+		// Both cards are indeed flipped
+		if (card1Data != null && card2Data != null) {
+			// The cards match and we haven't matched them earlier
+			if (
+				card1Data.roundId === card2Data.roundId &&
+				!gameProgress.some((p) => p.roundId === card1Data.roundId)
+			) {
+				setTimeout(async () => {
+					// Update progress and score
+					await updateProgress(GameName.Memory, card1Data.roundId, true);
+					// Set card as currently viewing in modal
+					setModalCardContent(card1Data);
+				}, timeoutTime);
+			}
+			// It's not a match
+			else if (card1Data.roundId !== card2Data.roundId) {
+				const rand = Math.floor(Math.random() * memoryFailMessages.length);
+				updateInfoMessage(memoryFailMessages[rand]);
+			}
 		}
+		return () => {
+			updateInfoMessage(null);
+		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [card1Data, card2Data]);
 
@@ -143,6 +154,9 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 		}
 	};
 
+	/**
+	 * Get card data by index
+	 */
 	const getCardData = (index: number) => {
 		const dataFound = foundCardData.length
 			? foundCardData.find((data) =>
@@ -164,12 +178,21 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 		<div>
 			<div className="md:px-6 lg:px-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center">
 				{/* Cards */}
-				{Array.from({ length: cardCount }).map((card, index) => (
+				{Array.from({ length: cardCount }).map((_, index) => (
 					<MemoryCard
-						cardData={getCardData(index)}
 						key={`card-${index}`}
+						cardData={getCardData(index)}
 						onClick={() => onCardClick(index)}
-					></MemoryCard>
+						className={index === activeCard2 ? "z-1" : ""}
+					>
+						<AnimatePresence>
+							{infoMessage && index === activeCard2 && (
+								<div className="w-full absolute bottom-1/4 left-0 md:left-[unset] md:-right-1/2 z-1">
+									<InfoMessage text={infoMessage} />
+								</div>
+							)}
+						</AnimatePresence>
+					</MemoryCard>
 				))}
 				<AnimatePresence>
 					{successMessage && <SuccessScreen text={successMessage} />}
