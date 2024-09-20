@@ -21,6 +21,8 @@ import Image from "next/image";
 import { createRandomRotationsArray } from "@/lib/helpers/effects";
 import InfoMessage from "@/components/ui/InfoMessage";
 import { memoryFailMessages } from "@/lib/helpers/messages";
+import { RoundContext } from "@/context/RoundContext";
+import FoundCards from "./FoundCards";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -33,6 +35,8 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	// Context data and functions
 	const { updateProgress } = useContext(GameContext);
 	const { progress, getGameProgress } = useContext(ProgressContext);
+	const { numberOfRounds, setNumberOfRounds, allRoundsPassed } =
+		useContext(RoundContext);
 
 	// States
 	const [card1Data, setCard1Data] = useState<MemoryRoundProps | null>(null);
@@ -42,6 +46,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	const [foundCardData, setFoundCardData] = useState<MemoryRoundProps[]>([]);
 	const [modalCardContent, setModalCardContent] =
 		useState<MemoryRoundProps | null>(null);
+	const [allFound, setAllfound] = useState<boolean>(false);
 
 	// Rotations need to be memoized, otherwise the random rotation function triggers a re-render
 	const rotationValues = useMemo(() => {
@@ -64,6 +69,21 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 		setFoundCardData(foundMatchesData);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	useEffect(() => {
+		if (allRoundsPassed) {
+			setAllfound(true);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [allRoundsPassed]);
+
+	/**
+	 * Set number of rounds initially
+	 */
+	useEffect(() => {
+		if (numberOfRounds === 0) setNumberOfRounds(gameData.cardCount / 2);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [gameData]);
 
 	/**
 	 * Progress state watcher
@@ -173,6 +193,8 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 			? card2Data
 			: null;
 	};
+
+	if (allFound) return <FoundCards />;
 
 	return (
 		<div>
