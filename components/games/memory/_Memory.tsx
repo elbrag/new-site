@@ -35,8 +35,13 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	// Context data and functions
 	const { updateProgress } = useContext(GameContext);
 	const { progress, getGameProgress } = useContext(ProgressContext);
-	const { numberOfRounds, setNumberOfRounds, allRoundsPassed } =
-		useContext(RoundContext);
+	const {
+		numberOfRounds,
+		setNumberOfRounds,
+		allRoundsPassed,
+		getGameCurrentRoundIndex,
+		getGameCompletedRoundIndexes,
+	} = useContext(RoundContext);
 
 	// States
 	const [card1Data, setCard1Data] = useState<MemoryRoundProps | null>(null);
@@ -47,6 +52,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	const [modalCardContent, setModalCardContent] =
 		useState<MemoryRoundProps | null>(null);
 	const [allFound, setAllfound] = useState<boolean>(false);
+	const [readyToRenderGame, setReadyToRenderGame] = useState(false);
 
 	// Rotations need to be memoized, otherwise the random rotation function triggers a re-render
 	const rotationValues = useMemo(() => {
@@ -70,12 +76,19 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	useEffect(() => {
-		if (allRoundsPassed) {
+	/**
+	 * Set all completed
+	 */
+	const checkIfAllCompleted = () => {
+		const completedRoundIndexes = getGameCompletedRoundIndexes(GameName.Memory);
+		const currentRoundIndex = getGameCurrentRoundIndex(GameName.Memory);
+		if (
+			allRoundsPassed ||
+			currentRoundIndex === completedRoundIndexes.length - 1
+		) {
 			setAllfound(true);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [allRoundsPassed]);
+	};
 
 	/**
 	 * Set number of rounds initially
@@ -84,6 +97,30 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 		if (numberOfRounds === 0) setNumberOfRounds(gameData.cardCount / 2);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [gameData]);
+
+	/**
+	 * On first render, check if all rounds are completed
+	 */
+	useEffect(() => {
+		// When the event state of all rounds passed happens, return in favour of the function call on modal close
+		if (allRoundsPassed) return;
+		const _checkIfAllCompleted = async () => {
+			const gameProgress = await getGameProgress(GameName.Memory, progress);
+			const foundMatchesIds = gameProgress.map((match) => match.roundId);
+			const foundMatchesData = await fetchGameData(GameName.Memory, "POST", {
+				foundMatchesIds,
+			});
+			if (foundMatchesData.length === numberOfRounds) {
+				setAllfound(true);
+			} else {
+				setTimeout(() => {
+					setReadyToRenderGame(true);
+				}, 1000);
+			}
+		};
+		_checkIfAllCompleted();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [getGameProgress, numberOfRounds, allRoundsPassed]);
 
 	/**
 	 * Progress state watcher
@@ -194,100 +231,114 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 			: null;
 	};
 
+	/**
+	 * On modal close
+	 */
+	const onModalClose = () => {
+		setModalCardContent(null);
+		if (allRoundsPassed) checkIfAllCompleted();
+	};
+
 	if (allFound) return <FoundCards />;
 
 	return (
 		<div>
 			<div className="md:px-6 lg:px-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center">
-				{/* Cards */}
-				{Array.from({ length: cardCount }).map((_, index) => (
-					<MemoryCard
-						key={`card-${index}`}
-						cardData={getCardData(index)}
-						onClick={() => onCardClick(index)}
-						className={index === activeCard2 ? "z-1" : ""}
-					>
+				{readyToRenderGame && (
+					<>
+						{/* Cards */}
+						{Array.from({ length: cardCount }).map((_, index) => (
+							<MemoryCard
+								key={`card-${index}`}
+								cardData={getCardData(index)}
+								onClick={() => onCardClick(index)}
+								className={index === activeCard2 ? "z-1" : ""}
+							>
+								<AnimatePresence>
+									{infoMessage && index === activeCard2 && (
+										<div className="w-full absolute bottom-1/4 left-0 md:left-[unset] md:-right-1/2 z-1">
+											<InfoMessage text={infoMessage} />
+										</div>
+									)}
+								</AnimatePresence>
+							</MemoryCard>
+						))}
 						<AnimatePresence>
-							{infoMessage && index === activeCard2 && (
-								<div className="w-full absolute bottom-1/4 left-0 md:left-[unset] md:-right-1/2 z-1">
-									<InfoMessage text={infoMessage} />
-								</div>
+							{successMessage && <SuccessScreen text={successMessage} />}
+						</AnimatePresence>
+						<AnimatePresence>{/* <Confetti /> */}</AnimatePresence>
+						{/* Modal */}
+						<AnimatePresence>
+							{modalCardContent && (
+								<Modal
+									onClose={onModalClose}
+									className="overflow-hidden max-w-184"
+									motionKey="memory-modal"
+								>
+									<h2 className="text-xl lg:text-2xl mb-10 uppercase">
+										It&apos;s a match!
+									</h2>
+									<div className="mb-6 flex flex-col justify-center">
+										<h3 className="mb-8 text-center">
+											{modalCardContent.description}
+										</h3>
+										<p>
+											{modalCardContent.subtitle && modalCardContent.subtitle}
+										</p>
+										<ul
+											className={`relative mx-auto h-44 md:h-52 grid place-items-center grid-cols-${modalCardContent?.images.length}`}
+											style={{
+												gridTemplateColumns: `repeat(${modalCardContent?.images.length}, 11rem)`,
+											}}
+										>
+											<AnimatePresence>
+												{modalCardContent?.images.map((image, i) => {
+													const rotation = rotationValues[i];
+													return (
+														<li
+															className={`w-44 h-inherit flex justify-center ${
+																i === 0 ? "z-1" : "absolute left-0 z-0"
+															}`}
+															key={`found-img-li-${i}`}
+														>
+															<motion.div
+																key={`found-img-container-${i}`}
+																className={`w-32 md:w-36 h-inherit rounded-md overflow-hidden `}
+																initial={{
+																	rotateZ: 0,
+																	x: 0,
+																	transformOrigin: "50% 50%",
+																}}
+																animate={{
+																	rotateZ: rotation,
+																	x: `calc(11rem * ${i})`,
+																	transformOrigin: "50% 50%",
+																}}
+																transition={{
+																	duration: 0.6,
+																	delay: i * 0.5 * (timeoutTime / 1000),
+																	ease: [0.42, 0, 0.58, 1],
+																}}
+															>
+																<Image
+																	className="min-h-full object-cover"
+																	src={`/static/images/memory/${image.url}.jpg`}
+																	alt=""
+																	width={500}
+																	height={500}
+																/>
+															</motion.div>
+														</li>
+													);
+												})}
+											</AnimatePresence>
+										</ul>
+									</div>
+								</Modal>
 							)}
 						</AnimatePresence>
-					</MemoryCard>
-				))}
-				<AnimatePresence>
-					{successMessage && <SuccessScreen text={successMessage} />}
-				</AnimatePresence>
-				<AnimatePresence>{/* <Confetti /> */}</AnimatePresence>
-				{/* Modal */}
-				<AnimatePresence>
-					{modalCardContent && (
-						<Modal
-							onClose={() => setModalCardContent(null)}
-							className="overflow-hidden max-w-184"
-							motionKey="memory-modal"
-						>
-							<h2 className="text-xl lg:text-2xl mb-10 uppercase">
-								It&apos;s a match!
-							</h2>
-							<div className="mb-6 flex flex-col justify-center">
-								<h3 className="mb-8 text-center">
-									{modalCardContent.description}
-								</h3>
-								<p>{modalCardContent.subtitle && modalCardContent.subtitle}</p>
-								<ul
-									className={`relative mx-auto h-44 md:h-52 grid place-items-center grid-cols-${modalCardContent?.images.length}`}
-									style={{
-										gridTemplateColumns: `repeat(${modalCardContent?.images.length}, 11rem)`,
-									}}
-								>
-									<AnimatePresence>
-										{modalCardContent?.images.map((image, i) => {
-											const rotation = rotationValues[i];
-											return (
-												<li
-													className={`w-44 h-inherit flex justify-center ${
-														i === 0 ? "z-1" : "absolute left-0 z-0"
-													}`}
-													key={`found-img-li-${i}`}
-												>
-													<motion.div
-														key={`found-img-container-${i}`}
-														className={`w-32 md:w-36 h-inherit rounded-md overflow-hidden `}
-														initial={{
-															rotateZ: 0,
-															x: 0,
-															transformOrigin: "50% 50%",
-														}}
-														animate={{
-															rotateZ: rotation,
-															x: `calc(11rem * ${i})`,
-															transformOrigin: "50% 50%",
-														}}
-														transition={{
-															duration: 0.6,
-															delay: i * 0.5 * (timeoutTime / 1000),
-															ease: [0.42, 0, 0.58, 1],
-														}}
-													>
-														<Image
-															className="min-h-full object-cover"
-															src={`/static/images/memory/${image.url}.jpg`}
-															alt=""
-															width={500}
-															height={500}
-														/>
-													</motion.div>
-												</li>
-											);
-										})}
-									</AnimatePresence>
-								</ul>
-							</div>
-						</Modal>
-					)}
-				</AnimatePresence>
+					</>
+				)}
 			</div>
 		</div>
 	);
