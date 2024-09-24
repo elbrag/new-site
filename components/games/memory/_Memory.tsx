@@ -12,7 +12,6 @@ import { MemoryRoundProps } from "@/lib/types/rounds";
 import { AnimatePresence, motion } from "framer-motion";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import SuccessScreen from "@/components/ui/SuccessScreen";
-import FailedScreen from "@/components/ui/FailedScreen";
 import { GameContext } from "@/context/GameContext";
 import { ProgressContext } from "@/context/ProgressContext";
 import { ProgressProps } from "@/lib/types/progress";
@@ -35,13 +34,8 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	// Context data and functions
 	const { updateProgress } = useContext(GameContext);
 	const { progress, getGameProgress } = useContext(ProgressContext);
-	const {
-		numberOfRounds,
-		setNumberOfRounds,
-		allRoundsPassed,
-		getGameCurrentRoundIndex,
-		getGameCompletedRoundIndexes,
-	} = useContext(RoundContext);
+	const { numberOfRounds, setNumberOfRounds, allRoundsPassed } =
+		useContext(RoundContext);
 
 	// States
 	const [card1Data, setCard1Data] = useState<MemoryRoundProps | null>(null);
@@ -75,20 +69,6 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 		setFoundCardData(foundMatchesData);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-
-	/**
-	 * Set all completed
-	 */
-	const checkIfAllCompleted = () => {
-		const completedRoundIndexes = getGameCompletedRoundIndexes(GameName.Memory);
-		const currentRoundIndex = getGameCurrentRoundIndex(GameName.Memory);
-		if (
-			allRoundsPassed ||
-			currentRoundIndex === completedRoundIndexes.length - 1
-		) {
-			setAllfound(true);
-		}
-	};
 
 	/**
 	 * Set number of rounds initially
@@ -236,7 +216,11 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	 */
 	const onModalClose = () => {
 		setModalCardContent(null);
-		if (allRoundsPassed) checkIfAllCompleted();
+		if (allRoundsPassed) {
+			setTimeout(() => {
+				setAllfound(true);
+			}, 600);
+		}
 	};
 
 	if (allFound) return <FoundCards />;
