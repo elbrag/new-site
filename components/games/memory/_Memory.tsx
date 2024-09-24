@@ -74,7 +74,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	 * Set number of rounds initially
 	 */
 	useEffect(() => {
-		if (numberOfRounds === 0) setNumberOfRounds(gameData.cardCount / 2);
+		setNumberOfRounds(gameData.cardCount / 2);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [gameData]);
 
@@ -227,11 +227,27 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 
 	return (
 		<div>
-			<div className="md:px-6 lg:px-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center">
-				{readyToRenderGame && (
-					<>
+			{readyToRenderGame && (
+				<AnimatePresence mode="wait">
+					<motion.div
+						className="md:px-6 lg:px-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center"
+						initial={{
+							opacity: 0,
+						}}
+						animate={{
+							opacity: 1,
+						}}
+						exit={{
+							opacity: 0,
+						}}
+						transition={{
+							duration: 0.5,
+						}}
+					>
 						{/* Cards */}
-						{Array.from({ length: cardCount }).map((_, index) => (
+						{Array.from({
+							length: cardCount,
+						}).map((_, index) => (
 							<MemoryCard
 								key={`card-${index}`}
 								cardData={getCardData(index)}
@@ -283,10 +299,10 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 															className={`w-44 h-inherit flex justify-center ${
 																i === 0 ? "z-1" : "absolute left-0 z-0"
 															}`}
-															key={`found-img-li-${i}`}
+															key={`found-img-li-`}
 														>
 															<motion.div
-																key={`found-img-container-${i}`}
+																key={`found-img-container-`}
 																className={`w-32 md:w-36 h-inherit rounded-md overflow-hidden `}
 																initial={{
 																	rotateZ: 0,
@@ -295,7 +311,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 																}}
 																animate={{
 																	rotateZ: rotation,
-																	x: `calc(11rem * ${i})`,
+																	x: `calc(11rem * )`,
 																	transformOrigin: "50% 50%",
 																}}
 																transition={{
@@ -321,9 +337,9 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 								</Modal>
 							)}
 						</AnimatePresence>
-					</>
-				)}
-			</div>
+					</motion.div>
+				</AnimatePresence>
+			)}
 		</div>
 	);
 };
