@@ -53,6 +53,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 		<>
 			<Head>
 				<title>EB {title.length ? `| ${title}` : title}</title>
+				<link rel="icon" href="/favicon.png" sizes="any" />
 			</Head>
 			<main
 				className={`min-h-screen flex flex-col  text-military font-dela ${
