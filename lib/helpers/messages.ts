@@ -8,3 +8,5 @@ export const memoryFailMessages = [
 	"How about the one next to me? 👀",
 	"The next one is going to be it",
 ];
+
+export const wellDoneHeading = "Well done! Here's what you found out:";

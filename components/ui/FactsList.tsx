@@ -1,15 +1,15 @@
+import { wellDoneHeading } from "@/lib/helpers/messages";
 import { HangmanRevealedRoundProps } from "@/lib/types/rounds";
 import { motion } from "framer-motion";
 
 interface FactsListProps {
-	heading?: string;
 	facts: HangmanRevealedRoundProps[];
 }
 
-const FactsList: React.FC<FactsListProps> = ({ facts, heading }) => {
+const FactsList: React.FC<FactsListProps> = ({ facts }) => {
 	return (
 		<div className="flex flex-col items-center text-center">
-			{heading && <h2 className="font-alegreya lg:text-lg mb-12">{heading}</h2>}
+			<h2 className="font-alegreya lg:text-lg mb-12">{wellDoneHeading}</h2>
 			<ul>
 				{facts.map((fact, index) => (
 					<motion.li
