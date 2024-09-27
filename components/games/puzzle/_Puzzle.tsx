@@ -1,131 +1,144 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { Box, Vec2, World } from "planck-js";
+
+import {
+	Bodies,
+	Engine,
+	Render,
+	Composite,
+	World,
+	Runner,
+	Mouse,
+	MouseConstraint,
+	Svg,
+} from "matter-js";
 
 const Puzzle: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const worldRef = useRef<World | null>(null);
+	const engineRef = useRef<Engine>(Engine.create());
 
 	/**
-	 * Ground
-	 *
-	 * Create and return
+	 * Add walls
 	 */
-	const createAndReturnGround = useCallback(
+	const addWalls = useCallback(
 		(world: World, canvasWidth: number, canvasHeight: number) => {
-			const ground = world.createBody({
-				type: "static",
-				position: new Vec2(0, canvasHeight - 60),
+			const wallThickness = 5;
+			const yZero = canvasHeight / 2;
+			const xZero = canvasWidth / 2;
+			const wallDefs: [number, number, number, number][] = [
+				[xZero, 0, canvasWidth, wallThickness],
+				[canvasWidth, yZero, wallThickness, canvasHeight],
+				[xZero, canvasHeight, canvasWidth, wallThickness],
+				[0, yZero, wallThickness, canvasHeight],
+			];
+			wallDefs.forEach((wallDef) => {
+				Composite.add(
+					world,
+					Bodies.rectangle(...wallDef, {
+						isStatic: true,
+						render: {
+							fillStyle: "#5EFC5B",
+							// lineWidth: 1,
+							strokeStyle: "white",
+							visible: true,
+						},
+					})
+				);
 			});
-			ground.createFixture(new Box(canvasWidth, 10));
-			return ground;
 		},
 		[]
 	);
 
-	/**
-	 * Create walls around the canvas
-	 *
-	 * This function creates static bodies at the edges of the canvas.
-	 */
-	const createAndReturnWalls = useCallback(
-		(world: planck.World, canvasWidth: number, canvasHeight: number) => {
-			const wallsBody = world.createBody({ type: "static" });
-			const wallHeight = 5;
-			const wallSpecs = [
-				{
-					position: new Vec2(0, canvasHeight / 2),
-					size: new Vec2(wallHeight, canvasHeight),
-				}, // Left
-				{
-					position: new Vec2(canvasWidth - wallHeight, canvasHeight / 2),
-					size: new Vec2(wallHeight, canvasHeight),
-				}, // Right
-				{
-					position: new Vec2(0, wallHeight / 2),
-					size: new Vec2(canvasWidth, wallHeight),
-				}, // Bottom
-				{
-					position: new Vec2(0, canvasHeight - wallHeight / 2),
-					size: new Vec2(canvasWidth, wallHeight),
-				}, // Top
+	const addShapes = useCallback(
+		(world: World, canvasWidth: number, canvasHeight: number) => {
+			const svgPaths = [
+				"/static/images/puzzle/piece_1_4.svg",
+				"/static/images/puzzle/piece_2.svg",
+				"/static/images/puzzle/piece_3.svg",
+				"/static/images/puzzle/piece_5.svg",
 			];
-
-			wallSpecs.forEach(({ position, size }) => {
-				wallsBody.createFixture(new Box(size.x, size.y), {
-					isSensor: false,
-				});
+			svgPaths.forEach((path) => {
+				const body = Bodies.rectangle(
+					canvasWidth / 2,
+					canvasHeight / 2,
+					300,
+					140,
+					{
+						restitution: 1,
+						friction: 0.8,
+						render: {
+							sprite: {
+								texture: path,
+								yScale: 1,
+								xScale: 1,
+							},
+							fillStyle: "#F3ECE3",
+						},
+					}
+				);
+				Composite.add(world, body);
 			});
-
-			return wallSpecs;
 		},
 		[]
 	);
 
 	/**
 	 * On first render
-	 *
-	 * - Define canvas, world, objects
-	 * - Run animation
 	 */
 	useEffect(() => {
-		// Check that everything exists
+		// Define canvas, ctx, engine and check that they exist
 		const canvas = canvasRef.current;
 		if (!canvas) return;
-		const ctx = canvas.getContext("2d");
-		if (!ctx) return;
-		// Set world
-		const world = new World({ gravity: new Vec2(0, 9.8), allowSleep: true });
-		worldRef.current = world;
 
-		// Get canvas measurements
-		const canvasHeight = canvas.height;
+		// const ctx = canvas.getContext("2d");
+		const engine = engineRef.current;
+		if (!engine) return;
+
 		const canvasWidth = canvas.width;
+		const canvasHeight = canvas.height;
 
-		// Create ground
-		const walls = createAndReturnWalls(world, canvasWidth, canvasHeight);
-		// const ground = createAndReturnGround(world, canvasWidth, canvasHeight);
-
-		// Create a piece
-		const piece = world.createBody({
-			type: "dynamic",
-			position: new Vec2(5, 5),
-		});
-		piece.createFixture({
-			shape: new Box(1, 1),
-			density: 1,
-			friction: 0.5,
-			restitution: 0.5,
+		// Renderer
+		const render = Render.create({
+			canvas,
+			engine: engine,
+			options: {
+				width: canvasWidth,
+				height: canvasHeight,
+				wireframes: false,
+			},
 		});
 
-		let animationFrameId: number;
+		// Composite
+		const world = engine.world;
 
-		// Animate
-		const animate = () => {
-			world.step(1 / 60); // Advance physics simulation at 60Hz
+		// Elements
+		addWalls(world, canvasWidth, canvasHeight);
+		addShapes(world, canvasWidth, canvasHeight);
 
-			// Clear the canvas
-			ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+		// Mouse
+		const mouse = Mouse.create(canvas);
+		const mouseConstraint = MouseConstraint.create(engine, {
+			mouse: mouse,
+			constraint: {
+				stiffness: 0.2,
+				render: {
+					visible: false,
+				},
+			},
+		});
 
-			// Draw the walls
-			ctx.fillStyle = "green"; // Change color for visibility
-			walls.forEach(({ position, size }) => {
-				ctx.fillRect(position.x, position.y - size.y / 2, size.x, size.y); // Draw wall
-			});
+		// Add mouse constraint to the world
+		Composite.add(world, mouseConstraint);
 
-			// Draw the puzzle piece
-			ctx.fillStyle = "blue";
-			const piecePosition = piece.getPosition();
-			ctx.fillRect(piecePosition.x * 30, piecePosition.y * 30, 60, 60);
+		// Run the engine and render
+		Render.run(render);
+		const runner = Runner.create();
+		Runner.run(runner, engine);
 
-			animationFrameId = requestAnimationFrame(animate);
-		};
-
-		animate();
-
+		// Clean up
 		return () => {
-			cancelAnimationFrame(animationFrameId);
-			world.destroyBody(piece);
-			// world.destroyBody(walls);
+			Composite.clear(world, false);
+			Engine.clear(engine);
+			Render.stop(render);
 		};
 	}, []);
 
