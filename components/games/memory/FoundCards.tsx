@@ -37,7 +37,7 @@ const FoundCards: React.FC<FoundCardsProps> = ({ cardData }) => {
 							className={`relative mx-auto h-44 md:h-52 grid place-items-center grid-cols-${data.images.length}`}
 						>
 							{data.images.map((image, ii) => {
-								const rotation = rotationValues[ii * i];
+								const rotation = rotationValues[(ii + 1) * i];
 
 								return (
 									<li
