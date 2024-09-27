@@ -16,13 +16,13 @@ import { GameContext } from "@/context/GameContext";
 import { ProgressContext } from "@/context/ProgressContext";
 import { ProgressProps } from "@/lib/types/progress";
 import Modal from "@/components/ui/Modal";
-import Image from "next/image";
 import { createRandomRotationsArray } from "@/lib/helpers/effects";
 import InfoMessage from "@/components/ui/InfoMessage";
 import { memoryFailMessages } from "@/lib/helpers/messages";
 import { RoundContext } from "@/context/RoundContext";
 import FoundCards from "./FoundCards";
 import MemoryRevealedImage from "./MemoryRevealedImage";
+import { uniqBy } from "lodash";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -234,13 +234,17 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 		}
 	};
 
+	/**
+	 * All found – reveal result!
+	 */
 	if (allFound) {
 		const allData: MemoryRoundProps[] = Array.from({
 			length: cardCount,
 		})
 			.map((_, index: number) => getCardData(index))
 			.filter((data) => data != null);
-		return <FoundCards cardData={allData} />;
+		const allUniqueData = uniqBy(allData, "roundId");
+		return <FoundCards cardData={allUniqueData} />;
 	}
 
 	return (
@@ -328,6 +332,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 															imgUrl={image.url}
 															index={i}
 															rotation={rotation}
+															timeoutTime={timeoutTime}
 														/>
 													</li>
 												);
