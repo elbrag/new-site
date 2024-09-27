@@ -52,7 +52,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>EB {title.length ? `| ${title}` : title}</title>
+				<title>{`EB ${title.length ? `| ${title}` : title}`}</title>
 				<link rel="icon" href="/favicon.png" sizes="any" />
 			</Head>
 			<main
