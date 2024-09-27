@@ -22,6 +22,7 @@ import InfoMessage from "@/components/ui/InfoMessage";
 import { memoryFailMessages } from "@/lib/helpers/messages";
 import { RoundContext } from "@/context/RoundContext";
 import FoundCards from "./FoundCards";
+import MemoryRevealedImage from "./MemoryRevealedImage";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -233,7 +234,14 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 		}
 	};
 
-	if (allFound) return <FoundCards />;
+	if (allFound) {
+		const allData: MemoryRoundProps[] = Array.from({
+			length: cardCount,
+		})
+			.map((_, index: number) => getCardData(index))
+			.filter((data) => data != null);
+		return <FoundCards cardData={allData} />;
+	}
 
 	return (
 		<div>
@@ -316,33 +324,11 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 														}`}
 														key={`found-img-li-${i}`}
 													>
-														<motion.div
-															key={`found-img-container-${i}`}
-															className={`w-32 md:w-36 h-inherit rounded-md overflow-hidden `}
-															initial={{
-																rotateZ: 0,
-																x: 0,
-																transformOrigin: "50% 50%",
-															}}
-															animate={{
-																rotateZ: rotation,
-																x: `calc(11rem * ${i})`,
-																transformOrigin: "50% 50%",
-															}}
-															transition={{
-																duration: 0.6,
-																delay: i * 0.5 * (timeoutTime / 1000),
-																ease: [0.42, 0, 0.58, 1],
-															}}
-														>
-															<Image
-																className="min-h-full object-cover"
-																src={`/static/images/memory/${image.url}.jpg`}
-																alt=""
-																width={500}
-																height={500}
-															/>
-														</motion.div>
+														<MemoryRevealedImage
+															imgUrl={image.url}
+															index={i}
+															rotation={rotation}
+														/>
 													</li>
 												);
 											})}
