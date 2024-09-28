@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import FullLogo from "../../../public/static/images/puzzle/full_logo.svg";
 
 import {
 	Bodies,
@@ -9,6 +10,7 @@ import {
 	Runner,
 	Mouse,
 	MouseConstraint,
+	Events,
 } from "matter-js";
 import { throttle } from "lodash";
 
@@ -123,6 +125,7 @@ const Puzzle: React.FC = () => {
 				width: canvasWidth,
 				height: canvasHeight,
 				wireframes: false,
+				background: "transparent",
 			},
 		});
 
@@ -168,14 +171,19 @@ const Puzzle: React.FC = () => {
 	}, []);
 
 	return (
-		<div className="px-6 lg:px-12  h-70vh">
+		<div className="px-6 lg:px-12 h-70vh">
 			Puzzle
-			<canvas
-				ref={canvasRef}
-				width={600}
-				height={400}
-				className="border bg-paper w-full h-full"
-			/>
+			<div className="relative z-0 h-full">
+				<canvas
+					ref={canvasRef}
+					width={600}
+					height={400}
+					className="border w-full h-full"
+				/>
+				<div className="reference-image absolute w-full h-full left-0 top-0 -z-1 flex justify-center items-center">
+					<FullLogo />
+				</div>
+			</div>
 		</div>
 	);
 };
