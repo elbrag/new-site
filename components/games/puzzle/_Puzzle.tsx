@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import {
 	Bodies,
@@ -9,8 +9,8 @@ import {
 	Runner,
 	Mouse,
 	MouseConstraint,
-	Svg,
 } from "matter-js";
+import { throttle } from "lodash";
 
 const Puzzle: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -48,6 +48,9 @@ const Puzzle: React.FC = () => {
 		[]
 	);
 
+	/**
+	 * Add shapes
+	 */
 	const addShapes = useCallback(
 		(world: World, canvasWidth: number, canvasHeight: number) => {
 			const svgPaths = [
@@ -82,14 +85,30 @@ const Puzzle: React.FC = () => {
 	);
 
 	/**
+	 * Resize canvas
+	 */
+	const resizeCanvas = (render?: Render) => {
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+		canvas.width = canvas.offsetWidth;
+		canvas.height = canvas.offsetHeight;
+
+		if (render) {
+			Render.stop(render);
+			render.canvas.width = window.innerWidth;
+			render.canvas.height = window.innerHeight;
+			Render.run(render);
+		}
+	};
+
+	/**
 	 * On first render
 	 */
 	useEffect(() => {
-		// Define canvas, ctx, engine and check that they exist
+		// Define canvas + engine and check that they exist
 		const canvas = canvasRef.current;
 		if (!canvas) return;
-
-		// const ctx = canvas.getContext("2d");
+		resizeCanvas();
 		const engine = engineRef.current;
 		if (!engine) return;
 
@@ -134,22 +153,28 @@ const Puzzle: React.FC = () => {
 		const runner = Runner.create();
 		Runner.run(runner, engine);
 
+		const onResize = throttle(() => {
+			resizeCanvas(render);
+		}, 1000);
+		window.addEventListener("resize", onResize);
+
 		// Clean up
 		return () => {
 			Composite.clear(world, false);
 			Engine.clear(engine);
 			Render.stop(render);
+			window.removeEventListener("resize", onResize);
 		};
 	}, []);
 
 	return (
-		<div className="px-6 lg:px-12">
+		<div className="px-6 lg:px-12  h-70vh">
 			Puzzle
 			<canvas
 				ref={canvasRef}
 				width={600}
 				height={400}
-				className="border bg-paper"
+				className="border bg-paper w-full h-full"
 			/>
 		</div>
 	);
