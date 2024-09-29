@@ -10,98 +10,12 @@ import {
 	Runner,
 	Mouse,
 	MouseConstraint,
-	Events,
 } from "matter-js";
 import { throttle } from "lodash";
 
 const Puzzle: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const engineRef = useRef<Engine>(Engine.create());
-
-	/**
-	 * Add walls
-	 */
-	const addWalls = useCallback(
-		(world: World, canvasWidth: number, canvasHeight: number) => {
-			const wallThickness = 5;
-			const yZero = canvasHeight / 2;
-			const xZero = canvasWidth / 2;
-			const wallDefs: [number, number, number, number][] = [
-				[xZero, 0, canvasWidth, wallThickness],
-				[canvasWidth, yZero, wallThickness, canvasHeight],
-				[xZero, canvasHeight, canvasWidth, wallThickness],
-				[0, yZero, wallThickness, canvasHeight],
-			];
-			wallDefs.forEach((wallDef) => {
-				Composite.add(
-					world,
-					Bodies.rectangle(...wallDef, {
-						isStatic: true,
-						render: {
-							fillStyle: "#5EFC5B",
-							// lineWidth: 1,
-							strokeStyle: "white",
-							visible: true,
-						},
-					})
-				);
-			});
-		},
-		[]
-	);
-
-	/**
-	 * Add shapes
-	 */
-	const addShapes = useCallback(
-		(world: World, canvasWidth: number, canvasHeight: number) => {
-			const svgPaths = [
-				"/static/images/puzzle/piece_1_4.svg",
-				"/static/images/puzzle/piece_2.svg",
-				"/static/images/puzzle/piece_3.svg",
-				"/static/images/puzzle/piece_5.svg",
-			];
-			svgPaths.forEach((path) => {
-				const body = Bodies.rectangle(
-					canvasWidth / 2,
-					canvasHeight / 2,
-					300,
-					140,
-					{
-						restitution: 1,
-						friction: 0.8,
-						render: {
-							sprite: {
-								texture: path,
-								yScale: 1,
-								xScale: 1,
-							},
-							fillStyle: "#F3ECE3",
-						},
-					}
-				);
-				Composite.add(world, body);
-			});
-		},
-		[]
-	);
-
-	/**
-	 * Resize canvas
-	 */
-	const resizeCanvas = (render?: Render) => {
-		const canvas = canvasRef.current;
-		if (!canvas) return;
-		canvas.width = canvas.offsetWidth;
-		canvas.height = canvas.offsetHeight;
-
-		if (render) {
-			Render.stop(render);
-			render.canvas.width = window.innerWidth;
-			render.canvas.height = window.innerHeight;
-			Render.run(render);
-		}
-	};
 
 	/**
 	 * On first render
@@ -170,10 +84,95 @@ const Puzzle: React.FC = () => {
 		};
 	}, []);
 
+	/**
+	 * Add walls
+	 */
+	const addWalls = useCallback(
+		(world: World, canvasWidth: number, canvasHeight: number) => {
+			const wallThickness = 5;
+			const yZero = canvasHeight / 2;
+			const xZero = canvasWidth / 2;
+			const wallDefs: [number, number, number, number][] = [
+				[xZero, 0, canvasWidth, wallThickness],
+				[canvasWidth, yZero, wallThickness, canvasHeight],
+				[xZero, canvasHeight, canvasWidth, wallThickness],
+				[0, yZero, wallThickness, canvasHeight],
+			];
+			wallDefs.forEach((wallDef) => {
+				Composite.add(
+					world,
+					Bodies.rectangle(...wallDef, {
+						isStatic: true,
+						render: {
+							fillStyle: "#5EFC5B",
+							// lineWidth: 1,
+							strokeStyle: "white",
+							visible: true,
+						},
+					})
+				);
+			});
+		},
+		[]
+	);
+
+	/**
+	 * Add shapes
+	 */
+	const addShapes = useCallback(
+		(world: World, canvasWidth: number, canvasHeight: number) => {
+			const svgs = [
+				{ url: "/static/images/puzzle/piece_1_4.svg", width: 249, height: 53 },
+				{ url: "/static/images/puzzle/piece_2.svg", width: 300, height: 134 },
+				{ url: "/static/images/puzzle/piece_3.svg", width: 300, height: 54 },
+				{ url: "/static/images/puzzle/piece_1_4.svg", width: 249, height: 53 },
+				{ url: "/static/images/puzzle/piece_5.svg", width: 246, height: 69 },
+			];
+			svgs.forEach((svg) => {
+				const body = Bodies.rectangle(
+					canvasWidth / 2,
+					canvasHeight / 2,
+					svg.width,
+					svg.height,
+					{
+						restitution: 1,
+						friction: 0.8,
+						render: {
+							sprite: {
+								texture: svg.url,
+								yScale: 1,
+								xScale: 1,
+							},
+						},
+					}
+				);
+				Composite.add(world, body);
+			});
+		},
+		[]
+	);
+
+	/**
+	 * Resize canvas
+	 */
+	const resizeCanvas = (render?: Render) => {
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+		canvas.width = canvas.offsetWidth;
+		canvas.height = canvas.offsetHeight;
+
+		if (render) {
+			Render.stop(render);
+			render.canvas.width = window.innerWidth;
+			render.canvas.height = window.innerHeight;
+			Render.run(render);
+		}
+	};
+
 	return (
 		<div className="px-6 lg:px-12 h-70vh">
 			Puzzle
-			<div className="relative z-0 h-full">
+			<div className="relative z-0 h-full bg-paper">
 				<canvas
 					ref={canvasRef}
 					width={600}
