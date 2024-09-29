@@ -10,6 +10,7 @@ import {
 	Runner,
 	Mouse,
 	MouseConstraint,
+	Body,
 } from "matter-js";
 import { throttle } from "lodash";
 
@@ -70,8 +71,9 @@ const Puzzle: React.FC = () => {
 		const runner = Runner.create();
 		Runner.run(runner, engine);
 
+		// Listen to resize
 		const onResize = throttle(() => {
-			resizeCanvas(render);
+			resizeCanvas(render, engine.world);
 		}, 1000);
 		window.addEventListener("resize", onResize);
 
@@ -155,16 +157,43 @@ const Puzzle: React.FC = () => {
 	/**
 	 * Resize canvas
 	 */
-	const resizeCanvas = (render?: Render) => {
+	const resizeCanvas = (render?: Render, world?: World) => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
+
+		// Get current dimensions
+		const prevWidth = canvas.width;
+		const prevHeight = canvas.height;
+
+		// Set new dimensions
 		canvas.width = canvas.offsetWidth;
 		canvas.height = canvas.offsetHeight;
 
 		if (render) {
 			Render.stop(render);
-			render.canvas.width = window.innerWidth;
-			render.canvas.height = window.innerHeight;
+			// Set render canvas size
+			render.canvas.width = canvas.width;
+			render.canvas.height = canvas.height;
+			render.bounds.max.x = canvas.width;
+			render.bounds.max.y = canvas.height;
+		}
+
+		// Calculate the scale factor for the objects in the world
+		const scaleX = canvas.width / prevWidth;
+		const scaleY = canvas.height / prevHeight;
+
+		if (world) {
+			// Loop through all bodies and scale them accordingly
+			Composite.allBodies(world).forEach((body) => {
+				Body.scale(body, scaleX, scaleY);
+				Body.setPosition(body, {
+					x: body.position.x * scaleX,
+					y: body.position.y * scaleY,
+				});
+			});
+		}
+
+		if (render) {
 			Render.run(render);
 		}
 	};
