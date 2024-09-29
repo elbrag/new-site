@@ -13,10 +13,12 @@ import {
 	Body,
 } from "matter-js";
 import { throttle } from "lodash";
+import Button from "@/components/ui/Button";
 
 const Puzzle: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const engineRef = useRef<Engine>(Engine.create());
+	const [restart, setRestart] = useState(false);
 
 	/**
 	 * On first render
@@ -84,7 +86,8 @@ const Puzzle: React.FC = () => {
 			Render.stop(render);
 			window.removeEventListener("resize", onResize);
 		};
-	}, []);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [restart]);
 
 	/**
 	 * Add walls
@@ -155,6 +158,13 @@ const Puzzle: React.FC = () => {
 	);
 
 	/**
+	 * Reset pieces
+	 */
+	const resetPieces = () => {
+		setRestart(true);
+	};
+
+	/**
 	 * Resize canvas
 	 */
 	const resizeCanvas = (render?: Render, world?: World) => {
@@ -199,19 +209,21 @@ const Puzzle: React.FC = () => {
 	};
 
 	return (
-		<div className="px-6 lg:px-12 h-70vh">
-			Puzzle
-			<div className="relative z-0 h-full bg-paper">
-				<canvas
-					ref={canvasRef}
-					width={600}
-					height={400}
-					className="border w-full h-full"
-				/>
-				<div className="reference-image absolute w-full h-full left-0 top-0 -z-1 flex justify-center items-center">
-					<FullLogo />
+		<div className="px-6 lg:px-12">
+			<div className="h-70vh">
+				<div className="relative z-0 h-full bg-paper">
+					<canvas
+						ref={canvasRef}
+						width={600}
+						height={400}
+						className="border w-full h-full"
+					/>
+					<div className="reference-image absolute w-full h-full left-0 top-0 -z-1 flex justify-center items-center">
+						<FullLogo />
+					</div>
 				</div>
 			</div>
+			<Button label="Reset" onClick={resetPieces} />
 		</div>
 	);
 };
