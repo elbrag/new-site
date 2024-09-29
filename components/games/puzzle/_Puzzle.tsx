@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import FullLogo from "../../../public/static/images/puzzle/full_logo.svg";
 
 import {
@@ -30,6 +30,7 @@ interface PuzzlePiece {
 const Puzzle: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const engineRef = useRef<Engine>(Engine.create());
+	const refImageRef = useRef<HTMLDivElement>(null);
 	const [restart, setRestart] = useState<boolean>(false);
 
 	/**
@@ -95,15 +96,19 @@ const Puzzle: React.FC = () => {
 	 */
 	useEffect(() => {
 		setRestart(false);
-		// Define canvas + engine and check that they exist
+		// Define canvas, refernce image and engine and check that they exist
 		const canvas = canvasRef.current;
-		if (!canvas) return;
-		resizeCanvas();
+		const refImg = refImageRef.current;
 		const engine = engineRef.current;
-		if (!engine) return;
+		if (!canvas || !engine || !refImg) return;
+		resizeCanvas();
 
+		// Determine canvas dimensions
 		const canvasWidth = canvas.width;
 		const canvasHeight = canvas.height;
+		// Determine ref image dimensions
+		const refImgWidth = refImg.clientWidth;
+		const refImgHeight = refImg.clientHeight;
 
 		// Renderer
 		const render = Render.create({
@@ -122,7 +127,7 @@ const Puzzle: React.FC = () => {
 
 		// Elements
 		addWalls(world, canvasWidth, canvasHeight);
-		addShapes(world, canvasWidth, canvasHeight);
+		addShapes(world, canvasWidth, canvasHeight, refImgWidth, refImgHeight);
 
 		// Initial state (pieces in place)
 		setInitialState(engine);
@@ -223,26 +228,35 @@ const Puzzle: React.FC = () => {
 	const addShapes = (
 		world: World,
 		canvasWidth: number,
-		canvasHeight: number
+		canvasHeight: number,
+		refImgWidth: number,
+		refImgHeight: number
 	) => {
-		svgs.forEach((svg) => {
-			const body = Bodies.rectangle(
-				canvasWidth / 2,
-				canvasHeight / 2,
-				svg.width,
-				svg.height,
-				{
-					restitution: 1,
-					friction: 0.8,
-					render: {
-						sprite: {
-							texture: svg.url,
-							yScale: 1,
-							xScale: 1,
-						},
-					},
-				}
+		const imageStartX = (canvasWidth - refImgWidth) / 2;
+		const imageStartY = (canvasHeight - refImgHeight) / 2;
+		// console.log(imageStartX, imageStartY);
+		svgs.forEach((svg, i) => {
+			// if (i === 0)
+			console.log(
+				imageStartX + (svg.steeringCoords.topRight.x - svg.width),
+				imageStartY + (svg.steeringCoords.bottomLeft.y - svg.height)
 			);
+			const x = imageStartX + (svg.steeringCoords.topRight.x - svg.width / 2);
+			const y =
+				imageStartY + (svg.steeringCoords.bottomLeft.y - svg.height / 2);
+			const w = svg.width;
+			const h = svg.height;
+			const body = Bodies.rectangle(x, y, w, h, {
+				restitution: 1,
+				friction: 0.8,
+				render: {
+					sprite: {
+						texture: svg.url,
+						yScale: 1,
+						xScale: 1,
+					},
+				},
+			});
 			Composite.add(world, body);
 		});
 	};
@@ -309,8 +323,11 @@ const Puzzle: React.FC = () => {
 						className="border w-full h-full"
 					/>
 					<div className="reference-image absolute w-full h-full left-0 top-0 -z-1 flex justify-center items-center">
-						<FullLogo />
+						<div ref={refImageRef}>
+							<FullLogo />
+						</div>
 					</div>
+					{/* <div className="guide w-4 h-4 absolute bg-military top-[189.5px] left-[226px]"></div> */}
 				</div>
 			</div>
 			<Button label="Reset" onClick={resetPieces} />
