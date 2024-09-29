@@ -24,12 +24,13 @@ interface PuzzlePiece {
 		bottomLeft: { x: number; y: number };
 		topRight: { x: number; y: number };
 	};
+	symmetrical?: boolean;
 }
 
 const Puzzle: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const engineRef = useRef<Engine>(Engine.create());
-	const [restart, setRestart] = useState(false);
+	const [restart, setRestart] = useState<boolean>(false);
 
 	/**
 	 * Puzzle pieces
@@ -44,6 +45,7 @@ const Puzzle: React.FC = () => {
 				bottomLeft: { x: 0, y: 53 },
 				topRight: { x: 249, y: 0 },
 			},
+			symmetrical: true,
 		},
 		{
 			id: 2,
@@ -74,6 +76,7 @@ const Puzzle: React.FC = () => {
 				bottomLeft: { x: 0, y: 214 },
 				topRight: { x: 249, y: 171 },
 			},
+			symmetrical: true,
 		},
 		{
 			id: 5,
@@ -91,6 +94,7 @@ const Puzzle: React.FC = () => {
 	 * On first render (init game)
 	 */
 	useEffect(() => {
+		setRestart(false);
 		// Define canvas + engine and check that they exist
 		const canvas = canvasRef.current;
 		if (!canvas) return;
@@ -120,20 +124,12 @@ const Puzzle: React.FC = () => {
 		addWalls(world, canvasWidth, canvasHeight);
 		addShapes(world, canvasWidth, canvasHeight);
 
-		// Mouse
-		const mouse = Mouse.create(canvas);
-		const mouseConstraint = MouseConstraint.create(engine, {
-			mouse: mouse,
-			constraint: {
-				stiffness: 0.2,
-				render: {
-					visible: false,
-				},
-			},
-		});
-
-		// Add mouse constraint to the world
-		Composite.add(world, mouseConstraint);
+		// Initial state (pieces in place)
+		setInitialState(engine);
+		// Interactive state (gravity activated, pieces fall down)
+		setTimeout(() => {
+			setInteractiveState(canvas, engine, world);
+		}, 1500);
 
 		// Run the engine and render
 		Render.run(render);
@@ -142,7 +138,7 @@ const Puzzle: React.FC = () => {
 
 		// Listen to resize
 		const onResize = throttle(() => {
-			resizeCanvas(render, engine.world);
+			resizeCanvas(render, world);
 		}, 1000);
 		window.addEventListener("resize", onResize);
 
@@ -157,65 +153,99 @@ const Puzzle: React.FC = () => {
 	}, [restart]);
 
 	/**
+	 * Set initial state
+	 */
+	const setInitialState = (engine: Engine) => {
+		engine.gravity.y = 0;
+	};
+
+	/**
+	 * Set interactive state
+	 */
+	const setInteractiveState = (
+		canvas: HTMLCanvasElement,
+		engine: Engine,
+		world: World
+	) => {
+		engine.gravity.y = 1;
+
+		// Mouse
+		const mouse = Mouse.create(canvas);
+		const mouseConstraint = MouseConstraint.create(engine, {
+			mouse: mouse,
+			constraint: {
+				stiffness: 0.2,
+				render: {
+					visible: false,
+				},
+			},
+		});
+		// Add mouse constraint to the world
+		Composite.add(world, mouseConstraint);
+	};
+
+	/**
 	 * Add walls
 	 */
-	const addWalls = useCallback(
-		(world: World, canvasWidth: number, canvasHeight: number) => {
-			const wallThickness = 5;
-			const yZero = canvasHeight / 2;
-			const xZero = canvasWidth / 2;
-			const wallDefs: [number, number, number, number][] = [
-				[xZero, 0, canvasWidth, wallThickness],
-				[canvasWidth, yZero, wallThickness, canvasHeight],
-				[xZero, canvasHeight, canvasWidth, wallThickness],
-				[0, yZero, wallThickness, canvasHeight],
-			];
-			wallDefs.forEach((wallDef) => {
-				Composite.add(
-					world,
-					Bodies.rectangle(...wallDef, {
-						isStatic: true,
-						render: {
-							fillStyle: "#5EFC5B",
-							// lineWidth: 1,
-							strokeStyle: "white",
-							visible: true,
-						},
-					})
-				);
-			});
-		},
-		[]
-	);
+	const addWalls = (
+		world: World,
+		canvasWidth: number,
+		canvasHeight: number
+	) => {
+		const wallThickness = 5;
+		const yZero = canvasHeight / 2;
+		const xZero = canvasWidth / 2;
+		const wallDefs: [number, number, number, number][] = [
+			[xZero, 0, canvasWidth, wallThickness],
+			[canvasWidth, yZero, wallThickness, canvasHeight],
+			[xZero, canvasHeight, canvasWidth, wallThickness],
+			[0, yZero, wallThickness, canvasHeight],
+		];
+		wallDefs.forEach((wallDef) => {
+			Composite.add(
+				world,
+				Bodies.rectangle(...wallDef, {
+					isStatic: true,
+					render: {
+						fillStyle: "#5EFC5B",
+						// lineWidth: 1,
+						strokeStyle: "white",
+						visible: true,
+					},
+				})
+			);
+		});
+	};
 
 	/**
 	 * Add shapes
 	 */
-	const addShapes = useCallback(
-		(world: World, canvasWidth: number, canvasHeight: number) => {
-			svgs.forEach((svg) => {
-				const body = Bodies.rectangle(
-					canvasWidth / 2,
-					canvasHeight / 2,
-					svg.width,
-					svg.height,
-					{
-						restitution: 1,
-						friction: 0.8,
-						render: {
-							sprite: {
-								texture: svg.url,
-								yScale: 1,
-								xScale: 1,
-							},
+	const addShapes = (
+		world: World,
+		canvasWidth: number,
+		canvasHeight: number
+	) => {
+		svgs.forEach((svg) => {
+			const body = Bodies.rectangle(
+				canvasWidth / 2,
+				canvasHeight / 2,
+				svg.width,
+				svg.height,
+				{
+					restitution: 1,
+					friction: 0.8,
+					render: {
+						sprite: {
+							texture: svg.url,
+							yScale: 1,
+							xScale: 1,
 						},
-					}
-				);
-				Composite.add(world, body);
-			});
-		},
-		[]
-	);
+					},
+				}
+			);
+			Composite.add(world, body);
+		});
+	};
 
 	/**
 	 * Reset pieces
