@@ -15,13 +15,80 @@ import {
 import { throttle } from "lodash";
 import Button from "@/components/ui/Button";
 
+interface PuzzlePiece {
+	id: number;
+	url: string;
+	width: number;
+	height: number;
+	steeringCoords: {
+		bottomLeft: { x: number; y: number };
+		topRight: { x: number; y: number };
+	};
+}
+
 const Puzzle: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const engineRef = useRef<Engine>(Engine.create());
 	const [restart, setRestart] = useState(false);
 
 	/**
-	 * On first render
+	 * Puzzle pieces
+	 */
+	const svgs: PuzzlePiece[] = [
+		{
+			id: 1,
+			url: "/static/images/puzzle/piece_1_4.svg",
+			width: 249,
+			height: 53,
+			steeringCoords: {
+				bottomLeft: { x: 0, y: 53 },
+				topRight: { x: 249, y: 0 },
+			},
+		},
+		{
+			id: 2,
+			url: "/static/images/puzzle/piece_2.svg",
+			width: 300,
+			height: 134,
+			steeringCoords: {
+				bottomLeft: { x: 300, y: 133.5 },
+				topRight: { x: 600, y: 0 },
+			},
+		},
+		{
+			id: 3,
+			url: "/static/images/puzzle/piece_3.svg",
+			width: 300,
+			height: 54,
+			steeringCoords: {
+				bottomLeft: { x: 0, y: 133.5 },
+				topRight: { x: 300, y: 90.5 },
+			},
+		},
+		{
+			id: 4,
+			url: "/static/images/puzzle/piece_1_4.svg",
+			width: 249,
+			height: 53,
+			steeringCoords: {
+				bottomLeft: { x: 0, y: 214 },
+				topRight: { x: 249, y: 171 },
+			},
+		},
+		{
+			id: 5,
+			url: "/static/images/puzzle/piece_5.svg",
+			width: 246,
+			height: 69,
+			steeringCoords: {
+				bottomLeft: { x: 354, y: 214 },
+				topRight: { x: 600, y: 145 },
+			},
+		},
+	];
+
+	/**
+	 * On first render (init game)
 	 */
 	useEffect(() => {
 		// Define canvas + engine and check that they exist
@@ -126,13 +193,6 @@ const Puzzle: React.FC = () => {
 	 */
 	const addShapes = useCallback(
 		(world: World, canvasWidth: number, canvasHeight: number) => {
-			const svgs = [
-				{ url: "/static/images/puzzle/piece_1_4.svg", width: 249, height: 53 },
-				{ url: "/static/images/puzzle/piece_2.svg", width: 300, height: 134 },
-				{ url: "/static/images/puzzle/piece_3.svg", width: 300, height: 54 },
-				{ url: "/static/images/puzzle/piece_1_4.svg", width: 249, height: 53 },
-				{ url: "/static/images/puzzle/piece_5.svg", width: 246, height: 69 },
-			];
 			svgs.forEach((svg) => {
 				const body = Bodies.rectangle(
 					canvasWidth / 2,
