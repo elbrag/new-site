@@ -35,7 +35,7 @@ const Input: React.FC<InputProps> = ({
 	};
 
 	return (
-		<label className={`w-full block ${className}`}>
+		<label className={`w-full text-left block ${className}`}>
 			<div className="mb-1.5 font-alegreya uppercase">{label}</div>
 			<input
 				id={id}

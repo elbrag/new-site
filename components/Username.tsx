@@ -66,14 +66,14 @@ export default function Username() {
 			<AnimatePresence>
 				{showModal && (
 					<Modal onClose={() => setShowModal(false)} motionKey="username-modal">
-						<h2 className="text-xl lg:text-2xl mb-10 uppercase">
+						<h2 className="text-xl lg:text-2xl mb-6 lg:mb-10 uppercase">
 							Update username
 						</h2>
 						<form onSubmit={(e) => e.preventDefault()}>
 							<Input
 								id="username"
 								label="Username"
-								className="mb-10"
+								className="mb-8 lg:mb-10"
 								value={inputValue}
 								onChange={(e) => {
 									setInputValue(e.target.value);

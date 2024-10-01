@@ -18,14 +18,14 @@ const Modal: React.FC<ModalProps> = ({
 			{/* Modal container */}
 			<motion.div
 				key={motionKey}
-				className="relative"
+				className="relative max-w-[calc(100vw-1rem)]"
 				initial={{ rotate: -10, scale: 0 }}
 				animate={{ rotate: 0, scale: 1 }}
 				exit={{ rotate: -10, scale: 0 }}
 				transition={{ duration: 0.5 }}
 			>
 				<div
-					className={`bg-paper py-4 px-6 lg:py-8 lg:px-12 w-screen max-w-144 flex flex-col items-center rounded-xl z-1 ${className}`}
+					className={`bg-paper p-4 lg:py-8 lg:px-12 w-screen max-w-full md:max-w-144 flex flex-col items-center rounded-xl z-1 text-center ${className}`}
 				>
 					{/* Content */}
 					{children}

@@ -299,13 +299,13 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 						{modalCardContent && (
 							<Modal
 								onClose={onModalClose}
-								className="overflow-hidden max-w-184"
+								className="overflow-hidden md:max-w-184"
 								motionKey="memory-modal"
 							>
-								<h2 className="text-xl lg:text-2xl mb-10 uppercase">
+								<h2 className="text-xl lg:text-2xl mb-6 lg:mb-10 uppercase">
 									It&apos;s a match!
 								</h2>
-								<div className="mb-6 flex flex-col justify-center">
+								<div className="mb-6 flex flex-col justify-center max-w-full">
 									<h3 className="mb-8 text-center">
 										{modalCardContent.description}
 									</h3>
