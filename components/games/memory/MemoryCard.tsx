@@ -19,7 +19,7 @@ const MemoryCard: React.FC<MemoryCardProps> = ({
 	return (
 		<a
 			onClick={onClick}
-			className={`w-32 h-44 md:w-36 md:h-52 block cursor-pointer m-auto ${className}`}
+			className={`w-32 sm:w-36 lg:w-40 aspect-9/13 block cursor-pointer m-auto ${className}`}
 			style={{ perspective: "1000px" }}
 		>
 			<div className="relative h-full w-full">

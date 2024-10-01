@@ -3,6 +3,7 @@
 const distances = {
 	18: "4.5rem",
 	19: "4.75rem",
+	34: "8.5rem",
 	128: "32rem",
 	144: "36rem",
 	184: "46rem",
@@ -128,6 +129,9 @@ module.exports = {
 				...distances,
 			},
 			minHeight: { ...distances },
+			aspectRatio: {
+				"9/13": "9 / 13",
+			},
 			textUnderlineOffset: { 3: "3px", 5: "5px" },
 			screens: {
 				xs: "480px",

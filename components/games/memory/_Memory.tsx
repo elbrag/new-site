@@ -248,14 +248,14 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	}
 
 	return (
-		<div>
+		<div className="flex justify-center">
 			{readyToRenderGame && (
 				<>
 					{/* Cards */}
 					{cardCount && (
 						<AnimatePresence>
 							<motion.div
-								className="md:px-6 lg:px-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center"
+								className="inline-grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center"
 								initial={{
 									opacity: 0,
 								}}
