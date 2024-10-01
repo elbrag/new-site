@@ -351,7 +351,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 
 export default Memory;
 
-const StyledCardGrid = styled.ul<{
+export const StyledCardGrid = styled.ul<{
 	$numberOfCards: number;
 }>`
 	grid-template-columns: repeat(

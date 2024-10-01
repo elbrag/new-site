@@ -4,6 +4,7 @@ import MemoryRevealedImage from "./MemoryRevealedImage";
 import { createRandomRotationsArray } from "@/lib/helpers/effects";
 import { wellDoneHeading } from "@/lib/helpers/messages";
 import { motion } from "framer-motion";
+import { StyledCardGrid } from "./_Memory";
 
 interface FoundCardsProps {
 	cardData: MemoryRoundProps[];
@@ -33,8 +34,9 @@ const FoundCards: React.FC<FoundCardsProps> = ({ cardData }) => {
 				<div key={`card-list-${i}`}>
 					<h3 className="text-base mb-8">{data.description}</h3>
 					<div className="flex justify-center mb-20">
-						<ul
-							className={`relative mx-auto h-44 md:h-52 grid place-items-center grid-cols-${data.images.length}`}
+						<StyledCardGrid
+							$numberOfCards={data.images.length}
+							className={`relative mx-auto h-fit grid place-items-center`}
 						>
 							{data.images.map((image, ii) => {
 								const rotation = rotationValues[(ii + 1) * i];
@@ -42,8 +44,8 @@ const FoundCards: React.FC<FoundCardsProps> = ({ cardData }) => {
 								return (
 									<li
 										key={`card-${ii}`}
-										className={`w-44 h-inherit flex justify-center ${
-											ii === 0 ? "z-1" : "absolute left-0 z-0"
+										className={`w-36 md:w-44 h-inherit flex justify-center ${
+											ii === 0 ? "z-1" : "sm:absolute left-0 z-0"
 										}`}
 									>
 										<MemoryRevealedImage
@@ -54,7 +56,7 @@ const FoundCards: React.FC<FoundCardsProps> = ({ cardData }) => {
 									</li>
 								);
 							})}
-						</ul>
+						</StyledCardGrid>
 					</div>
 				</div>
 			))}
