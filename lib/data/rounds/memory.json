@@ -120,7 +120,7 @@
     },
     {
         "roundId": 8,
-        "description": "I love spending quality time outside.",
+        "description": "I love spending time outside.",
         "images": [
             {
                 "url": "waterfall",
@@ -134,9 +134,6 @@
             },
             {
                 "url": "stump"
-            },
-            {
-                "url": "snack"
             },
             {
                 "url": "archery"

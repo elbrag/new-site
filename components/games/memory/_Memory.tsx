@@ -23,6 +23,7 @@ import { RoundContext } from "@/context/RoundContext";
 import FoundCards from "./FoundCards";
 import MemoryRevealedImage from "./MemoryRevealedImage";
 import { uniqBy } from "lodash";
+import styled from "styled-components";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -299,32 +300,30 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 						{modalCardContent && (
 							<Modal
 								onClose={onModalClose}
-								className="overflow-hidden md:max-w-184"
+								className="overflow-hidden md:max-w-200"
 								motionKey="memory-modal"
 							>
 								<h2 className="text-xl lg:text-2xl mb-6 lg:mb-10 uppercase">
 									It&apos;s a match!
 								</h2>
 								<div className="mb-6 flex flex-col justify-center max-w-full">
-									<h3 className="mb-8 text-center">
-										{modalCardContent.description}
-									</h3>
-									<p>
-										{modalCardContent.subtitle && modalCardContent.subtitle}
-									</p>
-									<ul
-										className={`relative mx-auto h-44 md:h-52 grid place-items-center grid-cols-${modalCardContent?.images.length}`}
-										style={{
-											gridTemplateColumns: `repeat(${modalCardContent?.images.length}, 11rem)`,
-										}}
+									<div className="mb-8 text-center">
+										<h3>{modalCardContent.description}</h3>
+										{modalCardContent.subtitle && (
+											<p>{modalCardContent.subtitle}</p>
+										)}
+									</div>
+									<StyledCardGrid
+										$numberOfCards={modalCardContent?.images.length}
+										className="relative mx-auto grid place-items-center grid-rows-[auto] md:grid-rows-1 max-w-full h-fit"
 									>
 										<AnimatePresence>
 											{modalCardContent?.images.map((image, i) => {
 												const rotation = rotationValues[i];
 												return (
 													<li
-														className={`w-44 h-inherit flex justify-center ${
-															i === 0 ? "z-1" : "absolute left-0 z-0"
+														className={`w-36 md:w-44 h-inherit flex justify-center ${
+															i === 0 ? "z-1" : "md:absolute left-0 z-0"
 														}`}
 														key={`found-img-li-${i}`}
 													>
@@ -338,7 +337,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 												);
 											})}
 										</AnimatePresence>
-									</ul>
+									</StyledCardGrid>
 								</div>
 							</Modal>
 						)}
@@ -350,3 +349,15 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 };
 
 export default Memory;
+
+const StyledCardGrid = styled.ul<{
+	$numberOfCards: number;
+}>`
+	grid-template-columns: repeat(2, 9rem);
+	@media (min-width: 640px) {
+		grid-template-columns: repeat(
+			${(props) => `${props.$numberOfCards}`},
+			11rem
+		);
+	}
+`;

@@ -1,7 +1,9 @@
 import { MemoryRoundProps } from "@/lib/types/rounds";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { throttle } from "lodash";
 
 interface MemoryRevealedImageProps {
 	imgUrl: string;
@@ -18,10 +20,29 @@ const MemoryRevealedImage: React.FC<MemoryRevealedImageProps> = ({
 	index,
 	rotation,
 }) => {
+	const [screenWidth, setScreenWidth] = useState(0);
+
+	useEffect(() => {
+		if (!window) return;
+
+		const _setScreenWidth = throttle(() => {
+			setScreenWidth(window.innerWidth);
+			console.log(screenWidth);
+		}, 1000);
+
+		_setScreenWidth();
+
+		window.addEventListener("resize", _setScreenWidth);
+
+		return () => {
+			window.removeEventListener("resize", _setScreenWidth);
+		};
+	}, []);
+
 	return (
 		<motion.div
 			key={`found-img-container-${index}`}
-			className={`w-32 md:w-36 h-inherit rounded-md overflow-hidden ${className}`}
+			className={`w-32 sm:w-36 lg:w-40 aspect-9/13 rounded-md overflow-hidden ${className}`}
 			initial={{
 				rotateZ: 0,
 				x: 0,
@@ -29,7 +50,7 @@ const MemoryRevealedImage: React.FC<MemoryRevealedImageProps> = ({
 			}}
 			animate={{
 				rotateZ: rotation,
-				x: `calc(11rem * ${index})`,
+				x: screenWidth > 640 ? `calc(11rem * ${index})` : 0,
 				transformOrigin: "50% 50%",
 			}}
 			transition={{
