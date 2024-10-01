@@ -303,11 +303,11 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 								className="overflow-hidden md:max-w-200"
 								motionKey="memory-modal"
 							>
-								<h2 className="text-xl lg:text-2xl mb-6 lg:mb-10 uppercase">
+								<h2 className="text-xl lg:text-2xl mb-6 lg:mb-8 uppercase">
 									It&apos;s a match!
 								</h2>
 								<div className="mb-6 flex flex-col justify-center max-w-full">
-									<div className="mb-8 text-center">
+									<div className="mb-8 lg:mb-10 text-center">
 										<h3>{modalCardContent.description}</h3>
 										{modalCardContent.subtitle && (
 											<p>{modalCardContent.subtitle}</p>
@@ -319,11 +319,12 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 									>
 										<AnimatePresence>
 											{modalCardContent?.images.map((image, i) => {
-												const rotation = rotationValues[i];
+												const rotation =
+													rotationValues[modalCardContent?.roundId + i];
 												return (
 													<li
 														className={`w-36 md:w-44 h-inherit flex justify-center ${
-															i === 0 ? "z-1" : "md:absolute left-0 z-0"
+															i === 0 ? "z-1" : "sm:absolute left-0 z-0"
 														}`}
 														key={`found-img-li-${i}`}
 													>
@@ -353,8 +354,17 @@ export default Memory;
 const StyledCardGrid = styled.ul<{
 	$numberOfCards: number;
 }>`
-	grid-template-columns: repeat(2, 9rem);
+	grid-template-columns: repeat(
+		${(props) => `${props.$numberOfCards === 1 ? "1" : "2"}`},
+		9rem
+	);
 	@media (min-width: 640px) {
+		grid-template-columns: repeat(
+			${(props) => `${props.$numberOfCards}`},
+			9rem
+		);
+	}
+	@media (min-width: 768px) {
 		grid-template-columns: repeat(
 			${(props) => `${props.$numberOfCards}`},
 			11rem

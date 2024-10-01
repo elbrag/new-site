@@ -1,8 +1,6 @@
-import { MemoryRoundProps } from "@/lib/types/rounds";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 import { throttle } from "lodash";
 
 interface MemoryRevealedImageProps {
@@ -42,7 +40,7 @@ const MemoryRevealedImage: React.FC<MemoryRevealedImageProps> = ({
 	return (
 		<motion.div
 			key={`found-img-container-${index}`}
-			className={`w-32 sm:w-36 lg:w-40 aspect-9/13 rounded-md overflow-hidden ${className}`}
+			className={`w-32 lg:w-40 aspect-9/13 rounded-md overflow-hidden ${className}`}
 			initial={{
 				rotateZ: 0,
 				x: 0,
@@ -50,7 +48,10 @@ const MemoryRevealedImage: React.FC<MemoryRevealedImageProps> = ({
 			}}
 			animate={{
 				rotateZ: rotation,
-				x: screenWidth > 640 ? `calc(11rem * ${index})` : 0,
+				x:
+					screenWidth >= 640
+						? `calc(${screenWidth < 768 ? "9rem" : "11rem"} * ${index})`
+						: 0,
 				transformOrigin: "50% 50%",
 			}}
 			transition={{
