@@ -14,8 +14,89 @@
     },
     {
         "roundId": 2,
-        "description": "I walk a lot and in all weathers.",
-        "subtitle": "(It keeps my developer body somewhat healthy.)",
+        "description": "Much of my life revolves around food and drink, and I enjoy cooking. Sometimes I make mead, too.",
+        "images": [
+            {
+                "url": "tartare",
+                "slotIndexes": [
+                    2,
+                    5
+                ]
+            },
+            {
+                "url": "sashimi"
+            },
+            {
+                "url": "mussels"
+            },
+            {
+                "url": "mead"
+            }
+        ]
+    },
+    {
+        "roundId": 3,
+        "description": "Home is where the heart is. I live in Gothenburg, but I truly belong in my remote log cabin. It always needs work though.",
+        "images": [
+            {
+                "url": "deck",
+                "slotIndexes": [
+                    1,
+                    14
+                ]
+            },
+            {
+                "url": "logs"
+            },
+            {
+                "url": "scraping"
+            }
+        ]
+    },
+    {
+        "roundId": 4,
+        "description": "I have sheep, a cat, and once there was a jackdaw in our chimney.",
+        "images": [
+            {
+                "url": "valka",
+                "slotIndexes": [
+                    8,
+                    11
+                ]
+            },
+            {
+                "url": "öyjwin"
+            },
+            {
+                "url": "jackdaw"
+            }
+        ]
+    },
+    {
+        "roundId": 5,
+        "description": "I love spending time with my friends. Nothing like it.",
+        "images": [
+            {
+                "url": "bbq",
+                "slotIndexes": [
+                    4,
+                    6
+                ]
+            },
+            {
+                "url": "lanterns"
+            },
+            {
+                "url": "anders_julia"
+            },
+            {
+                "url": "party"
+            }
+        ]
+    },
+    {
+        "roundId": 6,
+        "description": "I do plenty of walking, almost no matter the weather. It keeps my developer body somewhat healthy.",
         "images": [
             {
                 "url": "winter_walk",
@@ -30,40 +111,8 @@
         ]
     },
     {
-        "roundId": 3,
-        "description": "I cook, bake, and sometimes I make mead.",
-        "images": [
-            {
-                "url": "tartare",
-                "slotIndexes": [
-                    2,
-                    5
-                ]
-            },
-            {
-                "url": "mead"
-            }
-        ]
-    },
-    {
-        "roundId": 4,
-        "description": "I'm always up for a drink in good company.",
-        "images": [
-            {
-                "url": "beer",
-                "slotIndexes": [
-                    0,
-                    16
-                ]
-            },
-            {
-                "url": "wine_hearth"
-            }
-        ]
-    },
-    {
-        "roundId": 5,
-        "description": "I enjoy historical and cultural experiences.",
+        "roundId": 7,
+        "description": "I like historical and cultural experiences. It's a good reason to travel, too.",
         "images": [
             {
                 "url": "stavechurch",
@@ -73,54 +122,19 @@
                 ]
             },
             {
+                "url": "ercolano"
+            },
+            {
                 "url": "wardruna"
-            }
-        ]
-    },
-    {
-        "roundId": 6,
-        "description": "I spend most of my spare time in my log cabin. It's in a constant state of renovation.",
-        "images": [
-            {
-                "url": "deck",
-                "slotIndexes": [
-                    1,
-                    14
-                ]
             },
             {
-                "url": "chopping_block"
-            },
-            {
-                "url": "logs"
-            }
-        ]
-    },
-    {
-        "roundId": 7,
-        "description": "There are some animals in my life.",
-        "images": [
-            {
-                "url": "rune_fire",
-                "slotIndexes": [
-                    8,
-                    11
-                ]
-            },
-            {
-                "url": "ankan"
-            },
-            {
-                "url": "öyjwin"
-            },
-            {
-                "url": "valka"
+                "url": "rok"
             }
         ]
     },
     {
         "roundId": 8,
-        "description": "I love spending time outside.",
+        "description": "Spending time outside is crucial when you have nerdic tendensies. So I do some of this.",
         "images": [
             {
                 "url": "waterfall",
@@ -133,29 +147,23 @@
                 "url": "cairn"
             },
             {
-                "url": "stump"
+                "url": "archery"
             },
             {
-                "url": "archery"
+                "url": "island"
             }
         ]
     },
     {
         "roundId": 9,
-        "description": "Who doesn't love a good time with friends?",
+        "description": "I have always been drawn to fantasy/mythology stories. I prefer computer games on that theme, and I have been pretty far down the Tolkien rabbit hole.",
         "images": [
             {
-                "url": "bbq",
+                "url": "",
                 "slotIndexes": [
-                    4,
-                    6
+                    0,
+                    16
                 ]
-            },
-            {
-                "url": "lanterns"
-            },
-            {
-                "url": "anders_julia"
             }
         ]
     }
