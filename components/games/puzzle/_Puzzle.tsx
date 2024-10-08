@@ -11,6 +11,7 @@ import {
 	Mouse,
 	MouseConstraint,
 	Body,
+	Events,
 } from "matter-js";
 import { throttle } from "lodash";
 import Button from "@/components/ui/Button";
@@ -131,9 +132,13 @@ const Puzzle: React.FC = () => {
 
 		// Initial state (pieces in place)
 		setInitialState(engine);
+
+		let removeDragEvent: (() => void) | undefined;
+
 		// Interactive state (gravity activated, pieces fall down)
 		setTimeout(() => {
-			setInteractiveState(canvas, engine, world);
+			const interactiveStateResult = setInteractiveState(canvas, engine, world);
+			removeDragEvent = interactiveStateResult.removeEvent;
 		}, 1500);
 
 		// Run the engine and render
@@ -141,7 +146,7 @@ const Puzzle: React.FC = () => {
 		const runner = Runner.create();
 		Runner.run(runner, engine);
 
-		// Listen to resize
+		// Event listener: resize
 		const onResize = throttle(() => {
 			resizeCanvas(render, world);
 		}, 1000);
@@ -152,6 +157,9 @@ const Puzzle: React.FC = () => {
 			Composite.clear(world, false);
 			Engine.clear(engine);
 			Render.stop(render);
+			if (removeDragEvent) {
+				removeDragEvent();
+			}
 			window.removeEventListener("resize", onResize);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -171,7 +179,9 @@ const Puzzle: React.FC = () => {
 		canvas: HTMLCanvasElement,
 		engine: Engine,
 		world: World
-	) => {
+	): {
+		removeEvent: () => void;
+	} => {
 		engine.gravity.y = 1;
 
 		// Mouse
@@ -187,6 +197,42 @@ const Puzzle: React.FC = () => {
 		});
 		// Add mouse constraint to the world
 		Composite.add(world, mouseConstraint);
+
+		/**
+		 * Handle mouse move
+		 */
+		const handleMouseMove = throttle(() => {
+			if (mouseConstraint.body) {
+				const draggedPiece = mouseConstraint.body;
+				const draggedPiecePosition = draggedPiece.position;
+
+				// Dimensions
+				const width = draggedPiece.bounds.max.x - draggedPiece.bounds.min.x;
+				const height = draggedPiece.bounds.max.y - draggedPiece.bounds.min.y;
+
+				// Get corners
+				const bottomLeft = {
+					x: draggedPiecePosition.x - width / 2,
+					y: draggedPiecePosition.y + height / 2,
+				};
+				const topRight = {
+					x: draggedPiecePosition.x + width / 2,
+					y: draggedPiecePosition.y - height / 2,
+				};
+
+				console.log("Bottom Left Corner: ", bottomLeft);
+				console.log("Top Right Corner: ", topRight);
+			}
+		}, 600);
+
+		// Event listener: track the dragging coords
+		Events.on(mouseConstraint, "mousemove", handleMouseMove);
+
+		// Remove event, return to be used along with other cleanups
+		return {
+			removeEvent: () =>
+				Events.off(mouseConstraint, "mousemove", handleMouseMove),
+		};
 	};
 
 	/**
@@ -234,7 +280,7 @@ const Puzzle: React.FC = () => {
 	) => {
 		const imageStartX = (canvasWidth - refImgWidth) / 2;
 		const imageStartY = (canvasHeight - refImgHeight) / 2;
-		// console.log(imageStartX, imageStartY);
+
 		svgs.forEach((svg, i) => {
 			// if (i === 0)
 			console.log(
