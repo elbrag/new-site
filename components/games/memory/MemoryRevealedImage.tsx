@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { throttle } from "lodash";
+import { makeMemoryImgUrl } from "@/lib/helpers/images";
 
 interface MemoryRevealedImageProps {
 	imgUrl: string;
@@ -25,7 +26,6 @@ const MemoryRevealedImage: React.FC<MemoryRevealedImageProps> = ({
 
 		const _setScreenWidth = throttle(() => {
 			setScreenWidth(window.innerWidth);
-			console.log(screenWidth);
 		}, 1000);
 
 		_setScreenWidth();
@@ -62,7 +62,7 @@ const MemoryRevealedImage: React.FC<MemoryRevealedImageProps> = ({
 		>
 			<Image
 				className="min-h-full object-cover"
-				src={`/static/images/memory/${imgUrl}.jpg`}
+				src={makeMemoryImgUrl(imgUrl)}
 				alt=""
 				width={500}
 				height={500}

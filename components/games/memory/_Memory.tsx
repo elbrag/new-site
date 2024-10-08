@@ -24,6 +24,7 @@ import FoundCards from "./FoundCards";
 import MemoryRevealedImage from "./MemoryRevealedImage";
 import { uniqBy } from "lodash";
 import styled from "styled-components";
+import { makeMemoryImgUrl, preloadImage } from "@/lib/helpers/images";
 
 interface MemoryProps {
 	gameData: MemoryGameData;
@@ -113,6 +114,17 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	}, [progress]);
 
 	/**
+	 * On modal card content update, preload images
+	 */
+	useEffect(() => {
+		if (modalCardContent) {
+			modalCardContent.images.forEach((image) => {
+				preloadImage(makeMemoryImgUrl(image.url));
+			});
+		}
+	}, [modalCardContent]);
+
+	/**
 	 * Match watcher
 	 */
 	useEffect(() => {
@@ -158,9 +170,14 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	 * Flip card
 	 */
 	const activateCard = async (number: 1 | 2, index: number) => {
-		const _cardData = await fetchGameData(GameName.Memory, "POST", {
-			cardIndex: index,
-		});
+		const _cardData: MemoryRoundProps = await fetchGameData(
+			GameName.Memory,
+			"POST",
+			{
+				cardIndex: index,
+			}
+		);
+		preloadImage(makeMemoryImgUrl(_cardData.images[0].url));
 		setTimeout(() => {
 			number === 1 ? setCard1Data(_cardData) : setCard2Data(_cardData);
 			number === 1 ? setActiveCard1(index) : setActiveCard2(index);

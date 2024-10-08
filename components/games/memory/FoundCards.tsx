@@ -1,10 +1,11 @@
 import { MemoryRoundProps } from "@/lib/types/rounds";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import MemoryRevealedImage from "./MemoryRevealedImage";
 import { createRandomRotationsArray } from "@/lib/helpers/effects";
 import { wellDoneHeading } from "@/lib/helpers/messages";
 import { motion } from "framer-motion";
 import { StyledCardGrid } from "./_Memory";
+import { makeMemoryImgUrl, preloadImage } from "@/lib/helpers/images";
 
 interface FoundCardsProps {
 	cardData: MemoryRoundProps[];
@@ -16,6 +17,17 @@ const FoundCards: React.FC<FoundCardsProps> = ({ cardData }) => {
 		const rotations = createRandomRotationsArray();
 		return rotations;
 	}, []);
+
+	/**
+	 * Preload images
+	 */
+	useEffect(() => {
+		cardData.forEach((data) => {
+			data.images.forEach((image) => {
+				preloadImage(makeMemoryImgUrl(image.url));
+			});
+		});
+	}, [cardData]);
 
 	cardData = cardData.sort((a, b) => a.roundId - b.roundId);
 
