@@ -29,14 +29,21 @@ const FoundCards: React.FC<FoundCardsProps> = ({ cardData }) => {
 				ease: "easeInOut",
 			}}
 		>
-			<h2 className="font-alegreya lg:text-lg mb-12">{wellDoneHeading}</h2>
+			<h2 className="font-alegreya lg:text-lg mb-12 lg:mb-16">
+				{wellDoneHeading}
+			</h2>
 			{cardData.map((data, i) => (
 				<div key={`card-list-${i}`}>
-					<h3 className="text-base mb-8">{data.description}</h3>
+					<div className="mb-8">
+						<h3 className="text-base">{data.description}</h3>
+						{data.subtitle && (
+							<p className="font-alegreya mt-2">{data.subtitle}</p>
+						)}
+					</div>
 					<div className="flex justify-center mb-20">
 						<StyledCardGrid
 							$numberOfCards={data.images.length}
-							className={`relative mx-auto h-fit grid place-items-center`}
+							className={`relative mx-auto h-fit grid place-items-center gap-2 sm:gap-0`}
 						>
 							{data.images.map((image, ii) => {
 								const rotation = rotationValues[(ii + 1) * i];

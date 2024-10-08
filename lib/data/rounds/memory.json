@@ -14,20 +14,21 @@
     },
     {
         "roundId": 2,
-        "description": "Much of my life revolves around food and drink, and I enjoy cooking. Sometimes I make mead, too.",
+        "description": "Much of my life revolves around food and drink, and I enjoy cooking.",
+        "subtitle": "Sometimes I make mead, too.",
         "images": [
             {
-                "url": "tartare",
+                "url": "mussels",
                 "slotIndexes": [
                     2,
                     5
                 ]
             },
             {
-                "url": "sashimi"
+                "url": "tartare"
             },
             {
-                "url": "mussels"
+                "url": "sashimi"
             },
             {
                 "url": "mead"
@@ -36,7 +37,8 @@
     },
     {
         "roundId": 3,
-        "description": "Home is where the heart is. I live in Gothenburg, but I truly belong in my remote log cabin. It always needs work though.",
+        "description": "Home is where the heart is.",
+        "subtitle": "I live in Gothenburg, but I truly belong in my remote log cabin. It always needs work though.",
         "images": [
             {
                 "url": "deck",
@@ -74,7 +76,8 @@
     },
     {
         "roundId": 5,
-        "description": "I love spending time with my friends. Nothing like it.",
+        "description": "I love spending time with my friends.",
+        "subtitle": "Nothing like it.",
         "images": [
             {
                 "url": "bbq",
@@ -96,7 +99,8 @@
     },
     {
         "roundId": 6,
-        "description": "I do plenty of walking, almost no matter the weather. It keeps my developer body somewhat healthy.",
+        "description": "I do plenty of walking, almost no matter the weather.",
+        "subtitle": "It keeps my developer body somewhat healthy.",
         "images": [
             {
                 "url": "winter_walk",
@@ -112,7 +116,8 @@
     },
     {
         "roundId": 7,
-        "description": "I like historical and cultural experiences. It's a good reason to travel, too.",
+        "description": "I like historical and cultural experiences.",
+        "subtitle": "It's a good reason to travel, too.",
         "images": [
             {
                 "url": "stavechurch",
@@ -134,7 +139,8 @@
     },
     {
         "roundId": 8,
-        "description": "Spending time outside is crucial when you have nerdic tendensies. So I do some of this.",
+        "description": "Spending time outside is crucial when you have nerdic tendensies.",
+        "subtitle": "So I do some of this.",
         "images": [
             {
                 "url": "waterfall",
@@ -156,14 +162,18 @@
     },
     {
         "roundId": 9,
-        "description": "I have always been drawn to fantasy/mythology stories. I prefer computer games on that theme, and I have been pretty far down the Tolkien rabbit hole.",
+        "description": "I have always been drawn to fantasy/mythology stories.",
+        "subtitle": "I prefer computer games on that theme, and I have been pretty far down the Tolkien rabbit hole.",
         "images": [
             {
-                "url": "",
+                "url": "archery",
                 "slotIndexes": [
                     0,
                     16
                 ]
+            },
+            {
+                "url": "archery"
             }
         ]
     }

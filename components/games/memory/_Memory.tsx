@@ -310,7 +310,9 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 									<div className="mb-8 lg:mb-10 text-center">
 										<h3>{modalCardContent.description}</h3>
 										{modalCardContent.subtitle && (
-											<p>{modalCardContent.subtitle}</p>
+											<p className="font-alegreya mt-1">
+												{modalCardContent.subtitle}
+											</p>
 										)}
 									</div>
 									<StyledCardGrid
