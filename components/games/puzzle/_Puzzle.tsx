@@ -31,6 +31,8 @@ interface PuzzlePiece {
 
 interface CustomMatterBody extends Body {
 	steeringCoords?: SteeringCoords;
+	originalWidth?: number;
+	originalHeight?: number;
 }
 
 const Puzzle: React.FC = () => {
@@ -38,6 +40,12 @@ const Puzzle: React.FC = () => {
 	const engineRef = useRef<Engine>(Engine.create());
 	const refImageRef = useRef<HTMLDivElement>(null);
 	const [restart, setRestart] = useState<boolean>(false);
+
+	const wallThickness = 5;
+
+	// Define collision categories
+	const wallCategory = 0x0001;
+	const pieceCategory = 0x0002;
 
 	/**
 	 * Puzzle pieces
@@ -220,13 +228,18 @@ const Puzzle: React.FC = () => {
 		const handleMouseMove = throttle(() => {
 			if (mouseConstraint.body) {
 				const draggedPiece: CustomMatterBody = mouseConstraint.body;
-				if (!draggedPiece.steeringCoords) return;
+				if (
+					!draggedPiece.steeringCoords ||
+					!draggedPiece.originalWidth ||
+					!draggedPiece.originalHeight
+				)
+					return;
 
 				const draggedPiecePosition = draggedPiece.position;
 
 				// Dimensions
-				const width = draggedPiece.bounds.max.x - draggedPiece.bounds.min.x;
-				const height = draggedPiece.bounds.max.y - draggedPiece.bounds.min.y;
+				const width = draggedPiece.originalWidth;
+				const height = draggedPiece.originalHeight;
 
 				// Get corners
 				const bottomLeftCurrent = {
@@ -248,6 +261,24 @@ const Puzzle: React.FC = () => {
 					y: imageStartY + draggedPiece.steeringCoords.topRight.y,
 				};
 
+				console.log(
+					"topRightCurrent.y:",
+					topRightCurrent.y,
+					"topRightTarget.y:",
+					topRightTarget.y,
+					"Difference:",
+					Math.abs(topRightCurrent.y - topRightTarget.y)
+				);
+
+				console.log(
+					"bottomLeftCurrent.y:",
+					bottomLeftCurrent.y,
+					"bottomLeftTarget.y:",
+					bottomLeftTarget.y,
+					"Difference:",
+					Math.abs(bottomLeftCurrent.y - bottomLeftTarget.y)
+				);
+
 				// Check if target coords match current coords by comparing corners, x and y
 				if (
 					checkIfCoordsAreWithinErrorMargin(
@@ -255,14 +286,14 @@ const Puzzle: React.FC = () => {
 						bottomLeftTarget.x
 					) &&
 					checkIfCoordsAreWithinErrorMargin(
+						bottomLeftCurrent.y,
+						bottomLeftTarget.y
+					) &&
+					checkIfCoordsAreWithinErrorMargin(
 						topRightCurrent.y,
 						topRightTarget.y
 					) &&
-					checkIfCoordsAreWithinErrorMargin(
-						topRightCurrent.x,
-						topRightTarget.x
-					) &&
-					checkIfCoordsAreWithinErrorMargin(topRightCurrent.y, topRightTarget.y)
+					checkIfCoordsAreWithinErrorMargin(topRightCurrent.x, topRightTarget.x)
 				) {
 					console.log("IT fits!");
 					draggedPiece.isStatic = true;
@@ -281,13 +312,13 @@ const Puzzle: React.FC = () => {
 	};
 
 	/**
-	 * Get value with error margin
+	 * Check if compared coord values are within error margin of each other
 	 */
 	const checkIfCoordsAreWithinErrorMargin = (
 		coordValue1: number,
 		coordValue2: number
 	): boolean => {
-		const errorMargin = 3;
+		const errorMargin = 5;
 
 		return Math.abs(coordValue1 - coordValue2) <= errorMargin;
 	};
@@ -300,7 +331,6 @@ const Puzzle: React.FC = () => {
 		canvasWidth: number,
 		canvasHeight: number
 	) => {
-		const wallThickness = 5;
 		const yZero = canvasHeight / 2;
 		const xZero = canvasWidth / 2;
 		const wallDefs: [number, number, number, number][] = [
@@ -320,6 +350,10 @@ const Puzzle: React.FC = () => {
 						strokeStyle: "white",
 						visible: true,
 					},
+					collisionFilter: {
+						category: wallCategory,
+						mask: pieceCategory, // Only collide with puzzle pieces
+					},
 				})
 			);
 		});
@@ -334,11 +368,6 @@ const Puzzle: React.FC = () => {
 		imageStartY: number
 	) => {
 		svgs.forEach((svg, i) => {
-			if (i === 1)
-				console.log(
-					imageStartX + (svg.steeringCoords.topRight.x - svg.width),
-					imageStartY + (svg.steeringCoords.bottomLeft.y - svg.height)
-				);
 			const x = imageStartX + (svg.steeringCoords.topRight.x - svg.width / 2);
 			const y =
 				imageStartY + (svg.steeringCoords.bottomLeft.y - svg.height / 2);
@@ -354,8 +383,14 @@ const Puzzle: React.FC = () => {
 						xScale: 1,
 					},
 				},
+				collisionFilter: {
+					category: pieceCategory,
+					mask: wallCategory, // Collides with walls (but no friction)
+				},
 			});
 			body.steeringCoords = svg.steeringCoords;
+			body.originalWidth = w;
+			body.originalHeight = h;
 			Composite.add(world, body);
 		});
 	};
