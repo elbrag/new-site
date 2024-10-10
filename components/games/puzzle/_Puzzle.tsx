@@ -258,7 +258,10 @@ const Puzzle: React.FC = () => {
 
 				const topRightTarget = {
 					x: imageStartX + draggedPiece.steeringCoords.topRight.x,
-					y: imageStartY + draggedPiece.steeringCoords.topRight.y,
+					y:
+						imageStartY +
+						draggedPiece.steeringCoords.topRight.y -
+						wallThickness * 1.5,
 				};
 
 				console.log(
