@@ -16,16 +16,21 @@ import {
 import { throttle } from "lodash";
 import Button from "@/components/ui/Button";
 
+interface SteeringCoords {
+	bottomLeft: { x: number; y: number };
+	topRight: { x: number; y: number };
+}
 interface PuzzlePiece {
 	id: number;
 	url: string;
 	width: number;
 	height: number;
-	steeringCoords: {
-		bottomLeft: { x: number; y: number };
-		topRight: { x: number; y: number };
-	};
+	steeringCoords: SteeringCoords;
 	symmetrical?: boolean;
+}
+
+interface CustomMatterBody extends Body {
+	steeringCoords?: SteeringCoords;
 }
 
 const Puzzle: React.FC = () => {
@@ -110,6 +115,9 @@ const Puzzle: React.FC = () => {
 		// Determine ref image dimensions
 		const refImgWidth = refImg.clientWidth;
 		const refImgHeight = refImg.clientHeight;
+		// Define image starting coords
+		const imageStartX = (canvasWidth - refImgWidth) / 2;
+		const imageStartY = (canvasHeight - refImgHeight) / 2;
 
 		// Renderer
 		const render = Render.create({
@@ -128,7 +136,7 @@ const Puzzle: React.FC = () => {
 
 		// Elements
 		addWalls(world, canvasWidth, canvasHeight);
-		addShapes(world, canvasWidth, canvasHeight, refImgWidth, refImgHeight);
+		addShapes(world, imageStartX, imageStartY);
 
 		// Initial state (pieces in place)
 		setInitialState(engine);
@@ -137,7 +145,13 @@ const Puzzle: React.FC = () => {
 
 		// Interactive state (gravity activated, pieces fall down)
 		setTimeout(() => {
-			const interactiveStateResult = setInteractiveState(canvas, engine, world);
+			const interactiveStateResult = setInteractiveState(
+				canvas,
+				engine,
+				world,
+				imageStartX,
+				imageStartY
+			);
 			removeDragEvent = interactiveStateResult.removeEvent;
 		}, 1500);
 
@@ -178,7 +192,9 @@ const Puzzle: React.FC = () => {
 	const setInteractiveState = (
 		canvas: HTMLCanvasElement,
 		engine: Engine,
-		world: World
+		world: World,
+		imageStartX: number,
+		imageStartY: number
 	): {
 		removeEvent: () => void;
 	} => {
@@ -203,7 +219,9 @@ const Puzzle: React.FC = () => {
 		 */
 		const handleMouseMove = throttle(() => {
 			if (mouseConstraint.body) {
-				const draggedPiece = mouseConstraint.body;
+				const draggedPiece: CustomMatterBody = mouseConstraint.body;
+				if (!draggedPiece.steeringCoords) return;
+
 				const draggedPiecePosition = draggedPiece.position;
 
 				// Dimensions
@@ -211,17 +229,44 @@ const Puzzle: React.FC = () => {
 				const height = draggedPiece.bounds.max.y - draggedPiece.bounds.min.y;
 
 				// Get corners
-				const bottomLeft = {
+				const bottomLeftCurrent = {
 					x: draggedPiecePosition.x - width / 2,
 					y: draggedPiecePosition.y + height / 2,
 				};
-				const topRight = {
+				const topRightCurrent = {
 					x: draggedPiecePosition.x + width / 2,
 					y: draggedPiecePosition.y - height / 2,
 				};
 
-				console.log("Bottom Left Corner: ", bottomLeft);
-				console.log("Top Right Corner: ", topRight);
+				const bottomLeftTarget = {
+					x: imageStartX + draggedPiece.steeringCoords.bottomLeft.x,
+					y: imageStartY + draggedPiece.steeringCoords.bottomLeft.y,
+				};
+
+				const topRightTarget = {
+					x: imageStartX + draggedPiece.steeringCoords.topRight.x,
+					y: imageStartY + draggedPiece.steeringCoords.topRight.y,
+				};
+
+				// Check if target coords match current coords by comparing corners, x and y
+				if (
+					checkIfCoordsAreWithinErrorMargin(
+						bottomLeftCurrent.x,
+						bottomLeftTarget.x
+					) &&
+					checkIfCoordsAreWithinErrorMargin(
+						topRightCurrent.y,
+						topRightTarget.y
+					) &&
+					checkIfCoordsAreWithinErrorMargin(
+						topRightCurrent.x,
+						topRightTarget.x
+					) &&
+					checkIfCoordsAreWithinErrorMargin(topRightCurrent.y, topRightTarget.y)
+				) {
+					console.log("IT fits!");
+					draggedPiece.isStatic = true;
+				}
 			}
 		}, 600);
 
@@ -233,6 +278,18 @@ const Puzzle: React.FC = () => {
 			removeEvent: () =>
 				Events.off(mouseConstraint, "mousemove", handleMouseMove),
 		};
+	};
+
+	/**
+	 * Get value with error margin
+	 */
+	const checkIfCoordsAreWithinErrorMargin = (
+		coordValue1: number,
+		coordValue2: number
+	): boolean => {
+		const errorMargin = 3;
+
+		return Math.abs(coordValue1 - coordValue2) <= errorMargin;
 	};
 
 	/**
@@ -273,26 +330,21 @@ const Puzzle: React.FC = () => {
 	 */
 	const addShapes = (
 		world: World,
-		canvasWidth: number,
-		canvasHeight: number,
-		refImgWidth: number,
-		refImgHeight: number
+		imageStartX: number,
+		imageStartY: number
 	) => {
-		const imageStartX = (canvasWidth - refImgWidth) / 2;
-		const imageStartY = (canvasHeight - refImgHeight) / 2;
-
 		svgs.forEach((svg, i) => {
-			// if (i === 0)
-			console.log(
-				imageStartX + (svg.steeringCoords.topRight.x - svg.width),
-				imageStartY + (svg.steeringCoords.bottomLeft.y - svg.height)
-			);
+			if (i === 1)
+				console.log(
+					imageStartX + (svg.steeringCoords.topRight.x - svg.width),
+					imageStartY + (svg.steeringCoords.bottomLeft.y - svg.height)
+				);
 			const x = imageStartX + (svg.steeringCoords.topRight.x - svg.width / 2);
 			const y =
 				imageStartY + (svg.steeringCoords.bottomLeft.y - svg.height / 2);
 			const w = svg.width;
 			const h = svg.height;
-			const body = Bodies.rectangle(x, y, w, h, {
+			const body: CustomMatterBody = Bodies.rectangle(x, y, w, h, {
 				restitution: 1,
 				friction: 0.8,
 				render: {
@@ -303,6 +355,7 @@ const Puzzle: React.FC = () => {
 					},
 				},
 			});
+			body.steeringCoords = svg.steeringCoords;
 			Composite.add(world, body);
 		});
 	};
@@ -373,7 +426,7 @@ const Puzzle: React.FC = () => {
 							<FullLogo />
 						</div>
 					</div>
-					{/* <div className="guide w-4 h-4 absolute bg-military top-[189.5px] left-[226px]"></div> */}
+					<div className="guide w-4 h-4 absolute bg-military top-[236px] left-[379px]"></div>
 				</div>
 			</div>
 			<Button label="Reset" onClick={resetPieces} />
