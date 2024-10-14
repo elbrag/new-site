@@ -258,10 +258,7 @@ const Puzzle: React.FC = () => {
 
 				const topRightTarget = {
 					x: imageStartX + draggedPiece.steeringCoords.topRight.x,
-					y:
-						imageStartY +
-						draggedPiece.steeringCoords.topRight.y -
-						wallThickness * 1.5,
+					y: imageStartY + draggedPiece.steeringCoords.topRight.y,
 				};
 
 				console.log(
@@ -298,8 +295,11 @@ const Puzzle: React.FC = () => {
 					) &&
 					checkIfCoordsAreWithinErrorMargin(topRightCurrent.x, topRightTarget.x)
 				) {
-					console.log("IT fits!");
+					console.log("IT fits!", draggedPiece);
 					draggedPiece.isStatic = true;
+					draggedPiece.position.x = bottomLeftTarget.x + width / 2;
+					draggedPiece.position.y = topRightTarget.y + height / 2;
+					draggedPiece.angle = 0;
 				}
 			}
 		}, 600);
@@ -321,7 +321,7 @@ const Puzzle: React.FC = () => {
 		coordValue1: number,
 		coordValue2: number
 	): boolean => {
-		const errorMargin = 5;
+		const errorMargin = 10;
 
 		return Math.abs(coordValue1 - coordValue2) <= errorMargin;
 	};
@@ -464,7 +464,6 @@ const Puzzle: React.FC = () => {
 							<FullLogo />
 						</div>
 					</div>
-					<div className="guide w-4 h-4 absolute bg-military top-[236px] left-[379px]"></div>
 				</div>
 			</div>
 			<Button label="Reset" onClick={resetPieces} />
