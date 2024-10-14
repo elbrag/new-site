@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import FullLogo from "../../../public/static/images/puzzle/full_logo.svg";
 
 import {
 	Bodies,
@@ -15,6 +14,7 @@ import {
 } from "matter-js";
 import { throttle } from "lodash";
 import Button from "@/components/ui/Button";
+import SvgImage, { SvgImageMotifs } from "@/components/ui/SvgImage";
 
 interface SteeringCoords {
 	bottomLeft: { x: number; y: number };
@@ -412,10 +412,6 @@ const Puzzle: React.FC = () => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
 
-		// Get current dimensions
-		const prevWidth = canvas.width;
-		const prevHeight = canvas.height;
-
 		// Set new dimensions
 		canvas.width = canvas.offsetWidth;
 		canvas.height = canvas.offsetHeight;
@@ -429,19 +425,8 @@ const Puzzle: React.FC = () => {
 			render.bounds.max.y = canvas.height;
 		}
 
-		// Calculate the scale factor for the objects in the world
-		const scaleX = canvas.width / prevWidth;
-		const scaleY = canvas.height / prevHeight;
-
 		if (world) {
-			// Loop through all bodies and scale them accordingly
-			Composite.allBodies(world).forEach((body) => {
-				Body.scale(body, scaleX, scaleY);
-				Body.setPosition(body, {
-					x: body.position.x * scaleX,
-					y: body.position.y * scaleY,
-				});
-			});
+			resetPieces();
 		}
 
 		if (render) {
@@ -460,8 +445,12 @@ const Puzzle: React.FC = () => {
 						className="border w-full h-full"
 					/>
 					<div className="reference-image absolute w-full h-full left-0 top-0 -z-1 flex justify-center items-center">
-						<div ref={refImageRef}>
-							<FullLogo />
+						<div ref={refImageRef} className="max-w-full">
+							<SvgImage
+								image={SvgImageMotifs.FullLogo}
+								width={600}
+								height={215}
+							/>
 						</div>
 					</div>
 				</div>

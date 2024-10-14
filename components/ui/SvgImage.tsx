@@ -5,6 +5,7 @@ import ComingSoon from "../../public/static/images/comingsoon.svg";
 import Hangman from "../../public/static/images/covers/hangman.svg";
 import Memory from "../../public/static/images/covers/memory.svg";
 import SendResults from "../../public/static/images/covers/sendResults.svg";
+import FullLogo from "../../public/static/images/puzzle/full_logo.svg";
 
 import styled from "styled-components";
 import tailwindConfig from "../../tailwindSettings";
@@ -16,6 +17,7 @@ const svgImages = {
 	hangman: Hangman,
 	memory: Memory,
 	sendResults: SendResults,
+	fullLogo: FullLogo,
 };
 
 export enum SvgImageMotifs {
@@ -25,6 +27,7 @@ export enum SvgImageMotifs {
 	Hangman = "hangman",
 	Memory = "memory",
 	SendResults = "sendResults",
+	FullLogo = "fullLogo",
 }
 
 export enum SvgImageColors {
@@ -32,6 +35,7 @@ export enum SvgImageColors {
 	Black = "black",
 	Lime = "lime",
 	Cream = "cream",
+	Transparent = "transparent",
 }
 
 interface SvgImageProps {
