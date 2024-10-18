@@ -118,24 +118,16 @@ const Puzzle: React.FC = () => {
 		const refImg = refImageRef.current;
 		const engine = engineRef.current;
 		if (!canvas || !engine || !refImg) return;
-		canvas.width = canvas.offsetWidth;
-		canvas.height = canvas.offsetHeight;
 
-		// Determine canvas dimensions
-		const canvasWidth = canvas.width;
-		const canvasHeight = canvas.height;
-		// Determine ref image dimensions
-		const refImgWidth = refImg.clientWidth;
-		const refImgHeight = refImg.clientHeight;
-		// Scaled down image dimensions, if screen size is too small for original dimensions
-		const sizeScale =
-			refImgWidth < refImgOriginalWidth
-				? refImgWidth / refImgOriginalWidth
-				: undefined;
-
-		// Define image starting coords
-		const imageStartX = (canvasWidth - refImgWidth) / 2;
-		const imageStartY = (canvasHeight - refImgHeight) / 2;
+		setupCanvas(canvas);
+		const { canvasWidth, canvasHeight, refImgWidth, refImgHeight, sizeScale } =
+			getBasicDimensions(canvas, refImg);
+		const { imageStartX, imageStartY } = getImageStartCoords(
+			canvasWidth,
+			canvasHeight,
+			refImgWidth,
+			refImgHeight
+		);
 
 		// Renderer
 		const render = Render.create({
@@ -177,60 +169,11 @@ const Puzzle: React.FC = () => {
 		const runner = Runner.create();
 		Runner.run(runner, engine);
 
-		// Event listener: resize
-		/**
-		 * Resize logic triggered after resizing is done
-		 */
-		const handleResize = () => {
-			const canvas = canvasRef.current;
-			const refImg = refImageRef.current;
-			const engine = engineRef.current;
-			if (!canvas || !engine || !refImg) return;
-
-			// Clear existing bodies from the world
-			Composite.clear(engine.world, false);
-
-			// Get updated canvas dimensions
-			canvas.width = canvas.offsetWidth;
-			canvas.height = canvas.offsetHeight;
-
-			// Get updated reference image dimensions
-			const refImgWidth = refImg.clientWidth;
-			const refImgHeight = refImg.clientHeight;
-
-			// Calculate the scaling factor based on the original dimensions
-			const imgWidthScale = refImgWidth / refImgOriginalWidth;
-
-			// Define image starting coordinates (centered in the canvas)
-			const imageStartX = (canvas.width - refImgWidth) / 2;
-			const imageStartY = (canvas.height - refImgHeight) / 2;
-
-			// Re-add walls and puzzle pieces
-			addWalls(engine.world, canvas.width, canvas.height);
-			addShapes(engine.world, imageStartX, imageStartY, imgWidthScale);
-
-			// Reset the interactive state (dragging, etc.)
-			const interactiveStateResult = setInteractiveState(
-				canvas,
-				engine,
-				engine.world,
-				imageStartX,
-				imageStartY
-			);
-			const newRemoveDragEvent = interactiveStateResult.removeEvent;
-
-			// Clean up the previous drag event if applicable
-			if (removeDragEvent) {
-				removeDragEvent();
-			}
-			removeDragEvent = newRemoveDragEvent; // Update to the latest remove function
-		};
-
-		/**
-		 * Debounced resize function to avoid constant re-initialization during resizing
-		 */
-		const debouncedResize = debounce(handleResize, 1000);
-
+		// Resize event listener
+		const debouncedResize = debounce(
+			() => resizeHandler(canvas, refImg, engine, removeDragEvent),
+			1000
+		);
 		window.addEventListener("resize", debouncedResize);
 
 		// Clean up
@@ -245,6 +188,94 @@ const Puzzle: React.FC = () => {
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [restart]);
+
+	/**
+	 * Resize handler for the canvas
+	 */
+	const resizeHandler = (
+		canvas: HTMLCanvasElement,
+		refImg: HTMLDivElement,
+		engine: Engine,
+		removeDragEvent: (() => void) | undefined
+	) => {
+		Composite.clear(engine.world, false);
+
+		// Get updated dimensions
+		setupCanvas(canvas);
+		const { refImgWidth, refImgHeight, sizeScale } = getBasicDimensions(
+			canvas,
+			refImg
+		);
+		const { imageStartX, imageStartY } = getImageStartCoords(
+			canvas.width,
+			canvas.height,
+			refImgWidth,
+			refImgHeight
+		);
+
+		// Re-add walls and puzzle pieces
+		addWalls(engine.world, canvas.width, canvas.height);
+		addShapes(engine.world, imageStartX, imageStartY, sizeScale);
+
+		// Reset the interactive state
+		const interactiveStateResult = setInteractiveState(
+			canvas,
+			engine,
+			engine.world,
+			imageStartX,
+			imageStartY
+		);
+		const newRemoveDragEvent = interactiveStateResult.removeEvent;
+
+		// Clean up the previous drag event
+		if (removeDragEvent) {
+			removeDragEvent();
+		}
+		removeDragEvent = newRemoveDragEvent;
+	};
+
+	/**
+	 * Get basic (canvas and reference image) dimensions
+	 */
+	const getBasicDimensions = (
+		canvas: HTMLCanvasElement,
+		refImg: HTMLDivElement
+	) => {
+		const canvasWidth = canvas.width;
+		const canvasHeight = canvas.height;
+		const refImgWidth = refImg.clientWidth;
+		const refImgHeight = refImg.clientHeight;
+
+		// Calculate scale factor based on original dimensions
+		const sizeScale =
+			refImgWidth < refImgOriginalWidth
+				? refImgWidth / refImgOriginalWidth
+				: undefined;
+
+		return { canvasWidth, canvasHeight, refImgWidth, refImgHeight, sizeScale };
+	};
+
+	/**
+	 * Calculate starting coords for ref image
+	 */
+	const getImageStartCoords = (
+		canvasWidth: number,
+		canvasHeight: number,
+		refImgWidth: number,
+		refImgHeight: number
+	) => {
+		const imageStartX = (canvasWidth - refImgWidth) / 2;
+		const imageStartY = (canvasHeight - refImgHeight) / 2;
+		return { imageStartX, imageStartY };
+	};
+
+	/**
+	 * Setup canvas dimensions
+	 */
+	const setupCanvas = (canvas: HTMLCanvasElement) => {
+		canvas.width = canvas.offsetWidth;
+		canvas.height = canvas.offsetHeight;
+	};
 
 	/**
 	 * Set initial state
@@ -419,7 +450,6 @@ const Puzzle: React.FC = () => {
 			const svgWidth = svg.width * scale;
 			const svgHeight = svg.height * scale;
 
-			// Calculate the position of the piece using the scaled steering coordinates
 			const scaledTopRightX = svg.steeringCoords.topRight.x * scale;
 			const scaledBottomLeftY = svg.steeringCoords.bottomLeft.y * scale;
 
@@ -443,7 +473,7 @@ const Puzzle: React.FC = () => {
 					},
 					collisionFilter: {
 						category: pieceCategory,
-						mask: wallCategory, // Collides with walls (but no friction)
+						mask: wallCategory, // Collides with walls
 					},
 				}
 			);
