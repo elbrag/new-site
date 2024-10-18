@@ -12,7 +12,7 @@ import {
 	Body,
 	Events,
 } from "matter-js";
-import { throttle } from "lodash";
+import { throttle, debounce } from "lodash";
 import Button from "@/components/ui/Button";
 import SvgImage, { SvgImageMotifs } from "@/components/ui/SvgImage";
 
@@ -42,6 +42,9 @@ const Puzzle: React.FC = () => {
 	const [restart, setRestart] = useState<boolean>(false);
 
 	const wallThickness = 5;
+
+	const refImgOriginalWidth = 600;
+	const refImgOriginalHeight = 215;
 
 	// Define collision categories
 	const wallCategory = 0x0001;
@@ -110,12 +113,13 @@ const Puzzle: React.FC = () => {
 	 */
 	useEffect(() => {
 		setRestart(false);
-		// Define canvas, refernce image and engine and check that they exist
+		// Define canvas, reference image, and engine and check that they exist
 		const canvas = canvasRef.current;
 		const refImg = refImageRef.current;
 		const engine = engineRef.current;
 		if (!canvas || !engine || !refImg) return;
-		resizeCanvas();
+		canvas.width = canvas.offsetWidth;
+		canvas.height = canvas.offsetHeight;
 
 		// Determine canvas dimensions
 		const canvasWidth = canvas.width;
@@ -123,6 +127,12 @@ const Puzzle: React.FC = () => {
 		// Determine ref image dimensions
 		const refImgWidth = refImg.clientWidth;
 		const refImgHeight = refImg.clientHeight;
+		// Scaled down image dimensions, if screen size is too small for original dimensions
+		const sizeScale =
+			refImgWidth < refImgOriginalWidth
+				? refImgWidth / refImgOriginalWidth
+				: undefined;
+
 		// Define image starting coords
 		const imageStartX = (canvasWidth - refImgWidth) / 2;
 		const imageStartY = (canvasHeight - refImgHeight) / 2;
@@ -144,14 +154,13 @@ const Puzzle: React.FC = () => {
 
 		// Elements
 		addWalls(world, canvasWidth, canvasHeight);
-		addShapes(world, imageStartX, imageStartY);
+		addShapes(world, imageStartX, imageStartY, sizeScale);
 
 		// Initial state (pieces in place)
 		setInitialState(engine);
 
-		let removeDragEvent: (() => void) | undefined;
-
 		// Interactive state (gravity activated, pieces fall down)
+		let removeDragEvent: (() => void) | undefined;
 		setTimeout(() => {
 			const interactiveStateResult = setInteractiveState(
 				canvas,
@@ -169,10 +178,60 @@ const Puzzle: React.FC = () => {
 		Runner.run(runner, engine);
 
 		// Event listener: resize
-		const onResize = throttle(() => {
-			resizeCanvas(render, world);
-		}, 1000);
-		window.addEventListener("resize", onResize);
+		/**
+		 * Resize logic triggered after resizing is done
+		 */
+		const handleResize = () => {
+			const canvas = canvasRef.current;
+			const refImg = refImageRef.current;
+			const engine = engineRef.current;
+			if (!canvas || !engine || !refImg) return;
+
+			// Clear existing bodies from the world
+			Composite.clear(engine.world, false);
+
+			// Get updated canvas dimensions
+			canvas.width = canvas.offsetWidth;
+			canvas.height = canvas.offsetHeight;
+
+			// Get updated reference image dimensions
+			const refImgWidth = refImg.clientWidth;
+			const refImgHeight = refImg.clientHeight;
+
+			// Calculate the scaling factor based on the original dimensions
+			const imgWidthScale = refImgWidth / refImgOriginalWidth;
+
+			// Define image starting coordinates (centered in the canvas)
+			const imageStartX = (canvas.width - refImgWidth) / 2;
+			const imageStartY = (canvas.height - refImgHeight) / 2;
+
+			// Re-add walls and puzzle pieces
+			addWalls(engine.world, canvas.width, canvas.height);
+			addShapes(engine.world, imageStartX, imageStartY, imgWidthScale);
+
+			// Reset the interactive state (dragging, etc.)
+			const interactiveStateResult = setInteractiveState(
+				canvas,
+				engine,
+				engine.world,
+				imageStartX,
+				imageStartY
+			);
+			const newRemoveDragEvent = interactiveStateResult.removeEvent;
+
+			// Clean up the previous drag event if applicable
+			if (removeDragEvent) {
+				removeDragEvent();
+			}
+			removeDragEvent = newRemoveDragEvent; // Update to the latest remove function
+		};
+
+		/**
+		 * Debounced resize function to avoid constant re-initialization during resizing
+		 */
+		const debouncedResize = debounce(handleResize, 1000);
+
+		window.addEventListener("resize", debouncedResize);
 
 		// Clean up
 		return () => {
@@ -180,9 +239,9 @@ const Puzzle: React.FC = () => {
 			Engine.clear(engine);
 			Render.stop(render);
 			if (removeDragEvent) {
-				removeDragEvent();
+				removeDragEvent(); // Clean up the drag event
 			}
-			window.removeEventListener("resize", onResize);
+			window.removeEventListener("resize", debouncedResize);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [restart]);
@@ -261,24 +320,6 @@ const Puzzle: React.FC = () => {
 					y: imageStartY + draggedPiece.steeringCoords.topRight.y,
 				};
 
-				console.log(
-					"topRightCurrent.y:",
-					topRightCurrent.y,
-					"topRightTarget.y:",
-					topRightTarget.y,
-					"Difference:",
-					Math.abs(topRightCurrent.y - topRightTarget.y)
-				);
-
-				console.log(
-					"bottomLeftCurrent.y:",
-					bottomLeftCurrent.y,
-					"bottomLeftTarget.y:",
-					bottomLeftTarget.y,
-					"Difference:",
-					Math.abs(bottomLeftCurrent.y - bottomLeftTarget.y)
-				);
-
 				// Check if target coords match current coords by comparing corners, x and y
 				if (
 					checkIfCoordsAreWithinErrorMargin(
@@ -347,6 +388,7 @@ const Puzzle: React.FC = () => {
 				world,
 				Bodies.rectangle(...wallDef, {
 					isStatic: true,
+					label: "wall",
 					render: {
 						fillStyle: "#5EFC5B",
 						// lineWidth: 1,
@@ -368,32 +410,56 @@ const Puzzle: React.FC = () => {
 	const addShapes = (
 		world: World,
 		imageStartX: number,
-		imageStartY: number
+		imageStartY: number,
+		sizeScale?: number
 	) => {
+		const scale = sizeScale ?? 1;
+
 		svgs.forEach((svg, i) => {
-			const x = imageStartX + (svg.steeringCoords.topRight.x - svg.width / 2);
-			const y =
-				imageStartY + (svg.steeringCoords.bottomLeft.y - svg.height / 2);
-			const w = svg.width;
-			const h = svg.height;
-			const body: CustomMatterBody = Bodies.rectangle(x, y, w, h, {
-				restitution: 1,
-				friction: 0.8,
-				render: {
-					sprite: {
-						texture: svg.url,
-						yScale: 1,
-						xScale: 1,
+			const svgWidth = svg.width * scale;
+			const svgHeight = svg.height * scale;
+
+			// Calculate the position of the piece using the scaled steering coordinates
+			const scaledTopRightX = svg.steeringCoords.topRight.x * scale;
+			const scaledBottomLeftY = svg.steeringCoords.bottomLeft.y * scale;
+
+			const x = imageStartX + scaledTopRightX - svgWidth / 2;
+			const y = imageStartY + scaledBottomLeftY - svgHeight / 2;
+
+			const body: CustomMatterBody = Bodies.rectangle(
+				x,
+				y,
+				svgWidth,
+				svgHeight,
+				{
+					restitution: 1,
+					friction: 0.8,
+					render: {
+						sprite: {
+							texture: svg.url,
+							yScale: scale,
+							xScale: scale,
+						},
 					},
+					collisionFilter: {
+						category: pieceCategory,
+						mask: wallCategory, // Collides with walls (but no friction)
+					},
+				}
+			);
+			body.steeringCoords = {
+				topRight: {
+					x: scaledTopRightX,
+					y: svg.steeringCoords.topRight.y * scale,
 				},
-				collisionFilter: {
-					category: pieceCategory,
-					mask: wallCategory, // Collides with walls (but no friction)
+				bottomLeft: {
+					x: svg.steeringCoords.bottomLeft.x * scale,
+					y: scaledBottomLeftY,
 				},
-			});
-			body.steeringCoords = svg.steeringCoords;
-			body.originalWidth = w;
-			body.originalHeight = h;
+			};
+
+			body.originalWidth = svgWidth;
+			body.originalHeight = svgHeight;
 			Composite.add(world, body);
 		});
 	};
@@ -403,35 +469,6 @@ const Puzzle: React.FC = () => {
 	 */
 	const resetPieces = () => {
 		setRestart(true);
-	};
-
-	/**
-	 * Resize canvas
-	 */
-	const resizeCanvas = (render?: Render, world?: World) => {
-		const canvas = canvasRef.current;
-		if (!canvas) return;
-
-		// Set new dimensions
-		canvas.width = canvas.offsetWidth;
-		canvas.height = canvas.offsetHeight;
-
-		if (render) {
-			Render.stop(render);
-			// Set render canvas size
-			render.canvas.width = canvas.width;
-			render.canvas.height = canvas.height;
-			render.bounds.max.x = canvas.width;
-			render.bounds.max.y = canvas.height;
-		}
-
-		if (world) {
-			resetPieces();
-		}
-
-		if (render) {
-			Render.run(render);
-		}
 	};
 
 	return (
@@ -445,11 +482,11 @@ const Puzzle: React.FC = () => {
 						className="border w-full h-full"
 					/>
 					<div className="reference-image absolute w-full h-full left-0 top-0 -z-1 flex justify-center items-center">
-						<div ref={refImageRef} className="max-w-full">
+						<div ref={refImageRef} className="max-w-[90%]">
 							<SvgImage
 								image={SvgImageMotifs.FullLogo}
-								width={600}
-								height={215}
+								width={refImgOriginalWidth}
+								height={refImgOriginalHeight}
 							/>
 						</div>
 					</div>

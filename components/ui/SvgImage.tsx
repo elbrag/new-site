@@ -69,7 +69,7 @@ const SvgImage: React.FC<SvgImageProps> = ({
 			$smallScaleFactor={smallScaleFactor}
 			$mediumScaleFactor={mediumScaleFactor}
 			$largeScaleFactor={largeScaleFactor}
-			className={`svg-image flex items-center justify-center transition-size duration-500 ease-bouncy-1 `}
+			className={`svg-image flex items-center justify-center transition-size duration-500 ease-bouncy-1 max-w-full max-h-fit`}
 		>
 			<SvgImageElement className={`text-${color} w-full h-full`} />
 		</StyledSvgImage>
