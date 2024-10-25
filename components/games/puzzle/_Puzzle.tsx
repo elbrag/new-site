@@ -95,7 +95,7 @@ const Puzzle: React.FC = () => {
 			height: 54,
 			steeringCoords: {
 				bottomLeft: { x: 0, y: 133.5 },
-				topRight: { x: 300, y: 90.5 },
+				topRight: { x: 300, y: 80.5 },
 			},
 		},
 		{
@@ -105,7 +105,7 @@ const Puzzle: React.FC = () => {
 			height: 53,
 			steeringCoords: {
 				bottomLeft: { x: 0, y: 214 },
-				topRight: { x: 249, y: 171 },
+				topRight: { x: 249, y: 161 },
 			},
 			symmetrical: true,
 		},
@@ -509,9 +509,9 @@ const Puzzle: React.FC = () => {
 			body.originalHeight = svgHeight;
 			Composite.add(world, body);
 
-			const guideColor = getRandomColor();
-			createGuideline(body.steeringCoords.topRight, guideColor);
-			createGuideline(body.steeringCoords.bottomLeft, guideColor);
+			// const guideColor = getRandomColor();
+			// createGuideline(body.steeringCoords.topRight, guideColor);
+			// createGuideline(body.steeringCoords.bottomLeft, guideColor);
 		});
 	};
 
