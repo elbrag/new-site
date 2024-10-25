@@ -15,6 +15,7 @@ import {
 import { throttle, debounce } from "lodash";
 import Button from "@/components/ui/Button";
 import SvgImage, { SvgImageMotifs } from "@/components/ui/SvgImage";
+import { getRandomColor } from "@/lib/helpers/effects";
 
 interface Coord {
 	x: number;
@@ -24,6 +25,11 @@ interface Coord {
 interface SteeringCoords {
 	bottomLeft: Coord;
 	topRight: Coord;
+}
+
+interface Guide {
+	coord: Coord;
+	color: string;
 }
 interface PuzzlePiece {
 	id: number;
@@ -55,7 +61,7 @@ const Puzzle: React.FC = () => {
 	const wallCategory = 0x0001;
 	const pieceCategory = 0x0002;
 
-	const [guides, setGuides] = useState<Coord[]>([]);
+	const [guides, setGuides] = useState<Guide[]>([]);
 
 	/**
 	 * Puzzle pieces
@@ -115,8 +121,8 @@ const Puzzle: React.FC = () => {
 		},
 	];
 
-	const createGuideline = (coord: Coord) => {
-		setGuides((prevGuides) => [...prevGuides, coord]);
+	const createGuideline = (coord: Coord, color: string) => {
+		setGuides((prevGuides) => [...prevGuides, { coord: coord, color: color }]);
 	};
 
 	/**
@@ -502,8 +508,10 @@ const Puzzle: React.FC = () => {
 			body.originalWidth = svgWidth;
 			body.originalHeight = svgHeight;
 			Composite.add(world, body);
-			createGuideline(body.steeringCoords.topRight);
-			createGuideline(body.steeringCoords.bottomLeft);
+
+			const guideColor = getRandomColor();
+			createGuideline(body.steeringCoords.topRight, guideColor);
+			createGuideline(body.steeringCoords.bottomLeft, guideColor);
 		});
 	};
 
@@ -535,8 +543,12 @@ const Puzzle: React.FC = () => {
 					</div>
 					{guides.map((guide, i) => (
 						<div
-							className="absolute w-4 h-4 bg-military"
-							style={{ top: guide.y + "px", left: guide.x + "px" }}
+							className="absolute w-4 h-4 "
+							style={{
+								top: guide.coord.y + "px",
+								left: guide.coord.x + "px",
+								backgroundColor: guide.color,
+							}}
 							key={i}
 						></div>
 					))}
