@@ -15,10 +15,21 @@ import {
 import { throttle, debounce } from "lodash";
 import Button from "@/components/ui/Button";
 import SvgImage, { SvgImageMotifs } from "@/components/ui/SvgImage";
+import { getRandomColor } from "@/lib/helpers/effects";
+
+interface Coord {
+	x: number;
+	y: number;
+}
 
 interface SteeringCoords {
-	bottomLeft: { x: number; y: number };
-	topRight: { x: number; y: number };
+	bottomLeft: Coord;
+	topRight: Coord;
+}
+
+interface Guide {
+	coord: Coord;
+	color: string;
 }
 interface PuzzlePiece {
 	id: number;
@@ -49,6 +60,8 @@ const Puzzle: React.FC = () => {
 	// Define collision categories
 	const wallCategory = 0x0001;
 	const pieceCategory = 0x0002;
+
+	const [guides, setGuides] = useState<Guide[]>([]);
 
 	/**
 	 * Puzzle pieces
@@ -82,7 +95,7 @@ const Puzzle: React.FC = () => {
 			height: 54,
 			steeringCoords: {
 				bottomLeft: { x: 0, y: 133.5 },
-				topRight: { x: 300, y: 90.5 },
+				topRight: { x: 300, y: 80.5 },
 			},
 		},
 		{
@@ -92,7 +105,7 @@ const Puzzle: React.FC = () => {
 			height: 53,
 			steeringCoords: {
 				bottomLeft: { x: 0, y: 214 },
-				topRight: { x: 249, y: 171 },
+				topRight: { x: 249, y: 161 },
 			},
 			symmetrical: true,
 		},
@@ -107,6 +120,10 @@ const Puzzle: React.FC = () => {
 			},
 		},
 	];
+
+	const createGuideline = (coord: Coord, color: string) => {
+		setGuides((prevGuides) => [...prevGuides, { coord: coord, color: color }]);
+	};
 
 	/**
 	 * On first render (init game)
@@ -342,13 +359,13 @@ const Puzzle: React.FC = () => {
 				};
 
 				const bottomLeftTarget = {
-					x: imageStartX + draggedPiece.steeringCoords.bottomLeft.x,
-					y: imageStartY + draggedPiece.steeringCoords.bottomLeft.y,
+					x: draggedPiece.steeringCoords.bottomLeft.x,
+					y: draggedPiece.steeringCoords.bottomLeft.y,
 				};
 
 				const topRightTarget = {
-					x: imageStartX + draggedPiece.steeringCoords.topRight.x,
-					y: imageStartY + draggedPiece.steeringCoords.topRight.y,
+					x: draggedPiece.steeringCoords.topRight.x,
+					y: draggedPiece.steeringCoords.topRight.y,
 				};
 
 				// Check if target coords match current coords by comparing corners, x and y
@@ -479,18 +496,22 @@ const Puzzle: React.FC = () => {
 			);
 			body.steeringCoords = {
 				topRight: {
-					x: scaledTopRightX,
-					y: svg.steeringCoords.topRight.y * scale,
+					x: imageStartX + scaledTopRightX,
+					y: imageStartY + svg.steeringCoords.topRight.y * scale,
 				},
 				bottomLeft: {
-					x: svg.steeringCoords.bottomLeft.x * scale,
-					y: scaledBottomLeftY,
+					x: imageStartX + svg.steeringCoords.bottomLeft.x * scale,
+					y: imageStartY + scaledBottomLeftY,
 				},
 			};
 
 			body.originalWidth = svgWidth;
 			body.originalHeight = svgHeight;
 			Composite.add(world, body);
+
+			// const guideColor = getRandomColor();
+			// createGuideline(body.steeringCoords.topRight, guideColor);
+			// createGuideline(body.steeringCoords.bottomLeft, guideColor);
 		});
 	};
 
@@ -520,6 +541,17 @@ const Puzzle: React.FC = () => {
 							/>
 						</div>
 					</div>
+					{guides.map((guide, i) => (
+						<div
+							className="absolute w-4 h-4 "
+							style={{
+								top: guide.coord.y + "px",
+								left: guide.coord.x + "px",
+								backgroundColor: guide.color,
+							}}
+							key={i}
+						></div>
+					))}
 				</div>
 			</div>
 			<Button label="Reset" onClick={resetPieces} />
