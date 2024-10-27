@@ -186,7 +186,9 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	) => {
 		if (!firebaseDatabase) return firebaseDatabaseIsMissing;
 		if (!userId) return userIdIsMissing;
-		const shouldReset = Array.isArray(completed) && completed.length === 0;
+		const shouldReset =
+			(Array.isArray(completed) && completed.length === 0) ||
+			(!Array.isArray(completed) && completed === false);
 
 		await setProgress((prevProgress: ProgressProps[]) => {
 			// Find the index of the object with the same game name
@@ -301,7 +303,8 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	 */
 	const resetRound = (game: GameName, roundId: number) => {
 		updateErrors(firebaseDatabase, userId, game, [], false);
-		updateProgress(game, roundId, []);
+		const resetObject = game === GameName.Hangman ? [] : false;
+		updateProgress(game, roundId, resetObject);
 	};
 
 	/**
