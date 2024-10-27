@@ -9,122 +9,41 @@ import {
 	Runner,
 	Mouse,
 	MouseConstraint,
-	Body,
 	Events,
 } from "matter-js";
 import { throttle, debounce } from "lodash";
 import Button from "@/components/ui/Button";
 import SvgImage, { SvgImageMotifs } from "@/components/ui/SvgImage";
+import usePuzzleFunctions from "@/hooks/games/usePuzzleFunctions";
+import {
+	Coord,
+	CustomMatterBody,
+	Guide,
+	PuzzlePiece,
+} from "@/lib/types/puzzle";
 // import { getRandomColor } from "@/lib/helpers/effects";
-
-interface Coord {
-	x: number;
-	y: number;
-}
-
-interface SteeringCoords {
-	bottomLeft: Coord;
-	topRight: Coord;
-}
-
-interface Guide {
-	coord: Coord;
-	color: string;
-}
-interface PuzzlePiece {
-	id: number;
-	url: string;
-	width: number;
-	height: number;
-	steeringCoords: SteeringCoords;
-	symmetrical?: boolean;
-}
-
-interface CustomMatterBody extends Body {
-	steeringCoords?: SteeringCoords;
-	originalWidth?: number;
-	originalHeight?: number;
-	symmetrical?: boolean;
-}
 
 const Puzzle: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const engineRef = useRef<Engine>(Engine.create());
 	const refImageRef = useRef<HTMLDivElement>(null);
 	const [restart, setRestart] = useState<boolean>(false);
+	const [guides, setGuides] = useState<Guide[]>([]);
+
+	const {
+		puzzlePieces,
+		refImgOriginalWidth,
+		refImgOriginalHeight,
+		getImageStartCoords,
+		getBasicDimensions,
+		checkIfFit,
+	} = usePuzzleFunctions();
 
 	const wallThickness = 5;
 
-	const refImgOriginalWidth = 600;
-	const refImgOriginalHeight = 215;
-
-	// Define collision categories
+	// Collision categories
 	const wallCategory = 0x0001;
 	const pieceCategory = 0x0002;
-
-	const [guides, setGuides] = useState<Guide[]>([]);
-
-	/**
-	 * Puzzle pieces
-	 */
-	const svgs: PuzzlePiece[] = [
-		{
-			id: 1,
-			url: "/static/images/puzzle/piece_1_4.svg",
-			width: 249,
-			height: 53,
-			steeringCoords: {
-				bottomLeft: { x: 0, y: 53 },
-				topRight: { x: 249, y: 0 },
-			},
-			symmetrical: true,
-		},
-		{
-			id: 2,
-			url: "/static/images/puzzle/piece_2.svg",
-			width: 300,
-			height: 134,
-			steeringCoords: {
-				bottomLeft: { x: 300, y: 133.5 },
-				topRight: { x: 600, y: 0 },
-			},
-		},
-		{
-			id: 3,
-			url: "/static/images/puzzle/piece_3.svg",
-			width: 300,
-			height: 54,
-			steeringCoords: {
-				bottomLeft: { x: 0, y: 133.5 },
-				topRight: { x: 300, y: 80.5 },
-			},
-		},
-		{
-			id: 4,
-			url: "/static/images/puzzle/piece_1_4.svg",
-			width: 249,
-			height: 53,
-			steeringCoords: {
-				bottomLeft: { x: 0, y: 214 },
-				topRight: { x: 249, y: 161 },
-			},
-			symmetrical: true,
-		},
-		{
-			id: 5,
-			url: "/static/images/puzzle/piece_5.svg",
-			width: 246,
-			height: 69,
-			steeringCoords: {
-				bottomLeft: { x: 354, y: 214 },
-				topRight: { x: 600, y: 145 },
-			},
-		},
-	];
-
-	const createGuideline = (coord: Coord, color: string) => {
-		setGuides((prevGuides) => [...prevGuides, { coord: coord, color: color }]);
-	};
 
 	/**
 	 * On first render (init game)
@@ -245,41 +164,6 @@ const Puzzle: React.FC = () => {
 	};
 
 	/**
-	 * Get basic (canvas and reference image) dimensions
-	 */
-	const getBasicDimensions = (
-		canvas: HTMLCanvasElement,
-		refImg: HTMLDivElement
-	) => {
-		const canvasWidth = canvas.width;
-		const canvasHeight = canvas.height;
-		const refImgWidth = refImg.clientWidth;
-		const refImgHeight = refImg.clientHeight;
-
-		// Calculate scale factor based on original dimensions
-		const sizeScale =
-			refImgWidth < refImgOriginalWidth
-				? refImgWidth / refImgOriginalWidth
-				: undefined;
-
-		return { canvasWidth, canvasHeight, refImgWidth, refImgHeight, sizeScale };
-	};
-
-	/**
-	 * Calculate starting coords for ref image
-	 */
-	const getImageStartCoords = (
-		canvasWidth: number,
-		canvasHeight: number,
-		refImgWidth: number,
-		refImgHeight: number
-	) => {
-		const imageStartX = (canvasWidth - refImgWidth) / 2;
-		const imageStartY = (canvasHeight - refImgHeight) / 2;
-		return { imageStartX, imageStartY };
-	};
-
-	/**
 	 * Setup canvas dimensions
 	 */
 	const setupCanvas = (canvas: HTMLCanvasElement) => {
@@ -362,7 +246,7 @@ const Puzzle: React.FC = () => {
 			}
 		}, 600);
 
-		// Event listener: track the dragging coords
+		// Event listener tracking drag coords
 		Events.on(mouseConstraint, "mousemove", handleMouseMove);
 
 		// Remove event, return to be used along with other cleanups
@@ -370,80 +254,6 @@ const Puzzle: React.FC = () => {
 			removeEvent: () =>
 				Events.off(mouseConstraint, "mousemove", handleMouseMove),
 		};
-	};
-
-	/**
-	 * Check if piece fits
-	 */
-	const checkIfFit = (
-		draggedPiece: CustomMatterBody,
-		bottomLeftTarget: Coord,
-		topRightTarget: Coord
-	): boolean => {
-		const draggedPiecePosition = draggedPiece.position;
-		const width = draggedPiece.originalWidth ?? 0;
-		const height = draggedPiece.originalHeight ?? 0;
-
-		// Get corners
-		const bottomLeftCurrent = {
-			x: draggedPiecePosition.x - width / 2,
-			y: draggedPiecePosition.y + height / 2,
-		};
-		const topRightCurrent = {
-			x: draggedPiecePosition.x + width / 2,
-			y: draggedPiecePosition.y - height / 2,
-		};
-
-		// Exact fit: Check if target coords match current coords by comparing corners, x and y
-		const hasExactFit =
-			checkIfCoordsAreWithinErrorMargin(
-				bottomLeftCurrent.x,
-				bottomLeftTarget.x
-			) &&
-			checkIfCoordsAreWithinErrorMargin(
-				bottomLeftCurrent.y,
-				bottomLeftTarget.y
-			) &&
-			checkIfCoordsAreWithinErrorMargin(topRightCurrent.y, topRightTarget.y) &&
-			checkIfCoordsAreWithinErrorMargin(topRightCurrent.x, topRightTarget.x);
-
-		// Normalize angle to 0–360 degree range (360 becomes 0)
-		let angleInDegrees = draggedPiece.angle * (180 / Math.PI);
-		angleInDegrees = ((angleInDegrees % 360) + 360) % 360;
-
-		// Determine if the piece is flipped (close to 180° or 360°)
-		const isFlipped =
-			Math.abs(angleInDegrees - 180) < 10 || angleInDegrees > 350;
-
-		if (draggedPiece.symmetrical) {
-			// For symmetrical pieces, allow fit regardless of rotation
-			const visualFit =
-				checkIfCoordsAreWithinErrorMargin(
-					bottomLeftCurrent.x,
-					topRightTarget.x
-				) &&
-				checkIfCoordsAreWithinErrorMargin(
-					bottomLeftCurrent.y,
-					topRightTarget.y
-				);
-
-			return hasExactFit || visualFit;
-		} else {
-			// For non-symmetrical pieces, only exact fit expected
-			return hasExactFit && !isFlipped;
-		}
-	};
-
-	/**
-	 * Check if compared coord values are within error margin of each other
-	 */
-	const checkIfCoordsAreWithinErrorMargin = (
-		coordValue1: number,
-		coordValue2: number
-	): boolean => {
-		const errorMargin = 6;
-
-		return Math.abs(coordValue1 - coordValue2) <= errorMargin;
 	};
 
 	/**
@@ -476,7 +286,7 @@ const Puzzle: React.FC = () => {
 					},
 					collisionFilter: {
 						category: wallCategory,
-						mask: pieceCategory, // Only collide with puzzle pieces
+						mask: pieceCategory, // Collides with puzzle pieces
 					},
 				})
 			);
@@ -494,27 +304,27 @@ const Puzzle: React.FC = () => {
 	) => {
 		const scale = sizeScale ?? 1;
 
-		svgs.forEach((svg, i) => {
-			const svgWidth = svg.width * scale;
-			const svgHeight = svg.height * scale;
+		puzzlePieces.forEach((piece, i) => {
+			const pieceWidth = piece.width * scale;
+			const pieceHeight = piece.height * scale;
 
-			const scaledTopRightX = svg.steeringCoords.topRight.x * scale;
-			const scaledBottomLeftY = svg.steeringCoords.bottomLeft.y * scale;
+			const scaledTopRightX = piece.steeringCoords.topRight.x * scale;
+			const scaledBottomLeftY = piece.steeringCoords.bottomLeft.y * scale;
 
-			const x = imageStartX + scaledTopRightX - svgWidth / 2;
-			const y = imageStartY + scaledBottomLeftY - svgHeight / 2;
+			const x = imageStartX + scaledTopRightX - pieceWidth / 2;
+			const y = imageStartY + scaledBottomLeftY - pieceHeight / 2;
 
 			const body: CustomMatterBody = Bodies.rectangle(
 				x,
 				y,
-				svgWidth,
-				svgHeight,
+				pieceWidth,
+				pieceHeight,
 				{
 					restitution: 1,
 					friction: 0.8,
 					render: {
 						sprite: {
-							texture: svg.url,
+							texture: piece.url,
 							yScale: scale,
 							xScale: scale,
 						},
@@ -528,17 +338,17 @@ const Puzzle: React.FC = () => {
 			body.steeringCoords = {
 				topRight: {
 					x: imageStartX + scaledTopRightX,
-					y: imageStartY + svg.steeringCoords.topRight.y * scale,
+					y: imageStartY + piece.steeringCoords.topRight.y * scale,
 				},
 				bottomLeft: {
-					x: imageStartX + svg.steeringCoords.bottomLeft.x * scale,
+					x: imageStartX + piece.steeringCoords.bottomLeft.x * scale,
 					y: imageStartY + scaledBottomLeftY,
 				},
 			};
 
-			body.originalWidth = svgWidth;
-			body.originalHeight = svgHeight;
-			body.symmetrical = svg.symmetrical;
+			body.originalWidth = pieceWidth;
+			body.originalHeight = pieceHeight;
+			body.symmetrical = piece.symmetrical;
 			Composite.add(world, body);
 
 			// const guideColor = getRandomColor();
@@ -552,6 +362,13 @@ const Puzzle: React.FC = () => {
 	 */
 	const resetPieces = () => {
 		setRestart(true);
+	};
+
+	/**
+	 * Create guidelines, helpful for debugging
+	 */
+	const createGuideline = (coord: Coord, color: string) => {
+		setGuides((prevGuides) => [...prevGuides, { coord: coord, color: color }]);
 	};
 
 	return (
