@@ -15,7 +15,7 @@ import {
 import { throttle, debounce } from "lodash";
 import Button from "@/components/ui/Button";
 import SvgImage, { SvgImageMotifs } from "@/components/ui/SvgImage";
-import { getRandomColor } from "@/lib/helpers/effects";
+// import { getRandomColor } from "@/lib/helpers/effects";
 
 interface Coord {
 	x: number;
@@ -44,6 +44,7 @@ interface CustomMatterBody extends Body {
 	steeringCoords?: SteeringCoords;
 	originalWidth?: number;
 	originalHeight?: number;
+	symmetrical?: boolean;
 }
 
 const Puzzle: React.FC = () => {
@@ -171,13 +172,7 @@ const Puzzle: React.FC = () => {
 		// Interactive state (gravity activated, pieces fall down)
 		let removeDragEvent: (() => void) | undefined;
 		setTimeout(() => {
-			const interactiveStateResult = setInteractiveState(
-				canvas,
-				engine,
-				world,
-				imageStartX,
-				imageStartY
-			);
+			const interactiveStateResult = setInteractiveState(canvas, engine, world);
 			removeDragEvent = interactiveStateResult.removeEvent;
 		}, 1500);
 
@@ -238,9 +233,7 @@ const Puzzle: React.FC = () => {
 		const interactiveStateResult = setInteractiveState(
 			canvas,
 			engine,
-			engine.world,
-			imageStartX,
-			imageStartY
+			engine.world
 		);
 		const newRemoveDragEvent = interactiveStateResult.removeEvent;
 
@@ -307,9 +300,7 @@ const Puzzle: React.FC = () => {
 	const setInteractiveState = (
 		canvas: HTMLCanvasElement,
 		engine: Engine,
-		world: World,
-		imageStartX: number,
-		imageStartY: number
+		world: World
 	): {
 		removeEvent: () => void;
 	} => {
@@ -342,21 +333,9 @@ const Puzzle: React.FC = () => {
 				)
 					return;
 
-				const draggedPiecePosition = draggedPiece.position;
-
 				// Dimensions
 				const width = draggedPiece.originalWidth;
 				const height = draggedPiece.originalHeight;
-
-				// Get corners
-				const bottomLeftCurrent = {
-					x: draggedPiecePosition.x - width / 2,
-					y: draggedPiecePosition.y + height / 2,
-				};
-				const topRightCurrent = {
-					x: draggedPiecePosition.x + width / 2,
-					y: draggedPiecePosition.y - height / 2,
-				};
 
 				const bottomLeftTarget = {
 					x: draggedPiece.steeringCoords.bottomLeft.x,
@@ -368,23 +347,13 @@ const Puzzle: React.FC = () => {
 					y: draggedPiece.steeringCoords.topRight.y,
 				};
 
-				// Check if target coords match current coords by comparing corners, x and y
-				if (
-					checkIfCoordsAreWithinErrorMargin(
-						bottomLeftCurrent.x,
-						bottomLeftTarget.x
-					) &&
-					checkIfCoordsAreWithinErrorMargin(
-						bottomLeftCurrent.y,
-						bottomLeftTarget.y
-					) &&
-					checkIfCoordsAreWithinErrorMargin(
-						topRightCurrent.y,
-						topRightTarget.y
-					) &&
-					checkIfCoordsAreWithinErrorMargin(topRightCurrent.x, topRightTarget.x)
-				) {
-					console.log("IT fits!", draggedPiece);
+				const itFits = checkIfFit(
+					draggedPiece,
+					bottomLeftTarget,
+					topRightTarget
+				);
+
+				if (itFits) {
 					draggedPiece.isStatic = true;
 					draggedPiece.position.x = bottomLeftTarget.x + width / 2;
 					draggedPiece.position.y = topRightTarget.y + height / 2;
@@ -404,13 +373,75 @@ const Puzzle: React.FC = () => {
 	};
 
 	/**
+	 * Check if piece fits
+	 */
+	const checkIfFit = (
+		draggedPiece: CustomMatterBody,
+		bottomLeftTarget: Coord,
+		topRightTarget: Coord
+	): boolean => {
+		const draggedPiecePosition = draggedPiece.position;
+		const width = draggedPiece.originalWidth ?? 0;
+		const height = draggedPiece.originalHeight ?? 0;
+
+		// Get corners
+		const bottomLeftCurrent = {
+			x: draggedPiecePosition.x - width / 2,
+			y: draggedPiecePosition.y + height / 2,
+		};
+		const topRightCurrent = {
+			x: draggedPiecePosition.x + width / 2,
+			y: draggedPiecePosition.y - height / 2,
+		};
+
+		// Exact fit: Check if target coords match current coords by comparing corners, x and y
+		const hasExactFit =
+			checkIfCoordsAreWithinErrorMargin(
+				bottomLeftCurrent.x,
+				bottomLeftTarget.x
+			) &&
+			checkIfCoordsAreWithinErrorMargin(
+				bottomLeftCurrent.y,
+				bottomLeftTarget.y
+			) &&
+			checkIfCoordsAreWithinErrorMargin(topRightCurrent.y, topRightTarget.y) &&
+			checkIfCoordsAreWithinErrorMargin(topRightCurrent.x, topRightTarget.x);
+
+		// Normalize angle to 0–360 degree range (360 becomes 0)
+		let angleInDegrees = draggedPiece.angle * (180 / Math.PI);
+		angleInDegrees = ((angleInDegrees % 360) + 360) % 360;
+
+		// Determine if the piece is flipped (close to 180° or 360°)
+		const isFlipped =
+			Math.abs(angleInDegrees - 180) < 10 || angleInDegrees > 350;
+
+		if (draggedPiece.symmetrical) {
+			// For symmetrical pieces, allow fit regardless of rotation
+			const visualFit =
+				checkIfCoordsAreWithinErrorMargin(
+					bottomLeftCurrent.x,
+					topRightTarget.x
+				) &&
+				checkIfCoordsAreWithinErrorMargin(
+					bottomLeftCurrent.y,
+					topRightTarget.y
+				);
+
+			return hasExactFit || visualFit;
+		} else {
+			// For non-symmetrical pieces, only exact fit expected
+			return hasExactFit && !isFlipped;
+		}
+	};
+
+	/**
 	 * Check if compared coord values are within error margin of each other
 	 */
 	const checkIfCoordsAreWithinErrorMargin = (
 		coordValue1: number,
 		coordValue2: number
 	): boolean => {
-		const errorMargin = 10;
+		const errorMargin = 6;
 
 		return Math.abs(coordValue1 - coordValue2) <= errorMargin;
 	};
@@ -507,6 +538,7 @@ const Puzzle: React.FC = () => {
 
 			body.originalWidth = svgWidth;
 			body.originalHeight = svgHeight;
+			body.symmetrical = svg.symmetrical;
 			Composite.add(world, body);
 
 			// const guideColor = getRandomColor();
