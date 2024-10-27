@@ -29,4 +29,5 @@ export interface CustomMatterBody extends Body {
 	originalWidth?: number;
 	originalHeight?: number;
 	symmetrical?: boolean;
+	fitted?: boolean;
 }

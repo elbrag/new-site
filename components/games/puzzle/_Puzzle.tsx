@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
 	Bodies,
 	Engine,
@@ -15,15 +15,35 @@ import Button from "@/components/ui/Button";
 import SvgImage, { SvgImageMotifs } from "@/components/ui/SvgImage";
 import usePuzzleFunctions from "@/hooks/games/usePuzzleFunctions";
 import { Coord, CustomMatterBody, Guide } from "@/lib/types/puzzle";
+import useInfoMessage from "@/hooks/useInfoMessage";
+import { AnimatePresence } from "framer-motion";
+import SuccessScreen from "@/components/ui/SuccessScreen";
+import { GameContext } from "@/context/GameContext";
+import { GameName } from "@/lib/types/game";
+import { ProgressContext } from "@/context/ProgressContext";
+import { RoundContext } from "@/context/RoundContext";
+import { FirebaseContext } from "@/context/FirebaseContext";
 // import { getRandomColor } from "@/lib/helpers/effects";
 
 const Puzzle: React.FC = () => {
+	// Refs
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const engineRef = useRef<Engine>(Engine.create());
 	const refImageRef = useRef<HTMLDivElement>(null);
+
+	// States
 	const [restart, setRestart] = useState<boolean>(false);
 	const [guides, setGuides] = useState<Guide[]>([]);
 
+	// Contexts
+	const { updateProgress, resetRound } = useContext(GameContext);
+	const { progress, getGameProgress } = useContext(ProgressContext);
+	const { numberOfRounds, setNumberOfRounds, allRoundsPassed, roundComplete } =
+		useContext(RoundContext);
+	const { userId } = useContext(FirebaseContext);
+
+	// Hooks
+	const { updateSuccessMessage, successMessage } = useInfoMessage();
 	const {
 		puzzlePieces,
 		refImgOriginalWidth,
@@ -43,6 +63,9 @@ const Puzzle: React.FC = () => {
 	 * On first render (init game)
 	 */
 	useEffect(() => {
+		if (!userId) return;
+		setNumberOfRounds(puzzlePieces.length);
+
 		setRestart(false);
 		// Define canvas, reference image, and engine and check that they exist
 		const canvas = canvasRef.current;
@@ -84,8 +107,12 @@ const Puzzle: React.FC = () => {
 
 		// Interactive state (gravity activated, pieces fall down)
 		let removeDragEvent: (() => void) | undefined;
-		setTimeout(() => {
-			const interactiveStateResult = setInteractiveState(canvas, engine, world);
+		setTimeout(async () => {
+			const interactiveStateResult = await setInteractiveState(
+				canvas,
+				engine,
+				world
+			);
 			removeDragEvent = interactiveStateResult.removeEvent;
 		}, 1500);
 
@@ -112,12 +139,19 @@ const Puzzle: React.FC = () => {
 			window.removeEventListener("resize", debouncedResize);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [restart]);
+	}, [restart, userId]);
+
+	useEffect(() => {
+		if (roundComplete) {
+			updateSuccessMessage("That's the spot!");
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [roundComplete]);
 
 	/**
 	 * Resize handler for the canvas
 	 */
-	const resizeHandler = (
+	const resizeHandler = async (
 		canvas: HTMLCanvasElement,
 		refImg: HTMLDivElement,
 		engine: Engine,
@@ -143,7 +177,7 @@ const Puzzle: React.FC = () => {
 		addPuzzlePieces(engine.world, imageStartX, imageStartY, sizeScale);
 
 		// Reset the interactive state
-		const interactiveStateResult = setInteractiveState(
+		const interactiveStateResult = await setInteractiveState(
 			canvas,
 			engine,
 			engine.world
@@ -175,14 +209,22 @@ const Puzzle: React.FC = () => {
 	/**
 	 * Set interactive state
 	 */
-	const setInteractiveState = (
+	const setInteractiveState = async (
 		canvas: HTMLCanvasElement,
 		engine: Engine,
 		world: World
-	): {
+	): Promise<{
 		removeEvent: () => void;
-	} => {
+	}> => {
+		// Turn on gravity
 		engine.gravity.y = 1;
+
+		// Check if any pieces are already fitted, if so, don't drop them
+		// const gameProgress = await getGameProgress(GameName.Puzzle, progress);
+		// world.bodies.forEach((body) => {
+		// 	if (!gameProgress.some((p) => p.roundId === body.id))
+		// 		body.isStatic = true;
+		// });
 
 		// Mouse
 		const mouse = Mouse.create(canvas);
@@ -201,9 +243,14 @@ const Puzzle: React.FC = () => {
 		/**
 		 * Handle mouse move
 		 */
-		const handleMouseMove = throttle(() => {
+		const handleMouseMove = async () => {
+			// Check if a piece is being dragged
 			if (mouseConstraint.body) {
 				const draggedPiece: CustomMatterBody = mouseConstraint.body;
+
+				// Skip if already matched
+				if (draggedPiece.fitted) return;
+
 				if (
 					!draggedPiece.steeringCoords ||
 					!draggedPiece.originalWidth ||
@@ -230,15 +277,25 @@ const Puzzle: React.FC = () => {
 					bottomLeftTarget,
 					topRightTarget
 				);
+				const gameProgress = await getGameProgress(GameName.Puzzle, progress);
+				const matchingProgress = gameProgress.find(
+					(p) => p.roundId === draggedPiece.id
+				);
+				if (itFits && (!matchingProgress || !matchingProgress?.completed)) {
+					console.log("It's a fit");
 
-				if (itFits) {
+					// Fix position and make piece non-interactive
 					draggedPiece.isStatic = true;
 					draggedPiece.position.x = bottomLeftTarget.x + width / 2;
 					draggedPiece.position.y = topRightTarget.y + height / 2;
 					draggedPiece.angle = 0;
+					draggedPiece.fitted = true;
+
+					// Update progress
+					await updateProgress(GameName.Puzzle, draggedPiece.id, true);
 				}
 			}
-		}, 600);
+		};
 
 		// Event listener tracking drag coords
 		Events.on(mouseConstraint, "mousemove", handleMouseMove);
@@ -298,7 +355,7 @@ const Puzzle: React.FC = () => {
 	) => {
 		const scale = sizeScale ?? 1;
 
-		puzzlePieces.forEach((piece, i) => {
+		puzzlePieces.forEach(async (piece) => {
 			const pieceWidth = piece.width * scale;
 			const pieceHeight = piece.height * scale;
 
@@ -343,6 +400,13 @@ const Puzzle: React.FC = () => {
 			body.originalWidth = pieceWidth;
 			body.originalHeight = pieceHeight;
 			body.symmetrical = piece.symmetrical;
+			body.id = piece.id;
+
+			// If piece has been fitted previously, make it unaffected by gravity
+			const gameProgress = await getGameProgress(GameName.Puzzle, progress);
+			const matchingProgress = gameProgress.find((p) => p.roundId === piece.id);
+			if (matchingProgress && matchingProgress.completed) body.isStatic = true;
+
 			Composite.add(world, body);
 
 			// const guideColor = getRandomColor();
@@ -354,7 +418,9 @@ const Puzzle: React.FC = () => {
 	/**
 	 * Reset pieces
 	 */
-	const resetPieces = () => {
+	const resetPieces = async () => {
+		const gameProgress = await getGameProgress(GameName.Puzzle, progress);
+		gameProgress.forEach((p) => resetRound(GameName.Puzzle, p.roundId));
 		setRestart(true);
 	};
 
@@ -398,6 +464,9 @@ const Puzzle: React.FC = () => {
 				</div>
 			</div>
 			<Button label="Reset" onClick={resetPieces} />
+			<AnimatePresence>
+				{successMessage && <SuccessScreen text={successMessage} />}
+			</AnimatePresence>
 		</div>
 	);
 };
