@@ -16,3 +16,5 @@ export interface HangmanProgressCompletedProps {
 }
 
 export type MemoryProgressCompletedProps = boolean;
+
+export type PuzzleCompletedProps = boolean;
