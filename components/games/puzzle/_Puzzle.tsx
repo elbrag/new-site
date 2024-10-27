@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-
 import {
 	Bodies,
 	Engine,
@@ -15,12 +14,7 @@ import { throttle, debounce } from "lodash";
 import Button from "@/components/ui/Button";
 import SvgImage, { SvgImageMotifs } from "@/components/ui/SvgImage";
 import usePuzzleFunctions from "@/hooks/games/usePuzzleFunctions";
-import {
-	Coord,
-	CustomMatterBody,
-	Guide,
-	PuzzlePiece,
-} from "@/lib/types/puzzle";
+import { Coord, CustomMatterBody, Guide } from "@/lib/types/puzzle";
 // import { getRandomColor } from "@/lib/helpers/effects";
 
 const Puzzle: React.FC = () => {
@@ -83,7 +77,7 @@ const Puzzle: React.FC = () => {
 
 		// Elements
 		addWalls(world, canvasWidth, canvasHeight);
-		addShapes(world, imageStartX, imageStartY, sizeScale);
+		addPuzzlePieces(world, imageStartX, imageStartY, sizeScale);
 
 		// Initial state (pieces in place)
 		setInitialState(engine);
@@ -113,7 +107,7 @@ const Puzzle: React.FC = () => {
 			Engine.clear(engine);
 			Render.stop(render);
 			if (removeDragEvent) {
-				removeDragEvent(); // Clean up the drag event
+				removeDragEvent();
 			}
 			window.removeEventListener("resize", debouncedResize);
 		};
@@ -146,7 +140,7 @@ const Puzzle: React.FC = () => {
 
 		// Re-add walls and puzzle pieces
 		addWalls(engine.world, canvas.width, canvas.height);
-		addShapes(engine.world, imageStartX, imageStartY, sizeScale);
+		addPuzzlePieces(engine.world, imageStartX, imageStartY, sizeScale);
 
 		// Reset the interactive state
 		const interactiveStateResult = setInteractiveState(
@@ -296,7 +290,7 @@ const Puzzle: React.FC = () => {
 	/**
 	 * Add shapes
 	 */
-	const addShapes = (
+	const addPuzzlePieces = (
 		world: World,
 		imageStartX: number,
 		imageStartY: number,
