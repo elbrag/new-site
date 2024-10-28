@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+	useCallback,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import {
 	Bodies,
 	Engine,
@@ -23,6 +29,7 @@ import { GameName } from "@/lib/types/game";
 import { ProgressContext } from "@/context/ProgressContext";
 import { RoundContext } from "@/context/RoundContext";
 import { FirebaseContext } from "@/context/FirebaseContext";
+import { ProgressRoundProps } from "@/lib/types/progress";
 // import { getRandomColor } from "@/lib/helpers/effects";
 
 const Puzzle: React.FC = () => {
@@ -30,10 +37,12 @@ const Puzzle: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const engineRef = useRef<Engine>(Engine.create());
 	const refImageRef = useRef<HTMLDivElement>(null);
+	const isGameInitialized = useRef(false);
 
 	// States
 	const [restart, setRestart] = useState<boolean>(false);
 	const [guides, setGuides] = useState<Guide[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
 
 	// Contexts
 	const { updateProgress, resetRound } = useContext(GameContext);
@@ -60,138 +69,6 @@ const Puzzle: React.FC = () => {
 	const pieceCategory = 0x0002;
 
 	/**
-	 * On first render (init game)
-	 */
-	useEffect(() => {
-		if (!userId) return;
-		setNumberOfRounds(puzzlePieces.length);
-
-		setRestart(false);
-		// Define canvas, reference image, and engine and check that they exist
-		const canvas = canvasRef.current;
-		const refImg = refImageRef.current;
-		const engine = engineRef.current;
-		if (!canvas || !engine || !refImg) return;
-
-		setupCanvas(canvas);
-		const { canvasWidth, canvasHeight, refImgWidth, refImgHeight, sizeScale } =
-			getBasicDimensions(canvas, refImg);
-		const { imageStartX, imageStartY } = getImageStartCoords(
-			canvasWidth,
-			canvasHeight,
-			refImgWidth,
-			refImgHeight
-		);
-
-		// Renderer
-		const render = Render.create({
-			canvas,
-			engine: engine,
-			options: {
-				width: canvasWidth,
-				height: canvasHeight,
-				wireframes: false,
-				background: "transparent",
-			},
-		});
-
-		// Composite
-		const world = engine.world;
-
-		// Elements
-		addWalls(world, canvasWidth, canvasHeight);
-		addPuzzlePieces(world, imageStartX, imageStartY, sizeScale);
-
-		// Initial state (pieces in place)
-		setInitialState(engine);
-
-		// Interactive state (gravity activated, pieces fall down)
-		let removeDragEvent: (() => void) | undefined;
-		setTimeout(async () => {
-			const interactiveStateResult = await setInteractiveState(
-				canvas,
-				engine,
-				world
-			);
-			removeDragEvent = interactiveStateResult.removeEvent;
-		}, 1500);
-
-		// Run the engine and render
-		Render.run(render);
-		const runner = Runner.create();
-		Runner.run(runner, engine);
-
-		// Resize event listener
-		const debouncedResize = debounce(
-			() => resizeHandler(canvas, refImg, engine, removeDragEvent),
-			1000
-		);
-		window.addEventListener("resize", debouncedResize);
-
-		// Clean up
-		return () => {
-			Composite.clear(world, false);
-			Engine.clear(engine);
-			Render.stop(render);
-			if (removeDragEvent) {
-				removeDragEvent();
-			}
-			window.removeEventListener("resize", debouncedResize);
-		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [restart, userId]);
-
-	useEffect(() => {
-		if (roundComplete) {
-			updateSuccessMessage("That's the spot!");
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [roundComplete]);
-
-	/**
-	 * Resize handler for the canvas
-	 */
-	const resizeHandler = async (
-		canvas: HTMLCanvasElement,
-		refImg: HTMLDivElement,
-		engine: Engine,
-		removeDragEvent: (() => void) | undefined
-	) => {
-		Composite.clear(engine.world, false);
-
-		// Get updated dimensions
-		setupCanvas(canvas);
-		const { refImgWidth, refImgHeight, sizeScale } = getBasicDimensions(
-			canvas,
-			refImg
-		);
-		const { imageStartX, imageStartY } = getImageStartCoords(
-			canvas.width,
-			canvas.height,
-			refImgWidth,
-			refImgHeight
-		);
-
-		// Re-add walls and puzzle pieces
-		addWalls(engine.world, canvas.width, canvas.height);
-		addPuzzlePieces(engine.world, imageStartX, imageStartY, sizeScale);
-
-		// Reset the interactive state
-		const interactiveStateResult = await setInteractiveState(
-			canvas,
-			engine,
-			engine.world
-		);
-		const newRemoveDragEvent = interactiveStateResult.removeEvent;
-
-		// Clean up the previous drag event
-		if (removeDragEvent) {
-			removeDragEvent();
-		}
-		removeDragEvent = newRemoveDragEvent;
-	};
-
-	/**
 	 * Setup canvas dimensions
 	 */
 	const setupCanvas = (canvas: HTMLCanvasElement) => {
@@ -209,103 +86,99 @@ const Puzzle: React.FC = () => {
 	/**
 	 * Set interactive state
 	 */
-	const setInteractiveState = async (
-		canvas: HTMLCanvasElement,
-		engine: Engine,
-		world: World
-	): Promise<{
-		removeEvent: () => void;
-	}> => {
-		// Turn on gravity
-		engine.gravity.y = 1;
+	const setInteractiveState = useCallback(
+		async (
+			canvas: HTMLCanvasElement,
+			engine: Engine,
+			world: World
+		): Promise<{
+			removeEvent: () => void;
+		}> => {
+			// Turn on gravity
+			engine.gravity.y = 1;
 
-		// Check if any pieces are already fitted, if so, don't drop them
-		// const gameProgress = await getGameProgress(GameName.Puzzle, progress);
-		// world.bodies.forEach((body) => {
-		// 	if (!gameProgress.some((p) => p.roundId === body.id))
-		// 		body.isStatic = true;
-		// });
-
-		// Mouse
-		const mouse = Mouse.create(canvas);
-		const mouseConstraint = MouseConstraint.create(engine, {
-			mouse: mouse,
-			constraint: {
-				stiffness: 0.2,
-				render: {
-					visible: false,
+			// Mouse
+			const mouse = Mouse.create(canvas);
+			const mouseConstraint = MouseConstraint.create(engine, {
+				mouse: mouse,
+				constraint: {
+					stiffness: 0.2,
+					render: {
+						visible: false,
+					},
 				},
-			},
-		});
-		// Add mouse constraint to the world
-		Composite.add(world, mouseConstraint);
+			});
+			// Add mouse constraint to the world
+			Composite.add(world, mouseConstraint);
 
-		/**
-		 * Handle mouse move
-		 */
-		const handleMouseMove = async () => {
-			// Check if a piece is being dragged
-			if (mouseConstraint.body) {
-				const draggedPiece: CustomMatterBody = mouseConstraint.body;
+			/**
+			 * Handle mouse move
+			 */
+			const handleMouseMove = async () => {
+				// Check if a piece is being dragged
+				if (mouseConstraint.body) {
+					const draggedPiece: CustomMatterBody = mouseConstraint.body;
 
-				// Skip if already matched
-				if (draggedPiece.fitted) return;
+					// Skip if already matched
+					if (draggedPiece.fitted) return;
 
-				if (
-					!draggedPiece.steeringCoords ||
-					!draggedPiece.originalWidth ||
-					!draggedPiece.originalHeight
-				)
-					return;
+					if (
+						!draggedPiece.steeringCoords ||
+						!draggedPiece.originalWidth ||
+						!draggedPiece.originalHeight
+					)
+						return;
 
-				// Dimensions
-				const width = draggedPiece.originalWidth;
-				const height = draggedPiece.originalHeight;
+					// Dimensions
+					const width = draggedPiece.originalWidth;
+					const height = draggedPiece.originalHeight;
 
-				const bottomLeftTarget = {
-					x: draggedPiece.steeringCoords.bottomLeft.x,
-					y: draggedPiece.steeringCoords.bottomLeft.y,
-				};
+					const bottomLeftTarget = {
+						x: draggedPiece.steeringCoords.bottomLeft.x,
+						y: draggedPiece.steeringCoords.bottomLeft.y,
+					};
 
-				const topRightTarget = {
-					x: draggedPiece.steeringCoords.topRight.x,
-					y: draggedPiece.steeringCoords.topRight.y,
-				};
+					const topRightTarget = {
+						x: draggedPiece.steeringCoords.topRight.x,
+						y: draggedPiece.steeringCoords.topRight.y,
+					};
 
-				const itFits = checkIfFit(
-					draggedPiece,
-					bottomLeftTarget,
-					topRightTarget
-				);
-				const gameProgress = await getGameProgress(GameName.Puzzle, progress);
-				const matchingProgress = gameProgress.find(
-					(p) => p.roundId === draggedPiece.id
-				);
-				if (itFits && (!matchingProgress || !matchingProgress?.completed)) {
-					console.log("It's a fit");
+					const itFits = checkIfFit(
+						draggedPiece,
+						bottomLeftTarget,
+						topRightTarget
+					);
+					const gameProgress = await getGameProgress(GameName.Puzzle, progress);
+					const matchingProgress = gameProgress.find(
+						(p) => p.roundId === draggedPiece.id
+					);
+					if (itFits && (!matchingProgress || !matchingProgress?.completed)) {
+						console.log("It's a fit");
 
-					// Fix position and make piece non-interactive
-					draggedPiece.isStatic = true;
-					draggedPiece.position.x = bottomLeftTarget.x + width / 2;
-					draggedPiece.position.y = topRightTarget.y + height / 2;
-					draggedPiece.angle = 0;
-					draggedPiece.fitted = true;
+						// Fix position and make piece non-interactive
+						draggedPiece.isStatic = true;
+						draggedPiece.position.x = bottomLeftTarget.x + width / 2;
+						draggedPiece.position.y = topRightTarget.y + height / 2;
+						draggedPiece.angle = 0;
+						draggedPiece.fitted = true;
 
-					// Update progress
-					await updateProgress(GameName.Puzzle, draggedPiece.id, true);
+						// Update progress
+						await updateProgress(GameName.Puzzle, draggedPiece.id, true);
+					}
 				}
-			}
-		};
+			};
 
-		// Event listener tracking drag coords
-		Events.on(mouseConstraint, "mousemove", handleMouseMove);
+			// Event listener tracking drag coords
+			Events.on(mouseConstraint, "mousemove", handleMouseMove);
 
-		// Remove event, return to be used along with other cleanups
-		return {
-			removeEvent: () =>
-				Events.off(mouseConstraint, "mousemove", handleMouseMove),
-		};
-	};
+			// Remove event, return to be used along with other cleanups
+			return {
+				removeEvent: () =>
+					Events.off(mouseConstraint, "mousemove", handleMouseMove),
+			};
+		},
+		[checkIfFit, getGameProgress, progress, updateProgress]
+	);
 
 	/**
 	 * Add walls
@@ -345,75 +218,81 @@ const Puzzle: React.FC = () => {
 	};
 
 	/**
-	 * Add shapes
+	 * Add puzzle pieces
 	 */
-	const addPuzzlePieces = (
-		world: World,
-		imageStartX: number,
-		imageStartY: number,
-		sizeScale?: number
-	) => {
-		const scale = sizeScale ?? 1;
+	const addPuzzlePieces = useCallback(
+		(
+			world: World,
+			imageStartX: number,
+			imageStartY: number,
+			gameProgress: ProgressRoundProps[],
+			sizeScale?: number
+		) => {
+			const scale = sizeScale ?? 1;
 
-		puzzlePieces.forEach(async (piece) => {
-			const pieceWidth = piece.width * scale;
-			const pieceHeight = piece.height * scale;
+			puzzlePieces.forEach(async (piece) => {
+				const pieceWidth = piece.width * scale;
+				const pieceHeight = piece.height * scale;
 
-			const scaledTopRightX = piece.steeringCoords.topRight.x * scale;
-			const scaledBottomLeftY = piece.steeringCoords.bottomLeft.y * scale;
+				const scaledTopRightX = piece.steeringCoords.topRight.x * scale;
+				const scaledBottomLeftY = piece.steeringCoords.bottomLeft.y * scale;
 
-			const x = imageStartX + scaledTopRightX - pieceWidth / 2;
-			const y = imageStartY + scaledBottomLeftY - pieceHeight / 2;
+				const x = imageStartX + scaledTopRightX - pieceWidth / 2;
+				const y = imageStartY + scaledBottomLeftY - pieceHeight / 2;
 
-			const body: CustomMatterBody = Bodies.rectangle(
-				x,
-				y,
-				pieceWidth,
-				pieceHeight,
-				{
-					restitution: 1,
-					friction: 0.8,
-					render: {
-						sprite: {
-							texture: piece.url,
-							yScale: scale,
-							xScale: scale,
+				const body: CustomMatterBody = Bodies.rectangle(
+					x,
+					y,
+					pieceWidth,
+					pieceHeight,
+					{
+						restitution: 1,
+						friction: 0.8,
+						render: {
+							sprite: {
+								texture: piece.url,
+								yScale: scale,
+								xScale: scale,
+							},
 						},
+						collisionFilter: {
+							category: pieceCategory,
+							mask: wallCategory, // Collides with walls
+						},
+					}
+				);
+				body.steeringCoords = {
+					topRight: {
+						x: imageStartX + scaledTopRightX,
+						y: imageStartY + piece.steeringCoords.topRight.y * scale,
 					},
-					collisionFilter: {
-						category: pieceCategory,
-						mask: wallCategory, // Collides with walls
+					bottomLeft: {
+						x: imageStartX + piece.steeringCoords.bottomLeft.x * scale,
+						y: imageStartY + scaledBottomLeftY,
 					},
-				}
-			);
-			body.steeringCoords = {
-				topRight: {
-					x: imageStartX + scaledTopRightX,
-					y: imageStartY + piece.steeringCoords.topRight.y * scale,
-				},
-				bottomLeft: {
-					x: imageStartX + piece.steeringCoords.bottomLeft.x * scale,
-					y: imageStartY + scaledBottomLeftY,
-				},
-			};
+				};
 
-			body.originalWidth = pieceWidth;
-			body.originalHeight = pieceHeight;
-			body.symmetrical = piece.symmetrical;
-			body.id = piece.id;
+				body.originalWidth = pieceWidth;
+				body.originalHeight = pieceHeight;
+				body.symmetrical = piece.symmetrical;
+				body.id = piece.id;
 
-			// If piece has been fitted previously, make it unaffected by gravity
-			const gameProgress = await getGameProgress(GameName.Puzzle, progress);
-			const matchingProgress = gameProgress.find((p) => p.roundId === piece.id);
-			if (matchingProgress && matchingProgress.completed) body.isStatic = true;
+				// If piece has been fitted previously, make it unaffected by gravity
+				const matchingProgress = gameProgress.find(
+					(p) => p.roundId === piece.id
+				);
+				if (matchingProgress && matchingProgress.completed)
+					body.isStatic = true;
 
-			Composite.add(world, body);
+				Composite.add(world, body);
 
-			// const guideColor = getRandomColor();
-			// createGuideline(body.steeringCoords.topRight, guideColor);
-			// createGuideline(body.steeringCoords.bottomLeft, guideColor);
-		});
-	};
+				// const guideColor = getRandomColor();
+				// createGuideline(body.steeringCoords.topRight, guideColor);
+				// createGuideline(body.steeringCoords.bottomLeft, guideColor);
+			});
+		},
+		[puzzlePieces]
+	);
 
 	/**
 	 * Reset pieces
@@ -430,6 +309,178 @@ const Puzzle: React.FC = () => {
 	const createGuideline = (coord: Coord, color: string) => {
 		setGuides((prevGuides) => [...prevGuides, { coord: coord, color: color }]);
 	};
+
+	/**
+	 * Resize handler for the canvas
+	 */
+	const resizeHandler = useCallback(
+		async (
+			canvas: HTMLCanvasElement,
+			refImg: HTMLDivElement,
+			engine: Engine,
+			removeDragEvent: (() => void) | undefined
+		) => {
+			Composite.clear(engine.world, false);
+
+			// Get updated dimensions
+			setupCanvas(canvas);
+			const { refImgWidth, refImgHeight, sizeScale } = getBasicDimensions(
+				canvas,
+				refImg
+			);
+			const { imageStartX, imageStartY } = getImageStartCoords(
+				canvas.width,
+				canvas.height,
+				refImgWidth,
+				refImgHeight
+			);
+
+			// Re-add walls and puzzle pieces
+			addWalls(engine.world, canvas.width, canvas.height);
+			const gameProgress = await getGameProgress(GameName.Puzzle, progress);
+			addPuzzlePieces(
+				engine.world,
+				imageStartX,
+				imageStartY,
+				gameProgress,
+				sizeScale
+			);
+
+			// Reset the interactive state
+			const interactiveStateResult = await setInteractiveState(
+				canvas,
+				engine,
+				engine.world
+			);
+			const newRemoveDragEvent = interactiveStateResult.removeEvent;
+
+			// Clean up the previous drag event
+			if (removeDragEvent) {
+				removeDragEvent();
+			}
+			removeDragEvent = newRemoveDragEvent;
+		},
+		[
+			addPuzzlePieces,
+			getBasicDimensions,
+			getGameProgress,
+			getImageStartCoords,
+			progress,
+			setInteractiveState,
+		]
+	);
+
+	/**
+	 * Watcher to ensure game is ready to init
+	 */
+	useEffect(() => {
+		if (userId && progress.length > 0 && !isGameInitialized.current) {
+			isGameInitialized.current = true;
+			initGame();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [progress, restart, userId]);
+
+	/**
+	 * Round complete watcher
+	 */
+	useEffect(() => {
+		if (roundComplete) {
+			updateSuccessMessage("That's the spot!");
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [roundComplete]);
+
+	/**
+	 * Init game
+	 */
+	const initGame = useCallback(async () => {
+		setNumberOfRounds(puzzlePieces.length);
+		setRestart(false);
+
+		// Define canvas, reference image, and engine and check that they exist
+		const canvas = canvasRef.current;
+		const refImg = refImageRef.current;
+		const engine = engineRef.current;
+		if (!canvas || !engine || !refImg) return;
+
+		setupCanvas(canvas);
+		const { canvasWidth, canvasHeight, refImgWidth, refImgHeight, sizeScale } =
+			getBasicDimensions(canvas, refImg);
+		const { imageStartX, imageStartY } = getImageStartCoords(
+			canvasWidth,
+			canvasHeight,
+			refImgWidth,
+			refImgHeight
+		);
+
+		// Renderer
+		const render = Render.create({
+			canvas,
+			engine: engine,
+			options: {
+				width: canvasWidth,
+				height: canvasHeight,
+				wireframes: false,
+				background: "transparent",
+			},
+		});
+
+		// Composite
+		const world = engine.world;
+
+		// Elements
+		addWalls(world, canvasWidth, canvasHeight);
+		const gameProgress = await getGameProgress(GameName.Puzzle, progress);
+		addPuzzlePieces(world, imageStartX, imageStartY, gameProgress, sizeScale);
+
+		// Initial state (pieces in place)
+		setInitialState(engine);
+
+		// Interactive state (gravity activated, pieces fall down)
+		let removeDragEvent: (() => void) | undefined;
+		setTimeout(async () => {
+			const interactiveStateResult = await setInteractiveState(
+				canvas,
+				engine,
+				world
+			);
+			removeDragEvent = interactiveStateResult.removeEvent;
+		}, 1500);
+
+		// Run the engine and render
+		Render.run(render);
+		const runner = Runner.create();
+		Runner.run(runner, engine);
+
+		// Resize event listener
+		const debouncedResize = debounce(
+			() => resizeHandler(canvas, refImg, engine, removeDragEvent),
+			1000
+		);
+		window.addEventListener("resize", debouncedResize);
+
+		// Clean up
+		return () => {
+			Composite.clear(world, false);
+			Engine.clear(engine);
+			Render.stop(render);
+			if (removeDragEvent) {
+				removeDragEvent();
+			}
+			window.removeEventListener("resize", debouncedResize);
+		};
+	}, [
+		addPuzzlePieces,
+		getBasicDimensions,
+		getGameProgress,
+		getImageStartCoords,
+		progress,
+		puzzlePieces.length,
+		resizeHandler,
+		setInteractiveState,
+		setNumberOfRounds,
+	]);
 
 	return (
 		<div className="px-6 lg:px-12">
