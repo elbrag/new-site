@@ -23,6 +23,7 @@ import usePuzzleFunctions from "@/hooks/games/usePuzzleFunctions";
 import { Coord, CustomMatterBody, Guide } from "@/lib/types/puzzle";
 import { GameContext } from "@/context/GameContext";
 import { RoundContext } from "@/context/RoundContext";
+import { ProgressContext } from "@/context/ProgressContext";
 // import { getRandomColor } from "@/lib/helpers/effects";
 
 const Puzzle: React.FC = () => {
@@ -48,6 +49,7 @@ const Puzzle: React.FC = () => {
 
 	// Contexts
 	const { updateProgress } = useContext(GameContext);
+	const { progress, getGameProgress } = useContext(ProgressContext);
 	const { numberOfRounds, setNumberOfRounds } = useContext(RoundContext);
 
 	const wallThickness = 5;
@@ -55,52 +57,6 @@ const Puzzle: React.FC = () => {
 	// Collision categories
 	const wallCategory = 0x0001;
 	const pieceCategory = 0x0002;
-
-	/**
-	 * Resize handler for the canvas
-	 */
-	const resizeHandler = useCallback(
-		(
-			canvas: HTMLCanvasElement,
-			refImg: HTMLDivElement,
-			engine: Engine,
-			removeDragEvent: (() => void) | undefined
-		) => {
-			Composite.clear(engine.world, false);
-
-			// Get updated dimensions
-			setupCanvas(canvas);
-			const { refImgWidth, refImgHeight, sizeScale } = getBasicDimensions(
-				canvas,
-				refImg
-			);
-			const { imageStartX, imageStartY } = getImageStartCoords(
-				canvas.width,
-				canvas.height,
-				refImgWidth,
-				refImgHeight
-			);
-
-			// Re-add walls and puzzle pieces
-			addWalls(engine.world, canvas.width, canvas.height);
-			addPuzzlePieces(engine.world, imageStartX, imageStartY, sizeScale);
-
-			// Reset the interactive state
-			const interactiveStateResult = setInteractiveState(
-				canvas,
-				engine,
-				engine.world
-			);
-			const newRemoveDragEvent = interactiveStateResult.removeEvent;
-
-			// Clean up the previous drag event
-			if (removeDragEvent) {
-				removeDragEvent();
-			}
-			removeDragEvent = newRemoveDragEvent;
-		},
-		[]
-	);
 
 	/**
 	 * Setup canvas dimensions
@@ -116,6 +72,13 @@ const Puzzle: React.FC = () => {
 	const setInitialState = (engine: Engine) => {
 		engine.gravity.y = 0;
 	};
+
+	/**
+	 * On piece fit
+	 */
+	const onPieceFit = useCallback(() => {
+		console.log("Piece fits, here's the progress", progress);
+	}, [progress]);
 
 	/**
 	 * Set interactive state
@@ -147,10 +110,11 @@ const Puzzle: React.FC = () => {
 			/**
 			 * Handle mouse move
 			 */
-			const handleMouseMove = throttle(() => {
+			const handleMouseMove = async () => {
 				if (mouseConstraint.body) {
 					const draggedPiece: CustomMatterBody = mouseConstraint.body;
 					if (
+						draggedPiece.fitted ||
 						!draggedPiece.steeringCoords ||
 						!draggedPiece.originalWidth ||
 						!draggedPiece.originalHeight
@@ -182,10 +146,11 @@ const Puzzle: React.FC = () => {
 						draggedPiece.position.x = bottomLeftTarget.x + width / 2;
 						draggedPiece.position.y = topRightTarget.y + height / 2;
 						draggedPiece.angle = 0;
+						draggedPiece.fitted = true;
 						onPieceFit();
 					}
 				}
-			}, 600);
+			};
 
 			// Event listener tracking drag coords
 			Events.on(mouseConstraint, "mousemove", handleMouseMove);
@@ -196,12 +161,8 @@ const Puzzle: React.FC = () => {
 					Events.off(mouseConstraint, "mousemove", handleMouseMove),
 			};
 		},
-		[]
+		[checkIfFit, onPieceFit]
 	);
-
-	const onPieceFit = useCallback(() => {
-		console.log("Piece fits");
-	}, []);
 
 	/**
 	 * Add walls
@@ -304,7 +265,7 @@ const Puzzle: React.FC = () => {
 				// createGuideline(body.steeringCoords.bottomLeft, guideColor);
 			});
 		},
-		[]
+		[puzzlePieces]
 	);
 
 	/**
@@ -320,6 +281,57 @@ const Puzzle: React.FC = () => {
 	const createGuideline = (coord: Coord, color: string) => {
 		setGuides((prevGuides) => [...prevGuides, { coord: coord, color: color }]);
 	};
+
+	/**
+	 * Resize handler for the canvas
+	 */
+	const resizeHandler = useCallback(
+		(
+			canvas: HTMLCanvasElement,
+			refImg: HTMLDivElement,
+			engine: Engine,
+			removeDragEvent: (() => void) | undefined
+		) => {
+			Composite.clear(engine.world, false);
+
+			// Get updated dimensions
+			setupCanvas(canvas);
+			const { refImgWidth, refImgHeight, sizeScale } = getBasicDimensions(
+				canvas,
+				refImg
+			);
+			const { imageStartX, imageStartY } = getImageStartCoords(
+				canvas.width,
+				canvas.height,
+				refImgWidth,
+				refImgHeight
+			);
+
+			// Re-add walls and puzzle pieces
+			addWalls(engine.world, canvas.width, canvas.height);
+			addPuzzlePieces(engine.world, imageStartX, imageStartY, sizeScale);
+
+			// Reset the interactive state
+			const interactiveStateResult = setInteractiveState(
+				canvas,
+				engine,
+				engine.world
+			);
+			const newRemoveDragEvent = interactiveStateResult.removeEvent;
+
+			// Clean up the previous drag event
+			if (removeDragEvent) {
+				removeDragEvent();
+			}
+			removeDragEvent = newRemoveDragEvent;
+		},
+		[
+			addPuzzlePieces,
+			getBasicDimensions,
+			getImageStartCoords,
+			setInteractiveState,
+		]
+	);
 
 	/**
 	 * Init game
@@ -425,6 +437,13 @@ const Puzzle: React.FC = () => {
 			setNumberOfRounds(puzzlePieces.length);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [numberOfRounds, puzzlePieces.length]);
+
+	/**
+	 *
+	 */
+	useEffect(() => {
+		console.log("progress", progress);
+	}, [progress]);
 
 	return (
 		<div className="px-6 lg:px-12">
