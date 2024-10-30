@@ -184,6 +184,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			| MemoryProgressCompletedProps
 			| PuzzleCompletedProps
 	) => {
+		console.log("updateProgress", userId);
 		if (!firebaseDatabase) return firebaseDatabaseIsMissing;
 		if (!userId) return userIdIsMissing;
 		const shouldReset =

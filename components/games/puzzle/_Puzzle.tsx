@@ -24,6 +24,8 @@ import { Coord, CustomMatterBody, Guide } from "@/lib/types/puzzle";
 import { GameContext } from "@/context/GameContext";
 import { RoundContext } from "@/context/RoundContext";
 import { ProgressContext } from "@/context/ProgressContext";
+import { GameName } from "@/lib/types/game";
+import { FirebaseContext } from "@/context/FirebaseContext";
 // import { getRandomColor } from "@/lib/helpers/effects";
 
 const Puzzle: React.FC = () => {
@@ -51,6 +53,12 @@ const Puzzle: React.FC = () => {
 	const { updateProgress } = useContext(GameContext);
 	const { progress, getGameProgress } = useContext(ProgressContext);
 	const { numberOfRounds, setNumberOfRounds } = useContext(RoundContext);
+	const { userId } = useContext(FirebaseContext);
+
+	const progressRef = useRef(progress);
+	useEffect(() => {
+		progressRef.current = progress;
+	}, [progress]);
 
 	const wallThickness = 5;
 
@@ -76,9 +84,23 @@ const Puzzle: React.FC = () => {
 	/**
 	 * On piece fit
 	 */
-	const onPieceFit = useCallback(() => {
-		console.log("Piece fits, here's the progress", progress);
-	}, [progress]);
+	const onPieceFit = useCallback(
+		async (draggedPiece: CustomMatterBody) => {
+			console.log("Piece fits, here's the progress", progressRef.current);
+			const gameProgress = await getGameProgress(
+				GameName.Puzzle,
+				progressRef.current
+			);
+			console.log(gameProgress, draggedPiece.id);
+			const matchingProgress = gameProgress.find(
+				(p) => p.roundId === draggedPiece.id
+			);
+			if (!matchingProgress || !matchingProgress?.completed) {
+				updateProgress(GameName.Puzzle, draggedPiece.id, true);
+			}
+		},
+		[getGameProgress, updateProgress]
+	);
 
 	/**
 	 * Set interactive state
@@ -147,7 +169,7 @@ const Puzzle: React.FC = () => {
 						draggedPiece.position.y = topRightTarget.y + height / 2;
 						draggedPiece.angle = 0;
 						draggedPiece.fitted = true;
-						onPieceFit();
+						onPieceFit(draggedPiece);
 					}
 				}
 			};
@@ -161,7 +183,7 @@ const Puzzle: React.FC = () => {
 					Events.off(mouseConstraint, "mousemove", handleMouseMove),
 			};
 		},
-		[checkIfFit, onPieceFit]
+		[checkIfFit, onPieceFit, progressRef.current, getGameProgress]
 	);
 
 	/**
@@ -205,13 +227,19 @@ const Puzzle: React.FC = () => {
 	 * Add shapes
 	 */
 	const addPuzzlePieces = useCallback(
-		(
+		async (
 			world: World,
 			imageStartX: number,
 			imageStartY: number,
 			sizeScale?: number
 		) => {
 			const scale = sizeScale ?? 1;
+			// TODO: this logs empty array
+			const gameProgress = await getGameProgress(
+				GameName.Puzzle,
+				progressRef.current
+			);
+			console.log(gameProgress);
 
 			puzzlePieces.forEach((piece, i) => {
 				const pieceWidth = piece.width * scale;
@@ -258,6 +286,7 @@ const Puzzle: React.FC = () => {
 				body.originalWidth = pieceWidth;
 				body.originalHeight = pieceHeight;
 				body.symmetrical = piece.symmetrical;
+				body.id = piece.id;
 				Composite.add(world, body);
 
 				// const guideColor = getRandomColor();
@@ -265,7 +294,7 @@ const Puzzle: React.FC = () => {
 				// createGuideline(body.steeringCoords.bottomLeft, guideColor);
 			});
 		},
-		[puzzlePieces]
+		[puzzlePieces, progressRef.current]
 	);
 
 	/**
@@ -422,11 +451,11 @@ const Puzzle: React.FC = () => {
 	 * Init game on first render
 	 */
 	useEffect(() => {
-		if (!gameInited.current) {
+		if (userId && !gameInited.current) {
 			gameInited.current = true;
 			initGame();
 		}
-	}, [initGame]);
+	}, [initGame, userId]);
 
 	/**
 	 * Set number of rounds initially
@@ -437,13 +466,6 @@ const Puzzle: React.FC = () => {
 			setNumberOfRounds(puzzlePieces.length);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [numberOfRounds, puzzlePieces.length]);
-
-	/**
-	 *
-	 */
-	useEffect(() => {
-		console.log("progress", progress);
-	}, [progress]);
 
 	return (
 		<div className="px-6 lg:px-12">
