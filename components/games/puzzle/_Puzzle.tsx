@@ -16,7 +16,7 @@ import {
 	MouseConstraint,
 	Events,
 } from "matter-js";
-import { throttle, debounce } from "lodash";
+import { debounce } from "lodash";
 import Button from "@/components/ui/Button";
 import SvgImage, { SvgImageMotifs } from "@/components/ui/SvgImage";
 import usePuzzleFunctions from "@/hooks/games/usePuzzleFunctions";
@@ -89,6 +89,7 @@ const Puzzle: React.FC = () => {
 	const onPieceFit = useCallback(
 		async (draggedPiece: CustomMatterBody) => {
 			console.log("Piece fits, here's the progress", progressRef.current);
+			// Check puzzle progress
 			const gameProgress = await getGameProgress(
 				GameName.Puzzle,
 				progressRef.current
@@ -96,6 +97,7 @@ const Puzzle: React.FC = () => {
 			const matchingProgress = gameProgress.find(
 				(p) => p.roundId === draggedPiece.id
 			);
+			// If piece is not already fitted, update progress
 			if (!matchingProgress || !matchingProgress?.completed) {
 				updateProgress(GameName.Puzzle, draggedPiece.id, true);
 			}
@@ -184,7 +186,7 @@ const Puzzle: React.FC = () => {
 					Events.off(mouseConstraint, "mousemove", handleMouseMove),
 			};
 		},
-		[checkIfFit, onPieceFit, progressRef.current, getGameProgress]
+		[checkIfFit, onPieceFit]
 	);
 
 	/**
@@ -287,9 +289,11 @@ const Puzzle: React.FC = () => {
 				body.symmetrical = piece.symmetrical;
 				body.id = piece.id;
 
+				// Check if piece is already fitted
 				const matchingProgress = gameProgress.find(
 					(p) => p.roundId === body.id
 				);
+				// Don't allow fitted pieces to fall
 				if (matchingProgress?.completed) {
 					body.isStatic = true;
 					body.fitted = true;
