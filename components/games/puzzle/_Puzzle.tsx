@@ -55,11 +55,13 @@ const Puzzle: React.FC = () => {
 	const { numberOfRounds, setNumberOfRounds } = useContext(RoundContext);
 	const { userId } = useContext(FirebaseContext);
 
+	// Mirror progress from context
 	const progressRef = useRef(progress);
 	useEffect(() => {
 		progressRef.current = progress;
 	}, [progress]);
 
+	// Wall thickness
 	const wallThickness = 5;
 
 	// Collision categories
@@ -91,7 +93,6 @@ const Puzzle: React.FC = () => {
 				GameName.Puzzle,
 				progressRef.current
 			);
-			console.log(gameProgress, draggedPiece.id);
 			const matchingProgress = gameProgress.find(
 				(p) => p.roundId === draggedPiece.id
 			);
@@ -234,12 +235,10 @@ const Puzzle: React.FC = () => {
 			sizeScale?: number
 		) => {
 			const scale = sizeScale ?? 1;
-			// TODO: this logs empty array
 			const gameProgress = await getGameProgress(
 				GameName.Puzzle,
 				progressRef.current
 			);
-			console.log(gameProgress);
 
 			puzzlePieces.forEach((piece, i) => {
 				const pieceWidth = piece.width * scale;
@@ -287,6 +286,15 @@ const Puzzle: React.FC = () => {
 				body.originalHeight = pieceHeight;
 				body.symmetrical = piece.symmetrical;
 				body.id = piece.id;
+
+				const matchingProgress = gameProgress.find(
+					(p) => p.roundId === body.id
+				);
+				if (matchingProgress?.completed) {
+					body.isStatic = true;
+					body.fitted = true;
+				}
+
 				Composite.add(world, body);
 
 				// const guideColor = getRandomColor();
@@ -294,7 +302,7 @@ const Puzzle: React.FC = () => {
 				// createGuideline(body.steeringCoords.bottomLeft, guideColor);
 			});
 		},
-		[puzzlePieces, progressRef.current]
+		[puzzlePieces, progressRef, getGameProgress]
 	);
 
 	/**
@@ -451,17 +459,16 @@ const Puzzle: React.FC = () => {
 	 * Init game on first render
 	 */
 	useEffect(() => {
-		if (userId && !gameInited.current) {
+		if (userId && !gameInited.current && progressRef.current) {
 			gameInited.current = true;
 			initGame();
 		}
-	}, [initGame, userId]);
+	}, [initGame, userId, progressRef]);
 
 	/**
 	 * Set number of rounds initially
 	 */
 	useEffect(() => {
-		console.log("setNumberOfRounds?");
 		if (puzzlePieces.length && numberOfRounds === 0)
 			setNumberOfRounds(puzzlePieces.length);
 		// eslint-disable-next-line react-hooks/exhaustive-deps

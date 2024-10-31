@@ -191,15 +191,16 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			(Array.isArray(completed) && completed.length === 0) ||
 			(!Array.isArray(completed) && completed === false);
 
-		await setProgress((prevProgress: ProgressProps[]) => {
+		await setProgress((prevProgress: ProgressProps[] | undefined) => {
+			const _prevProgress = prevProgress ?? [];
 			// Find the index of the object with the same game name
-			const existingGameIndex = prevProgress.findIndex(
+			const existingGameIndex = _prevProgress.findIndex(
 				(item: ProgressProps) => item.game === game
 			);
 
 			// If an object with the same game name exists
 			if (existingGameIndex !== -1) {
-				const updatedProgress = prevProgress.map(
+				const updatedProgress = _prevProgress.map(
 					(item: ProgressProps, index: number) => {
 						if (index === existingGameIndex) {
 							// Find the index of the progress item with the same roundId
@@ -272,7 +273,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			} else {
 				// If no object with the same game name exists, add a new object to progress
 				const newProgress = [
-					...prevProgress,
+					..._prevProgress,
 					{
 						game: game,
 						rounds: [

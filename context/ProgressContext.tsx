@@ -12,9 +12,9 @@ import { Database } from "firebase/database";
 import { createContext, useState } from "react";
 
 interface ProgressContextProps {
-	progress: ProgressProps[];
+	progress: ProgressProps[] | undefined;
 	setProgress: (
-		progress: (prevProgress: ProgressProps[]) => ProgressProps[]
+		progress: (prevProgress: ProgressProps[] | undefined) => ProgressProps[]
 	) => void;
 	getGameProgress: (
 		_game: GameName,
@@ -48,7 +48,7 @@ interface ProgressContextProviderProps {
 const ProgressContextProvider = ({
 	children,
 }: ProgressContextProviderProps) => {
-	const [progress, setProgress] = useState<ProgressProps[]>([]);
+	const [progress, setProgress] = useState<ProgressProps[]>();
 	const { getUserData } = useUserData();
 
 	/**
@@ -63,9 +63,7 @@ const ProgressContextProvider = ({
 			userId,
 			"progress"
 		);
-		if (storedProgress?.length) {
-			setProgress(JSON.parse(storedProgress));
-		}
+		setProgress(storedProgress?.length ? JSON.parse(storedProgress) : []);
 	};
 
 	/**
@@ -76,7 +74,7 @@ const ProgressContextProvider = ({
 		_progress?: ProgressProps[]
 	): ProgressRoundProps[] => {
 		return (
-			(_progress ?? progress).find((p: ProgressProps) => p.game === game)
+			(_progress ?? progress ?? []).find((p: ProgressProps) => p.game === game)
 				?.rounds ?? []
 		);
 	};

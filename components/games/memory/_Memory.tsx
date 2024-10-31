@@ -63,15 +63,18 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 	/**
 	 * On progress state update
 	 */
-	const onProgressUpdate = useCallback(async (progress: ProgressProps[]) => {
-		const gameProgress = await getGameProgress(GameName.Memory, progress);
-		const foundMatchesIds = gameProgress.map((match) => match.roundId);
-		const foundMatchesData = await fetchGameData(GameName.Memory, "POST", {
-			foundMatchesIds,
-		});
-		setFoundCardData(foundMatchesData);
+	const onProgressUpdate = useCallback(
+		async (progress: ProgressProps[] | undefined) => {
+			const gameProgress = await getGameProgress(GameName.Memory, progress);
+			const foundMatchesIds = gameProgress.map((match) => match.roundId);
+			const foundMatchesData = await fetchGameData(GameName.Memory, "POST", {
+				foundMatchesIds,
+			});
+			setFoundCardData(foundMatchesData);
+		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+		[]
+	);
 
 	/**
 	 * Set number of rounds initially
