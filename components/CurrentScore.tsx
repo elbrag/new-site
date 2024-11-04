@@ -3,9 +3,11 @@ import { useContext } from "react";
 import ScoreMessage from "./ui/ScoreMessage";
 import { AnimatePresence } from "framer-motion";
 import { FirebaseContext } from "@/context/FirebaseContext";
+import { ScoreContext } from "@/context/ScoreContext";
 
 export default function CurrentScore() {
-	const { currentScore, scoreMessage } = useContext(GameContext);
+	const { scoreMessage } = useContext(GameContext);
+	const { currentScore } = useContext(ScoreContext);
 	const { signedIn } = useContext(FirebaseContext);
 
 	return (

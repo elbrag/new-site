@@ -25,9 +25,9 @@ import {
 	firebaseDatabaseIsMissing,
 	userIdIsMissing,
 } from "@/lib/helpers/errorThrowMessages";
+import { ScoreContext } from "./ScoreContext";
 interface GameContextProps {
 	gameUrls: string[];
-	currentScore: number;
 	username: string | null;
 	updateUsernameInFirebase: (_username: string) => void;
 	updateProgress: (
@@ -45,7 +45,6 @@ interface GameContextProps {
 
 export const GameContext = createContext<GameContextProps>({
 	gameUrls: [],
-	currentScore: 0,
 	username: null,
 	updateUsernameInFirebase: () => {},
 	updateProgress: () => {},
@@ -66,14 +65,8 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	 * Hooks
 	 */
 	const { scoreMessage, updateScoreMessage } = useInfoMessage();
-	const {
-		username,
-		updateUsernameInFirebase,
-		currentScore,
-		updateScoreInFirebase,
-		firebaseDatabase,
-		userId,
-	} = useContext(FirebaseContext);
+	const { username, updateUsernameInFirebase, firebaseDatabase, userId } =
+		useContext(FirebaseContext);
 
 	const {
 		setRoundComplete,
@@ -86,6 +79,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	} = useContext(RoundContext);
 
 	const { setProgress, getRoundStatus } = useContext(ProgressContext);
+	const { updateFirebaseScore } = useContext(ScoreContext);
 
 	const { updateErrors } = useContext(ErrorContext);
 
@@ -184,7 +178,6 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			| MemoryProgressCompletedProps
 			| PuzzleCompletedProps
 	) => {
-		console.log("updateProgress", userId);
 		if (!firebaseDatabase) return firebaseDatabaseIsMissing;
 		if (!userId) return userIdIsMissing;
 		const shouldReset =
@@ -317,8 +310,9 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	const updateScore = (game: GameName) => {
 		const gameToScore = gamesData.find((data) => data.url === game);
 		const score = gameToScore ? gameToScore.scorePerRound : null;
-		if (score) {
-			updateScoreInFirebase(score);
+		console.log("updateScore in GameContext, score:", score);
+		if (score && firebaseDatabase && userId) {
+			updateFirebaseScore(firebaseDatabase, userId, score);
 			updateScoreMessage(`+${score}`);
 		}
 	};
@@ -327,7 +321,6 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		<GameContext.Provider
 			value={{
 				gameUrls,
-				currentScore,
 				username,
 				updateUsernameInFirebase,
 				updateProgress,

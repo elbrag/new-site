@@ -26,7 +26,6 @@ import {
 	signOut,
 } from "firebase/auth";
 import { useEffect, useState } from "react";
-import useScore from "@/hooks/firebase/useScore";
 import useUsername from "@/hooks/firebase/useUsername";
 import {
 	FirebaseDatabaseProps,
@@ -38,6 +37,7 @@ import { ProgressContext } from "./ProgressContext";
 import { firebaseConfig } from "@/lib/helpers/firebase";
 import { CookieNames, setCookie } from "@/lib/helpers/cookies";
 import { useRouter } from "next/router";
+import { ScoreContext } from "./ScoreContext";
 
 let firebaseApp: FirebaseApp | undefined;
 let firebaseDatabase: Database;
@@ -46,8 +46,6 @@ interface FirebaseContextProps {
 	initFirebase: (withSignIn?: boolean) => void;
 	firebaseDatabase: FirebaseDatabaseProps;
 	userId: FirebaseUserIdProps;
-	currentScore: number;
-	updateScoreInFirebase: (incoming: number) => void;
 	username: string | null;
 	signedIn: boolean;
 	updateUsernameInFirebase: (username: string) => void;
@@ -58,8 +56,6 @@ export const FirebaseContext = createContext<FirebaseContextProps>({
 	firebaseDatabase: undefined,
 	userId: null,
 	signedIn: false,
-	currentScore: 0,
-	updateScoreInFirebase: () => {},
 	username: null,
 	updateUsernameInFirebase: () => {},
 });
@@ -76,7 +72,7 @@ const FirebaseContextProvider = ({
 	const [isInitialized, setIsInitialized] = useState(false);
 	const router = useRouter();
 
-	const { currentScore, updateFirebaseScore, updateScoreState } = useScore();
+	const { currentScore, updateScoreState } = useContext(ScoreContext);
 	const { username, updateFirebaseUsername, updateUsernameState } =
 		useUsername();
 	const {
@@ -129,10 +125,10 @@ const FirebaseContextProvider = ({
 
 	// Score
 	useEffect(() => {
-		if (userId) {
+		if (userId && currentScore === undefined) {
 			updateScoreState(firebaseDatabase, userId);
 		}
-	}, [updateScoreState, userId]);
+	}, [updateScoreState, userId, currentScore]);
 
 	/**
 	 * Update username via hook
@@ -140,15 +136,6 @@ const FirebaseContextProvider = ({
 	const updateUsernameInFirebase = (username: string) => {
 		if (userId) {
 			updateFirebaseUsername(firebaseDatabase, userId, username);
-		}
-	};
-
-	/**
-	 * Update score via hook
-	 */
-	const updateScoreInFirebase = (incoming: number) => {
-		if (userId) {
-			updateFirebaseScore(firebaseDatabase, userId, incoming);
 		}
 	};
 
@@ -272,8 +259,6 @@ const FirebaseContextProvider = ({
 				firebaseDatabase,
 				userId,
 				signedIn,
-				currentScore,
-				updateScoreInFirebase,
 				username,
 				updateUsernameInFirebase,
 			}}

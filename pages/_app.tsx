@@ -12,6 +12,7 @@ import ErrorContextProvider from "@/context/ErrorContext";
 import Head from "next/head";
 import gamesData from "../lib/data/gamesData.json";
 import { useEffect, useState } from "react";
+import ScoreContextProvider from "@/context/ScoreContext";
 
 const delaGothicOne = Dela_Gothic_One({
 	weight: "400",
@@ -64,14 +65,16 @@ function MyApp({ Component, pageProps }: AppProps) {
 				<ErrorContextProvider>
 					<ProgressContextProvider>
 						<RoundContextProvider>
-							<FirebaseContextProvider>
-								<GameContextProvider>
-									<div className="page-content flex-grow h-full flex flex-col justify-center mx-5 mt-18 mb-14">
-										<Component {...pageProps} />
-									</div>
-									<Footer />
-								</GameContextProvider>
-							</FirebaseContextProvider>
+							<ScoreContextProvider>
+								<FirebaseContextProvider>
+									<GameContextProvider>
+										<div className="page-content flex-grow h-full flex flex-col justify-center mx-5 mt-18 mb-14">
+											<Component {...pageProps} />
+										</div>
+										<Footer />
+									</GameContextProvider>
+								</FirebaseContextProvider>
+							</ScoreContextProvider>
 						</RoundContextProvider>
 					</ProgressContextProvider>
 				</ErrorContextProvider>

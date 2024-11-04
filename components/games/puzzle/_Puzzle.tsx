@@ -26,6 +26,7 @@ import { RoundContext } from "@/context/RoundContext";
 import { ProgressContext } from "@/context/ProgressContext";
 import { GameName } from "@/lib/types/game";
 import { FirebaseContext } from "@/context/FirebaseContext";
+import { ScoreContext } from "@/context/ScoreContext";
 // import { getRandomColor } from "@/lib/helpers/effects";
 
 const Puzzle: React.FC = () => {
@@ -51,15 +52,21 @@ const Puzzle: React.FC = () => {
 
 	// Contexts
 	const { updateProgress } = useContext(GameContext);
+	const { currentScore } = useContext(ScoreContext);
 	const { progress, getGameProgress } = useContext(ProgressContext);
 	const { numberOfRounds, setNumberOfRounds } = useContext(RoundContext);
 	const { userId } = useContext(FirebaseContext);
 
 	// Mirror progress from context
 	const progressRef = useRef(progress);
+
 	useEffect(() => {
 		progressRef.current = progress;
 	}, [progress]);
+
+	useEffect(() => {
+		console.log("currentScore:", currentScore);
+	}, [currentScore]);
 
 	// Wall thickness
 	const wallThickness = 5;
@@ -463,10 +470,12 @@ const Puzzle: React.FC = () => {
 	 * Init game on first render
 	 */
 	useEffect(() => {
+		console.log("init?");
 		if (userId && !gameInited.current && progressRef.current) {
 			gameInited.current = true;
 			initGame();
 		}
+		// TODO: initGame dep creates a circular dependency when progress is empty
 	}, [initGame, userId, progressRef]);
 
 	/**
