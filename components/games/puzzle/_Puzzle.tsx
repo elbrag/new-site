@@ -38,6 +38,7 @@ const Puzzle: React.FC = () => {
 	// States
 	const [restart, setRestart] = useState<boolean>(false);
 	const [guides, setGuides] = useState<Guide[]>([]);
+	const [matchingPieceId, setMatchingPieceId] = useState<number | null>(null);
 
 	// Hooks
 	const {
@@ -87,19 +88,18 @@ const Puzzle: React.FC = () => {
 	 * On piece fit
 	 */
 	const onPieceFit = useCallback(
-		async (draggedPiece: CustomMatterBody) => {
-			console.log("Piece fits, here's the progress", progressRef.current);
+		async (draggedPieceId: number) => {
 			// Check puzzle progress
 			const gameProgress = await getGameProgress(
 				GameName.Puzzle,
 				progressRef.current
 			);
 			const matchingProgress = gameProgress.find(
-				(p) => p.roundId === draggedPiece.id
+				(p) => p.roundId === draggedPieceId
 			);
 			// If piece is not already fitted, update progress
 			if (!matchingProgress || !matchingProgress?.completed) {
-				updateProgress(GameName.Puzzle, draggedPiece.id, true);
+				updateProgress(GameName.Puzzle, draggedPieceId, true);
 			}
 		},
 		[getGameProgress, updateProgress]
@@ -172,7 +172,7 @@ const Puzzle: React.FC = () => {
 						draggedPiece.position.y = topRightTarget.y + height / 2;
 						draggedPiece.angle = 0;
 						draggedPiece.fitted = true;
-						onPieceFit(draggedPiece);
+						setMatchingPieceId(draggedPiece.id);
 					}
 				}
 			};
@@ -186,7 +186,7 @@ const Puzzle: React.FC = () => {
 					Events.off(mouseConstraint, "mousemove", handleMouseMove),
 			};
 		},
-		[checkIfFit, onPieceFit]
+		[checkIfFit]
 	);
 
 	/**
@@ -477,6 +477,20 @@ const Puzzle: React.FC = () => {
 			setNumberOfRounds(puzzlePieces.length);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [numberOfRounds, puzzlePieces.length]);
+
+	/**
+	 * Watch matching piece, run onPieceFit and then unset state
+	 *
+	 * Necessary because onPieceFit (particularly updateProgress) cannot be called from within setInteractiveState (states from context get "stuck")
+	 */
+	useEffect(() => {
+		if (!matchingPieceId) return;
+		if (matchingPieceId) {
+			onPieceFit(matchingPieceId);
+			setMatchingPieceId(null);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [matchingPieceId]);
 
 	return (
 		<div className="px-6 lg:px-12">
