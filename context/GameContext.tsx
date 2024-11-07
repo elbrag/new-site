@@ -65,8 +65,13 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	 * Hooks
 	 */
 	const { scoreMessage, updateScoreMessage } = useInfoMessage();
-	const { username, updateUsernameInFirebase, firebaseDatabase, userId } =
-		useContext(FirebaseContext);
+	const {
+		username,
+		updateUsernameInFirebase,
+		firebaseDatabase,
+		userId,
+		updateScoreInFirebase,
+	} = useContext(FirebaseContext);
 
 	const {
 		setRoundComplete,
@@ -79,7 +84,6 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	} = useContext(RoundContext);
 
 	const { setProgress, getRoundStatus } = useContext(ProgressContext);
-	const { updateFirebaseScore } = useContext(ScoreContext);
 
 	const { updateErrors } = useContext(ErrorContext);
 
@@ -307,13 +311,12 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	 *
 	 * Calculate score for game and pass score on to updateScoreInFirebase
 	 */
-	const updateScore = (game: GameName) => {
+	const updateScore = async (game: GameName) => {
 		const gameToScore = gamesData.find((data) => data.url === game);
 		const score = gameToScore ? gameToScore.scorePerRound : null;
-		console.log("updateScore in GameContext, score:", score);
 		if (score && firebaseDatabase && userId) {
-			updateFirebaseScore(firebaseDatabase, userId, score);
-			updateScoreMessage(`+${score}`);
+			await updateScoreInFirebase(score);
+			await updateScoreMessage(`+${score}`);
 		}
 	};
 

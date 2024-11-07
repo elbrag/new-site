@@ -49,6 +49,7 @@ interface FirebaseContextProps {
 	username: string | null;
 	signedIn: boolean;
 	updateUsernameInFirebase: (username: string) => void;
+	updateScoreInFirebase: (incoming: number) => void;
 }
 
 export const FirebaseContext = createContext<FirebaseContextProps>({
@@ -58,6 +59,7 @@ export const FirebaseContext = createContext<FirebaseContextProps>({
 	signedIn: false,
 	username: null,
 	updateUsernameInFirebase: () => {},
+	updateScoreInFirebase: () => {},
 });
 
 interface FirebaseContextProviderProps {
@@ -72,7 +74,8 @@ const FirebaseContextProvider = ({
 	const [isInitialized, setIsInitialized] = useState(false);
 	const router = useRouter();
 
-	const { currentScore, updateScoreState } = useContext(ScoreContext);
+	const { currentScore, updateScoreState, updateFirebaseScore } =
+		useContext(ScoreContext);
 	const { username, updateFirebaseUsername, updateUsernameState } =
 		useUsername();
 	const {
@@ -136,6 +139,15 @@ const FirebaseContextProvider = ({
 	const updateUsernameInFirebase = (username: string) => {
 		if (userId) {
 			updateFirebaseUsername(firebaseDatabase, userId, username);
+		}
+	};
+
+	/**
+	 * Update score via hook
+	 */
+	const updateScoreInFirebase = (incoming: number) => {
+		if (userId) {
+			updateFirebaseScore(firebaseDatabase, userId, incoming);
 		}
 	};
 
@@ -261,6 +273,7 @@ const FirebaseContextProvider = ({
 				signedIn,
 				username,
 				updateUsernameInFirebase,
+				updateScoreInFirebase,
 			}}
 		>
 			{children}

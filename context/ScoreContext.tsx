@@ -4,7 +4,7 @@
  * Manages "currentScore" state
  */
 
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { Database } from "firebase/database";
 import useUserData from "@/hooks/firebase/useUserData";
 
@@ -34,6 +34,14 @@ const ScoreContextProvider = ({ children }: ScoreContextProviderProps) => {
 	);
 	const { updateUserData, getUserData } = useUserData();
 
+	useEffect(() => {
+		console.log("ScoreContextProvider updated");
+	}, []);
+
+	useEffect(() => {
+		console.log("currentScore changed in ScoreContextProvider", currentScore);
+	}, [currentScore]);
+
 	/**
 	 * Update score in Firebase + set state
 	 */
@@ -42,6 +50,7 @@ const ScoreContextProvider = ({ children }: ScoreContextProviderProps) => {
 		userId: string,
 		incoming: number
 	) => {
+		console.log("currentScore in updateFirebaseScore", currentScore);
 		const newScore = (currentScore ?? 0) + incoming;
 		await updateUserData(firebaseDatabase, userId, "score", newScore);
 		setCurrentScore(newScore);
