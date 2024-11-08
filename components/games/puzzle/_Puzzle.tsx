@@ -32,11 +32,11 @@ const Puzzle: React.FC = () => {
 	// Refs
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const engineRef = useRef<Engine>(Engine.create());
+	const renderRef = useRef<Render | null>(null);
 	const refImageRef = useRef<HTMLDivElement>(null);
 	const gameInited = useRef(false);
 
 	// States
-	const [restart, setRestart] = useState<boolean>(false);
 	const [guides, setGuides] = useState<Guide[]>([]);
 	const [matchingPieceId, setMatchingPieceId] = useState<number | null>(null);
 
@@ -51,7 +51,7 @@ const Puzzle: React.FC = () => {
 	} = usePuzzleFunctions();
 
 	// Contexts
-	const { updateProgress } = useContext(GameContext);
+	const { updateProgress, resetRound } = useContext(GameContext);
 	const { progress, getGameProgress } = useContext(ProgressContext);
 	const { numberOfRounds, setNumberOfRounds } = useContext(RoundContext);
 	const { userId } = useContext(FirebaseContext);
@@ -312,8 +312,27 @@ const Puzzle: React.FC = () => {
 	/**
 	 * Reset pieces
 	 */
-	const resetPieces = () => {
-		setRestart(true);
+	const resetPieces = async () => {
+		await Promise.all(
+			puzzlePieces.map((piece) => resetRound(GameName.Puzzle, piece.id))
+		);
+		resetGame();
+	};
+
+	/**
+	 * Reset game
+	 */
+	const resetGame = async () => {
+		const canvas = canvasRef.current;
+		const engine = engineRef.current;
+		const render = renderRef.current;
+
+		if (canvas && engine) {
+			Composite.clear(engine.world, false);
+			Engine.clear(engine);
+			if (render) Render.stop(render);
+			initGame();
+		}
 	};
 
 	/**
@@ -378,12 +397,11 @@ const Puzzle: React.FC = () => {
 	 * Init game
 	 */
 	const initGame = useCallback(async () => {
-		setRestart(false);
-
-		// Define canvas, reference image, and engine and check that they exist
-		const canvas = canvasRef.current;
+		// Define canvas, reference image and engine and check that they exist
 		const refImg = refImageRef.current;
+		const canvas = canvasRef.current;
 		const engine = engineRef.current;
+
 		if (!canvas || !engine || !refImg) return;
 
 		setupCanvas(canvas);
@@ -407,6 +425,8 @@ const Puzzle: React.FC = () => {
 				background: "transparent",
 			},
 		});
+
+		renderRef.current = render;
 
 		// Composite
 		const world = engine.world;
@@ -463,6 +483,7 @@ const Puzzle: React.FC = () => {
 	 * Init game on first render
 	 */
 	useEffect(() => {
+		console.log("init?");
 		if (userId && !gameInited.current && progressRef.current) {
 			gameInited.current = true;
 			initGame();
