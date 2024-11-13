@@ -26,6 +26,9 @@ import { RoundContext } from "@/context/RoundContext";
 import { ProgressContext } from "@/context/ProgressContext";
 import { GameName } from "@/lib/types/game";
 import { FirebaseContext } from "@/context/FirebaseContext";
+import { AnimatePresence } from "framer-motion";
+import SuccessScreen from "@/components/ui/SuccessScreen";
+import useInfoMessage from "@/hooks/useInfoMessage";
 // import { getRandomColor } from "@/lib/helpers/effects";
 
 const Puzzle: React.FC = () => {
@@ -49,6 +52,7 @@ const Puzzle: React.FC = () => {
 		getBasicDimensions,
 		checkIfFit,
 	} = usePuzzleFunctions();
+	const { updateSuccessMessage, successMessage } = useInfoMessage();
 
 	// Contexts
 	const { updateProgress, resetRound } = useContext(GameContext);
@@ -100,9 +104,10 @@ const Puzzle: React.FC = () => {
 			// If piece is not already fitted, update progress
 			if (!matchingProgress || !matchingProgress?.completed) {
 				updateProgress(GameName.Puzzle, draggedPieceId, true);
+				updateSuccessMessage("It's a fit!");
 			}
 		},
-		[getGameProgress, updateProgress]
+		[getGameProgress, updateProgress, updateSuccessMessage]
 	);
 
 	/**
@@ -543,6 +548,9 @@ const Puzzle: React.FC = () => {
 							key={i}
 						></div>
 					))}
+					<AnimatePresence>
+						{successMessage && <SuccessScreen text={successMessage} />}
+					</AnimatePresence>
 				</div>
 			</div>
 			<Button label="Reset" onClick={resetPieces} />
