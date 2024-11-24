@@ -52,6 +52,14 @@ interface RoundContextProps {
 	setAllRoundsPassed: (allRoundsPassed: boolean) => void;
 	getGameCurrentRoundIndex: (game: GameName) => number;
 	getGameCompletedRoundIndexes: (game: GameName) => number[];
+	setCompletedRoundIndexes: (
+		completedRoundIndexes: CompletedRoundIndexesProps[]
+	) => void;
+	removeCompletedAndCurrentRoundIndexes: (
+		game: GameName,
+		firebaseDatabase: FirebaseDatabaseProps,
+		userId: FirebaseUserIdProps
+	) => void;
 }
 
 export const RoundContext = createContext<RoundContextProps>({
@@ -72,6 +80,8 @@ export const RoundContext = createContext<RoundContextProps>({
 	setAllRoundsPassed: () => {},
 	getGameCurrentRoundIndex: () => 0,
 	getGameCompletedRoundIndexes: () => [],
+	setCompletedRoundIndexes: () => {},
+	removeCompletedAndCurrentRoundIndexes: () => {},
 });
 
 interface RoundContextProviderProps {
@@ -185,6 +195,50 @@ const RoundContextProvider = ({ children }: RoundContextProviderProps) => {
 	};
 
 	/**
+	 * Remove index from completedRoundIndexes and currentRoundIndexes
+	 */
+	const removeCompletedAndCurrentRoundIndexes = async (
+		game: GameName,
+		firebaseDatabase: FirebaseDatabaseProps,
+		userId: FirebaseUserIdProps
+	) => {
+		if (!firebaseDatabase) return firebaseDatabaseIsMissing;
+		if (!userId) return userIdIsMissing;
+
+		setCompletedRoundIndexes((prevCompletedRoundIndexes) => {
+			const updatedCompletedRoundIndexes = updateState(
+				prevCompletedRoundIndexes,
+				game,
+				[],
+				"completedRoundIndexes"
+			);
+			updateUserData(
+				firebaseDatabase,
+				userId,
+				"completedRoundIndexes",
+				JSON.stringify(updatedCompletedRoundIndexes)
+			);
+			return updatedCompletedRoundIndexes;
+		});
+		setCurrentRoundIndexes((prevRoundIndexes) => {
+			const updatedRoundIndexes = updateState(
+				prevRoundIndexes,
+				game,
+				0,
+				"currentRoundIndex"
+			);
+			updateUserData(
+				firebaseDatabase,
+				userId,
+				"currentRoundIndexes",
+				JSON.stringify(updatedRoundIndexes)
+			);
+
+			return updatedRoundIndexes;
+		});
+	};
+
+	/**
 	 * Get game specific current round index
 	 */
 	const getGameCurrentRoundIndex = (game: GameName): number => {
@@ -225,6 +279,8 @@ const RoundContextProvider = ({ children }: RoundContextProviderProps) => {
 				setAllRoundsPassed,
 				getGameCurrentRoundIndex,
 				getGameCompletedRoundIndexes,
+				setCompletedRoundIndexes,
+				removeCompletedAndCurrentRoundIndexes,
 			}}
 		>
 			{children}

@@ -55,9 +55,10 @@ const Puzzle: React.FC = () => {
 	const { updateSuccessMessage, successMessage } = useInfoMessage();
 
 	// Contexts
-	const { updateProgress, resetRound } = useContext(GameContext);
+	const { updateProgress, resetGame } = useContext(GameContext);
 	const { progress, getGameProgress } = useContext(ProgressContext);
-	const { numberOfRounds, setNumberOfRounds } = useContext(RoundContext);
+	const { numberOfRounds, setNumberOfRounds, allRoundsPassed } =
+		useContext(RoundContext);
 	const { userId } = useContext(FirebaseContext);
 
 	// Mirror progress from context
@@ -318,16 +319,17 @@ const Puzzle: React.FC = () => {
 	 * Reset pieces
 	 */
 	const resetPieces = async () => {
-		await Promise.all(
-			puzzlePieces.map((piece) => resetRound(GameName.Puzzle, piece.id))
+		await resetGame(
+			GameName.Puzzle,
+			puzzlePieces.map((p) => p.id)
 		);
-		resetGame();
+		resetGameBoard();
 	};
 
 	/**
 	 * Reset game
 	 */
-	const resetGame = async () => {
+	const resetGameBoard = async () => {
 		const canvas = canvasRef.current;
 		const engine = engineRef.current;
 		const render = renderRef.current;
@@ -517,6 +519,16 @@ const Puzzle: React.FC = () => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [matchingPieceId]);
+
+	/**
+	 * allRoundsPassed watcher
+	 */
+	useEffect(() => {
+		if (allRoundsPassed) {
+			updateSuccessMessage("All complete!");
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [allRoundsPassed]);
 
 	return (
 		<div className="px-6 lg:px-12">

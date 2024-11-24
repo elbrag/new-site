@@ -40,7 +40,7 @@ interface GameContextProps {
 	) => void;
 	scoreMessage: string | null;
 	onRoundFail: (_game: GameName) => void;
-	resetRound: (game: GameName, roundId: number) => void;
+	resetGame: (game: GameName, roundIds: number[]) => void;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -51,7 +51,7 @@ export const GameContext = createContext<GameContextProps>({
 	updateProgress: () => {},
 	scoreMessage: null,
 	onRoundFail: () => {},
-	resetRound: () => {},
+	resetGame: () => {},
 });
 
 interface GameContextProviderProps {
@@ -83,6 +83,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		onRoundFinish,
 		setRoundFailed,
 		roundLength,
+		removeCompletedAndCurrentRoundIndexes,
 	} = useContext(RoundContext);
 
 	const { setProgress, getRoundStatus } = useContext(ProgressContext);
@@ -300,12 +301,15 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	};
 
 	/**
-	 * Reset round progress and errors
+	 * Reset game
 	 */
-	const resetRound = (game: GameName, roundId: number) => {
+	const resetGame = async (game: GameName, roundIds: number[]) => {
 		updateErrors(firebaseDatabase, userId, game, [], false);
 		const resetObject = game === GameName.Hangman ? [] : false;
-		updateProgress(game, roundId, resetObject);
+		roundIds.forEach((roundId) => {
+			updateProgress(game, roundId, resetObject);
+		});
+		removeCompletedAndCurrentRoundIndexes(game, firebaseDatabase, userId);
 	};
 
 	/**
@@ -332,7 +336,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				updateProgress,
 				scoreMessage,
 				onRoundFail,
-				resetRound,
+				resetGame,
 			}}
 		>
 			{children}
