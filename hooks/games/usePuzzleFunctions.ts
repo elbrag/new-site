@@ -121,7 +121,7 @@ const usePuzzleFunctions = () => {
 		coordValue1: number,
 		coordValue2: number
 	): boolean => {
-		const errorMargin = 5;
+		const errorMargin = 4;
 		return Math.abs(coordValue1 - coordValue2) <= errorMargin;
 	};
 
