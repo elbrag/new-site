@@ -644,7 +644,7 @@ const Puzzle: React.FC = () => {
 						className="w-full h-full"
 					/>
 					<div className="reference-image absolute w-full h-full left-0 top-0 -z-1 flex justify-center items-center">
-						<div ref={refImageRef} className="max-w-[90%]">
+						<div ref={refImageRef} className="max-w-[80%] lg:max-w-[90%]">
 							<SvgImage
 								image={SvgImageMotifs.FullLogo}
 								width={refImgOriginalWidth}
@@ -668,17 +668,17 @@ const Puzzle: React.FC = () => {
 					</AnimatePresence>
 				</div>
 			</div>
-			<div className="flex justify-center min-h-12 mt-4 md:mt-10">
+			<div className="flex justify-center min-h-12 mt-6 md:mt-10">
 				<AnimatePresence>
 					{gameInited.current && allowReset && (
 						<motion.div
-							className="flex flex-col md:flex-row gap-6  items-center"
+							className="flex flex-col md:flex-row gap-4 md:gap-6  items-center"
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
 							transition={{ duration: 0.4 }}
 						>
-							Clean up and replay?
+							<p className="text-sm lg:text-base">Clean up and replay?</p>
 							<Button label="Reset" onClick={resetPieces} />
 						</motion.div>
 					)}
@@ -703,7 +703,7 @@ const AnimatedHeading = ({
 			animate={{ opacity: 1 }}
 			exit={{ opacity: 0 }}
 			transition={{ duration: 0.3 }}
-			className="absolute top-3 left-4 z-1"
+			className="absolute top-3 left-4 z-1 text-sm lg:text-base"
 			key={motionKey}
 		>
 			{children}
