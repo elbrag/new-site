@@ -15,7 +15,7 @@ const SuccessScreen: React.FC<SuccessScreenProps> = ({ text }) => {
 			transition={{ duration: 0.5 }}
 			className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center"
 		>
-			<div className="px-8 py-4 sm:px-12 sm:py-8 text-lg sm:text-2xl bg-yellow rounded-xl">
+			<div className="px-8 py-4 sm:px-12 sm:py-8 text-lg sm:text-2xl bg-yellow rounded-xl select-none">
 				{text}
 			</div>
 		</motion.div>

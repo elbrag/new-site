@@ -40,7 +40,7 @@ interface GameContextProps {
 	) => void;
 	scoreMessage: string | null;
 	onRoundFail: (_game: GameName) => void;
-	resetRound: (game: GameName, roundId: number) => void;
+	resetGame: (game: GameName, roundIds: number[]) => void;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -51,7 +51,7 @@ export const GameContext = createContext<GameContextProps>({
 	updateProgress: () => {},
 	scoreMessage: null,
 	onRoundFail: () => {},
-	resetRound: () => {},
+	resetGame: () => {},
 });
 
 interface GameContextProviderProps {
@@ -83,6 +83,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		onRoundFinish,
 		setRoundFailed,
 		roundLength,
+		removeCompletedAndCurrentRoundIndexes,
 	} = useContext(RoundContext);
 
 	const { setProgress, getRoundStatus } = useContext(ProgressContext);
@@ -190,15 +191,16 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			(Array.isArray(completed) && completed.length === 0) ||
 			(!Array.isArray(completed) && completed === false);
 
-		await setProgress((prevProgress: ProgressProps[]) => {
+		await setProgress((prevProgress: ProgressProps[] | undefined) => {
+			const _prevProgress = prevProgress ?? [];
 			// Find the index of the object with the same game name
-			const existingGameIndex = prevProgress.findIndex(
+			const existingGameIndex = _prevProgress.findIndex(
 				(item: ProgressProps) => item.game === game
 			);
 
 			// If an object with the same game name exists
 			if (existingGameIndex !== -1) {
-				const updatedProgress = prevProgress.map(
+				const updatedProgress = _prevProgress.map(
 					(item: ProgressProps, index: number) => {
 						if (index === existingGameIndex) {
 							// Find the index of the progress item with the same roundId
@@ -271,7 +273,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			} else {
 				// If no object with the same game name exists, add a new object to progress
 				const newProgress = [
-					...prevProgress,
+					..._prevProgress,
 					{
 						game: game,
 						rounds: [
@@ -299,12 +301,15 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	};
 
 	/**
-	 * Reset round progress and errors
+	 * Reset game
 	 */
-	const resetRound = (game: GameName, roundId: number) => {
+	const resetGame = async (game: GameName, roundIds: number[]) => {
 		updateErrors(firebaseDatabase, userId, game, [], false);
 		const resetObject = game === GameName.Hangman ? [] : false;
-		updateProgress(game, roundId, resetObject);
+		roundIds.forEach((roundId) => {
+			updateProgress(game, roundId, resetObject);
+		});
+		removeCompletedAndCurrentRoundIndexes(game, firebaseDatabase, userId);
 	};
 
 	/**
@@ -331,7 +336,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				updateProgress,
 				scoreMessage,
 				onRoundFail,
-				resetRound,
+				resetGame,
 			}}
 		>
 			{children}
