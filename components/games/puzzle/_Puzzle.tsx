@@ -15,6 +15,7 @@ import {
 	Mouse,
 	MouseConstraint,
 	Events,
+	Body,
 } from "matter-js";
 import { debounce } from "lodash";
 import Button from "@/components/ui/Button";
@@ -134,6 +135,25 @@ const Puzzle: React.FC = () => {
 			const timeout = setTimeout(() => {
 				setShowInitMessage(false);
 			}, 5000);
+
+			// Apply scatter, linear + rotation
+			Composite.allBodies(world).forEach((body) => {
+				const scatterStrength = 12;
+				const rotationStrength = 0.16;
+				Body.setVelocity(body, {
+					x: (Math.random() - 0.5) * scatterStrength,
+					y: (Math.random() - 0.5) * scatterStrength,
+				});
+				Body.setAngularVelocity(body, (Math.random() - 0.5) * rotationStrength);
+			});
+
+			// Stop scatter
+			setTimeout(() => {
+				Composite.allBodies(world).forEach((body) => {
+					Body.setVelocity(body, { x: 0, y: 0 });
+					Body.setAngularVelocity(body, 0); // Stop any spinning
+				});
+			}, 500);
 
 			// Mouse
 			const mouse = Mouse.create(canvas);
