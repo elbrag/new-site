@@ -121,7 +121,7 @@ const usePuzzleFunctions = () => {
 		coordValue1: number,
 		coordValue2: number
 	): boolean => {
-		const errorMargin = 6;
+		const errorMargin = 5;
 		return Math.abs(coordValue1 - coordValue2) <= errorMargin;
 	};
 
@@ -164,9 +164,8 @@ const usePuzzleFunctions = () => {
 		let angleInDegrees = draggedPiece.angle * (180 / Math.PI);
 		angleInDegrees = ((angleInDegrees % 360) + 360) % 360;
 
-		// Determine if the piece is flipped (close to 180° or 360°)
-		const isFlipped =
-			Math.abs(angleInDegrees - 180) < 10 || angleInDegrees > 350;
+		// Determine if the piece is flipped (close to 180°)
+		const isFlipped = Math.abs(angleInDegrees - 180) < 10;
 
 		if (draggedPiece.symmetrical) {
 			// For symmetrical pieces, allow fit regardless of rotation
