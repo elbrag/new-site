@@ -10,3 +10,11 @@ export const memoryFailMessages = [
 ];
 
 export const wellDoneHeading = "Well done! Here's what you found out:";
+
+export const puzzleInitMessages = [
+	"Dammit! Could you help me with this?",
+	"Oh not again",
+	"Oh and now they're everywhere",
+	"Should have built a sturdier logo...",
+	"Could you lend me a hand here?",
+];

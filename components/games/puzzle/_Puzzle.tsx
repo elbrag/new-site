@@ -29,6 +29,7 @@ import { FirebaseContext } from "@/context/FirebaseContext";
 import { AnimatePresence, motion } from "framer-motion";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import useInfoMessage from "@/hooks/useInfoMessage";
+import { puzzleInitMessages } from "@/lib/helpers/messages";
 // import { getRandomColor } from "@/lib/helpers/effects";
 
 const Puzzle: React.FC = () => {
@@ -560,7 +561,13 @@ const Puzzle: React.FC = () => {
 								transition={{ duration: 0.3 }}
 								className="absolute top-3 left-4 z-1"
 							>
-								<h2>Dammit! Could you help me with this?</h2>
+								<h2>
+									{
+										puzzleInitMessages[
+											Math.floor(Math.random() * puzzleInitMessages.length)
+										]
+									}
+								</h2>
 							</motion.div>
 						)}
 					</AnimatePresence>
