@@ -26,7 +26,7 @@ import { RoundContext } from "@/context/RoundContext";
 import { ProgressContext } from "@/context/ProgressContext";
 import { GameName } from "@/lib/types/game";
 import { FirebaseContext } from "@/context/FirebaseContext";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import useInfoMessage from "@/hooks/useInfoMessage";
 // import { getRandomColor } from "@/lib/helpers/effects";
@@ -42,6 +42,8 @@ const Puzzle: React.FC = () => {
 	// States
 	const [guides, setGuides] = useState<Guide[]>([]);
 	const [matchingPieceId, setMatchingPieceId] = useState<number | null>(null);
+	const [showInitMessage, setShowInitMessage] = useState(false);
+	const [allowReset, setAllowReset] = useState(false);
 
 	// Hooks
 	const {
@@ -68,7 +70,7 @@ const Puzzle: React.FC = () => {
 	}, [progress]);
 
 	// Wall thickness
-	const wallThickness = 5;
+	const wallThickness = 10;
 
 	// Collision categories
 	const wallCategory = 0x0001;
@@ -106,8 +108,10 @@ const Puzzle: React.FC = () => {
 			if (!matchingProgress || !matchingProgress?.completed) {
 				updateProgress(GameName.Puzzle, draggedPieceId, true);
 				updateSuccessMessage("It's a fit!");
+				if (!allowReset) setAllowReset(true);
 			}
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[getGameProgress, updateProgress, updateSuccessMessage]
 	);
 
@@ -123,6 +127,12 @@ const Puzzle: React.FC = () => {
 			removeEvent: () => void;
 		} => {
 			engine.gravity.y = 1;
+			setTimeout(() => {
+				setShowInitMessage(true);
+			}, 800);
+			const timeout = setTimeout(() => {
+				setShowInitMessage(false);
+			}, 5000);
 
 			// Mouse
 			const mouse = Mouse.create(canvas);
@@ -179,6 +189,7 @@ const Puzzle: React.FC = () => {
 						draggedPiece.angle = 0;
 						draggedPiece.fitted = true;
 						setMatchingPieceId(draggedPiece.id);
+						draggedPiece.collisionFilter = { mask: wallCategory };
 					}
 				}
 			};
@@ -188,8 +199,10 @@ const Puzzle: React.FC = () => {
 
 			// Remove event, return to be used along with other cleanups
 			return {
-				removeEvent: () =>
-					Events.off(mouseConstraint, "mousemove", handleMouseMove),
+				removeEvent: () => {
+					Events.off(mouseConstraint, "mousemove", handleMouseMove);
+					clearTimeout(timeout);
+				},
 			};
 		},
 		[checkIfFit]
@@ -218,9 +231,8 @@ const Puzzle: React.FC = () => {
 					isStatic: true,
 					label: "wall",
 					render: {
-						fillStyle: "#5EFC5B",
-						// lineWidth: 1,
-						strokeStyle: "white",
+						fillStyle: "transparent",
+						strokeStyle: "transparent",
 						visible: true,
 					},
 					collisionFilter: {
@@ -247,6 +259,10 @@ const Puzzle: React.FC = () => {
 				GameName.Puzzle,
 				progressRef.current
 			);
+			// If there has been any progress since before, allow reset
+			if (gameProgress.some((p) => p.completed)) {
+				setAllowReset(true);
+			}
 
 			puzzlePieces.forEach((piece, i) => {
 				const pieceWidth = piece.width * scale;
@@ -264,8 +280,9 @@ const Puzzle: React.FC = () => {
 					pieceWidth,
 					pieceHeight,
 					{
-						restitution: 1,
-						friction: 0.8,
+						restitution: 0.8,
+						friction: 0.85,
+						density: 0.075,
 						render: {
 							sprite: {
 								texture: piece.url,
@@ -275,7 +292,7 @@ const Puzzle: React.FC = () => {
 						},
 						collisionFilter: {
 							category: pieceCategory,
-							mask: wallCategory, // Collides with walls
+							// mask: wallCategory, // Collides with walls
 						},
 					}
 				);
@@ -303,6 +320,7 @@ const Puzzle: React.FC = () => {
 				if (matchingProgress?.completed) {
 					body.isStatic = true;
 					body.fitted = true;
+					body.collisionFilter = { mask: wallCategory };
 				}
 
 				Composite.add(world, body);
@@ -490,7 +508,6 @@ const Puzzle: React.FC = () => {
 	 * Init game on first render
 	 */
 	useEffect(() => {
-		console.log("init?");
 		if (userId && !gameInited.current && progressRef.current) {
 			gameInited.current = true;
 			initGame();
@@ -533,12 +550,25 @@ const Puzzle: React.FC = () => {
 	return (
 		<div className="px-6 lg:px-12">
 			<div className="h-70vh">
-				<div className="relative z-0 h-full bg-paper">
+				<div className="relative z-0 h-full bg-paper border border-line1 rounded-xl overflow-hidden">
+					<AnimatePresence>
+						{showInitMessage && (
+							<motion.div
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+								transition={{ duration: 0.3 }}
+								className="absolute top-3 left-4 z-1"
+							>
+								<h2>Dammit! Could you help me with this?</h2>
+							</motion.div>
+						)}
+					</AnimatePresence>
 					<canvas
 						ref={canvasRef}
 						width={600}
 						height={400}
-						className="border w-full h-full"
+						className="w-full h-full"
 					/>
 					<div className="reference-image absolute w-full h-full left-0 top-0 -z-1 flex justify-center items-center">
 						<div ref={refImageRef} className="max-w-[90%]">
@@ -565,7 +595,22 @@ const Puzzle: React.FC = () => {
 					</AnimatePresence>
 				</div>
 			</div>
-			<Button label="Reset" onClick={resetPieces} />
+			<div className="flex justify-center min-h-12 mt-4 md:mt-10">
+				<AnimatePresence>
+					{gameInited.current && allowReset && (
+						<motion.div
+							className="flex flex-col md:flex-row gap-6  items-center"
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							transition={{ duration: 0.4 }}
+						>
+							Clean up and replay?
+							<Button label="Reset" onClick={resetPieces} />
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</div>
 		</div>
 	);
 };
