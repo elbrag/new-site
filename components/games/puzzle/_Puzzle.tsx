@@ -16,6 +16,7 @@ import {
 	MouseConstraint,
 	Events,
 	Body,
+	Bounds,
 } from "matter-js";
 import { debounce } from "lodash";
 import Button from "@/components/ui/Button";
@@ -219,10 +220,35 @@ const Puzzle: React.FC = () => {
 			// Event listener tracking drag coords
 			Events.on(mouseConstraint, "mousemove", handleMouseMove);
 
-			// Remove event, return to be used along with other cleanups
+			// Define canvas Bounds object
+			const canvasBounds = Bounds.create([
+				{ x: 0, y: 0 },
+				{ x: canvas.width, y: 0 },
+				{ x: canvas.width, y: canvas.height },
+				{ x: 0, y: canvas.height },
+			]);
+			/**
+			 * Handle bodies escaping (and bring them back)
+			 */
+			const handleBodiesEscaping = () => {
+				Composite.allBodies(world).forEach((body) => {
+					if (body.position && !Bounds.contains(canvasBounds, body.position)) {
+						Body.setPosition(body, {
+							x: canvas.width / 2,
+							y: canvas.height / 2,
+						});
+						Body.setVelocity(body, { x: 0, y: 0 });
+					}
+				});
+			};
+			// Event listener
+			Events.on(engine, "beforeUpdate", handleBodiesEscaping);
+
+			// Remove events, return to be used along with other cleanups
 			return {
 				removeEvent: () => {
 					Events.off(mouseConstraint, "mousemove", handleMouseMove);
+					Events.off(engine, "beforeUpdate", handleBodiesEscaping);
 					clearTimeout(timeout);
 				},
 			};
