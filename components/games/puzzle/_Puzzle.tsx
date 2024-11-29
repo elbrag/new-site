@@ -588,17 +588,17 @@ const Puzzle: React.FC = () => {
 	}, [allRoundsPassed]);
 
 	return (
-		<div className="px-6 lg:px-12">
-			<div className="h-70vh">
+		<div className="md:px-6 lg:px-12">
+			<div className="h-50vh md:h-70vh">
 				<div className="relative z-0 h-full bg-paper border border-line1 rounded-xl overflow-hidden">
 					<AnimatePresence>
 						{allMatched && (
-							<AnimatedHeading>
+							<AnimatedHeading key="doneMessage">
 								<h2>Much better! 💖</h2>
 							</AnimatedHeading>
 						)}
 						{showInitMessage && !allRoundsPassed && !allMatched && (
-							<AnimatedHeading>
+							<AnimatedHeading key="initMessage">
 								{
 									<h2>
 										{
@@ -664,7 +664,13 @@ const Puzzle: React.FC = () => {
 
 export default Puzzle;
 
-const AnimatedHeading = ({ children }: { children: React.ReactNode }) => {
+const AnimatedHeading = ({
+	children,
+	key,
+}: {
+	children: React.ReactNode;
+	key: string;
+}) => {
 	return (
 		<motion.div
 			initial={{ opacity: 0 }}
@@ -672,6 +678,7 @@ const AnimatedHeading = ({ children }: { children: React.ReactNode }) => {
 			exit={{ opacity: 0 }}
 			transition={{ duration: 0.3 }}
 			className="absolute top-3 left-4 z-1"
+			key={key}
 		>
 			{children}
 		</motion.div>
