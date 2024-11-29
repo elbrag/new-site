@@ -46,6 +46,7 @@ const Puzzle: React.FC = () => {
 	const [matchingPieceId, setMatchingPieceId] = useState<number | null>(null);
 	const [showInitMessage, setShowInitMessage] = useState(false);
 	const [allowReset, setAllowReset] = useState(false);
+	const [allMatched, setAllMatched] = useState(false);
 
 	// Hooks
 	const {
@@ -443,6 +444,7 @@ const Puzzle: React.FC = () => {
 	 * Init game
 	 */
 	const initGame = useCallback(async () => {
+		setAllMatched(false);
 		// Define canvas, reference image and engine and check that they exist
 		const refImg = refImageRef.current;
 		const canvas = canvasRef.current;
@@ -532,7 +534,10 @@ const Puzzle: React.FC = () => {
 		if (userId && !gameInited.current && progressRef.current) {
 			gameInited.current = true;
 			initGame();
+			// Check if all completed
+			setAllMatchedIfAllCompleted();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [initGame, userId, progressRef]);
 
 	/**
@@ -559,11 +564,25 @@ const Puzzle: React.FC = () => {
 	}, [matchingPieceId]);
 
 	/**
+	 * If progress says all are completed, set all matched to display message in heading
+	 */
+	const setAllMatchedIfAllCompleted = async () => {
+		const gameProgress = await getGameProgress(
+			GameName.Puzzle,
+			progressRef.current
+		);
+		if (gameProgress.every((round) => round.completed)) {
+			setAllMatched(true);
+		}
+	};
+
+	/**
 	 * allRoundsPassed watcher
 	 */
 	useEffect(() => {
 		if (allRoundsPassed) {
-			updateSuccessMessage("All complete!");
+			updateSuccessMessage("That was the last one! Good job.");
+			setAllMatchedIfAllCompleted();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [allRoundsPassed]);
@@ -573,22 +592,23 @@ const Puzzle: React.FC = () => {
 			<div className="h-70vh">
 				<div className="relative z-0 h-full bg-paper border border-line1 rounded-xl overflow-hidden">
 					<AnimatePresence>
-						{showInitMessage && (
-							<motion.div
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								exit={{ opacity: 0 }}
-								transition={{ duration: 0.3 }}
-								className="absolute top-3 left-4 z-1"
-							>
-								<h2>
-									{
-										puzzleInitMessages[
-											Math.floor(Math.random() * puzzleInitMessages.length)
-										]
-									}
-								</h2>
-							</motion.div>
+						{allMatched && (
+							<AnimatedHeading>
+								<h2>Much better! 💖</h2>
+							</AnimatedHeading>
+						)}
+						{showInitMessage && !allRoundsPassed && !allMatched && (
+							<AnimatedHeading>
+								{
+									<h2>
+										{
+											puzzleInitMessages[
+												Math.floor(Math.random() * puzzleInitMessages.length)
+											]
+										}
+									</h2>
+								}
+							</AnimatedHeading>
 						)}
 					</AnimatePresence>
 					<canvas
@@ -643,3 +663,17 @@ const Puzzle: React.FC = () => {
 };
 
 export default Puzzle;
+
+const AnimatedHeading = ({ children }: { children: React.ReactNode }) => {
+	return (
+		<motion.div
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			exit={{ opacity: 0 }}
+			transition={{ duration: 0.3 }}
+			className="absolute top-3 left-4 z-1"
+		>
+			{children}
+		</motion.div>
+	);
+};
