@@ -33,7 +33,7 @@ interface ProgressContextProps {
 }
 
 export const ProgressContext = createContext<ProgressContextProps>({
-	progress: [],
+	progress: undefined,
 	setProgress: () => {},
 	getGameProgress: () => [],
 	getRoundStatus: () => null,

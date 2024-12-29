@@ -597,7 +597,10 @@ const Puzzle: React.FC = () => {
 			GameName.Puzzle,
 			progressRef.current
 		);
-		if (gameProgress.every((round) => round.completed)) {
+		if (
+			gameProgress.length === numberOfRounds &&
+			gameProgress.every((round) => round.completed)
+		) {
 			setAllMatched(true);
 		}
 	};

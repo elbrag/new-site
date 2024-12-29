@@ -94,10 +94,10 @@ const FirebaseContextProvider = ({
 
 	// Progress
 	useEffect(() => {
-		if (userId && firebaseDatabase && !progress?.length) {
+		if (userId && firebaseDatabase && !progress) {
 			updateProgressState(firebaseDatabase, userId);
 		}
-	}, [progress?.length, updateProgressState, userId]);
+	}, [progress, updateProgressState, userId]);
 
 	// Errors
 	useEffect(() => {
