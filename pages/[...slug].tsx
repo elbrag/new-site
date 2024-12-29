@@ -7,7 +7,9 @@ import { CookieNames, getCookie } from "@/lib/helpers/cookies";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
 import { GetServerSideProps, GetServerSidePropsContext } from "next/types";
 import BarLoader from "@/components/ui/BarLoader";
-
+interface GameComponentProps {
+	gameData: GameData;
+}
 const GamePage = ({
 	game,
 	gameData,
@@ -20,7 +22,7 @@ const GamePage = ({
 	}
 	const gameUrl = game.url;
 
-	const GameComponent = dynamic(
+	const GameComponent = dynamic<GameComponentProps>(
 		() =>
 			import(
 				`../components/games/${kebabToPascal(gameUrl)}/_${kebabToCamel(
@@ -40,7 +42,6 @@ const GamePage = ({
 		<div>
 			<div className="px-4 lg:px-12 pt-8 sm:pt-16 pb-16 flex flex-col items-center justify-center">
 				<div className="w-full">
-					{/* @ts-ignore */}
 					<GameComponent gameData={gameData} />
 				</div>
 			</div>

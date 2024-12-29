@@ -33,8 +33,9 @@ export const FontList = {
 function MyApp({ Component, pageProps }: AppProps) {
 	const router = useRouter();
 	const [title, setTitle] = useState("");
-	//@ts-ignore
-	const fonts = Object.keys(FontList).map((key) => FontList[key]);
+	const fonts = Object.keys(FontList).map(
+		(key) => FontList[key as keyof typeof FontList]
+	);
 	const isHome = router.asPath === "/";
 
 	useEffect(() => {
