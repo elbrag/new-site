@@ -4,7 +4,7 @@
  * Central place for several other contexts and hooks
  */
 
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 import gamesData from "../lib/data/gamesData.json";
 import { GameName, GameProps } from "@/lib/types/game";
 
@@ -25,6 +25,7 @@ import {
 	firebaseDatabaseIsMissing,
 	userIdIsMissing,
 } from "@/lib/helpers/errorThrowMessages";
+import { useRouter } from "next/router";
 interface GameContextProps {
 	gameUrls: string[];
 	currentScore: number;
@@ -92,6 +93,8 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 
 	const { updateUserData } = useUserData();
 
+	const router = useRouter();
+
 	/**
 	 * Check if completed
 	 */
@@ -157,6 +160,14 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		// Send score to Firebase
 		updateScore(game);
 	};
+
+	/**
+	 * Ensure roundComplete does not linger on route
+	 */
+	useEffect(() => {
+		setRoundComplete(false);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [router]);
 
 	/**
 	 * On round fail
