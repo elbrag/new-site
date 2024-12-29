@@ -4,7 +4,7 @@ import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
 
 export default function handler(
 	req: NextApiRequest,
-	res: NextApiResponse<any>
+	res: NextApiResponse<unknown>
 ) {
 	let returnData = {};
 

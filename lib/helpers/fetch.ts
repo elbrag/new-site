@@ -1,10 +1,19 @@
 /**
  * Fetch game data wrapper
  */
+interface GameDataBodyData {
+	foundRoundIds?: number[];
+	letter?: string;
+	roundId?: number;
+	foundMatchesIds?: number[];
+	cardIndex?: number;
+}
+
 export const fetchGameData = async (
 	endpoint: string,
 	method: "POST" | "GET" = "POST",
-	bodyData?: any
+	bodyData?: GameDataBodyData
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
 	let data = {
 		method,

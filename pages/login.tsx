@@ -106,7 +106,7 @@ export default Login;
 
 export const getServerSideProps = async (
 	context: GetServerSidePropsContext
-): Promise<GetServerSidePropsResult<any>> => {
+): Promise<GetServerSidePropsResult<unknown>> => {
 	const { req, res } = context;
 	const cookieString =
 		getCookie(CookieNames.FirebaseToken, req.headers.cookie ?? "") ?? "";

@@ -3,7 +3,7 @@ import hangman from "../../../lib/data/rounds/hangman.json";
 
 export default function handler(
 	req: NextApiRequest,
-	res: NextApiResponse<any>
+	res: NextApiResponse<unknown>
 ) {
 	const { gameName } = req.query;
 	let returnData;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GameName } from "../types/game";
 
 export const updateState = (
