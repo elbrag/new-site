@@ -6,7 +6,6 @@ import Hangman from "../../public/static/images/covers/hangman.svg";
 import Memory from "../../public/static/images/covers/memory.svg";
 import SendResults from "../../public/static/images/covers/sendResults.svg";
 import FullLogo from "../../public/static/images/puzzle/full_logo.svg";
-
 import styled from "styled-components";
 import tailwindConfig from "../../tailwindSettings";
 
