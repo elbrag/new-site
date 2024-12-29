@@ -25,7 +25,7 @@ import MemoryRevealedImage from "./MemoryRevealedImage";
 import { uniqBy } from "lodash";
 import styled from "styled-components";
 import { makeMemoryImgUrl, preloadImage } from "@/lib/helpers/images";
-
+import DotLoader from "@/components/ui/DotLoader";
 interface MemoryProps {
 	gameData: MemoryGameData;
 }
@@ -270,7 +270,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 
 	return (
 		<div className="flex justify-center">
-			{readyToRenderGame && (
+			{readyToRenderGame ? (
 				<>
 					{/* Cards */}
 					{cardCount && (
@@ -366,6 +366,8 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 						)}
 					</AnimatePresence>
 				</>
+			) : (
+				<DotLoader />
 			)}
 		</div>
 	);

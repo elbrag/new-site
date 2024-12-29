@@ -18,6 +18,7 @@ import { ProgressContext } from "@/context/ProgressContext";
 import FactsList from "@/components/ui/FactsList";
 import { HangmanRevealedRoundProps } from "@/lib/types/rounds";
 import Pagination from "./Pagination";
+import DotLoader from "@/components/ui/DotLoader";
 
 interface HangmanProps {
 	gameData: HangmanGameData;
@@ -217,7 +218,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 
 	return (
 		<div className="hangman min-h-[80vh] flex flex-col justify-center w-full">
-			{readyToRenderGame && (
+			{readyToRenderGame ? (
 				<div className="grid lg:grid-cols-5 gap-4 lg:mb-[10vh]">
 					{/* Game  */}
 					<div className="lg:col-span-3 flex flex-col border rounded-lg border-line1 p-4 pb-10 bg-paper w-full">
@@ -299,6 +300,8 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 						{/* <Confetti /> */}
 					</AnimatePresence>
 				</div>
+			) : (
+				<DotLoader />
 			)}
 		</div>
 	);

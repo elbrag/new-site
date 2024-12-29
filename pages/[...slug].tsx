@@ -6,7 +6,7 @@ import { fetchGameData } from "@/lib/helpers/fetch";
 import { CookieNames, getCookie } from "@/lib/helpers/cookies";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
 import { GetServerSideProps, GetServerSidePropsContext } from "next/types";
-import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
+import BarLoader from "@/components/ui/BarLoader";
 
 const GamePage = ({
 	game,
@@ -29,8 +29,8 @@ const GamePage = ({
 			),
 		{
 			loading: () => (
-				<div className="min-h-screen flex items-center justify-center">
-					<p>Loading...</p>
+				<div className="min-h-80vh flex items-center justify-center">
+					<BarLoader />
 				</div>
 			),
 		}
