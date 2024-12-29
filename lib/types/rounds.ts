@@ -32,5 +32,3 @@ export interface MemoryRoundProps extends RoundProps {
 	subtitle?: string;
 	images: MemoryImageProps[];
 }
-
-export interface MemoryRevealedCardsProps extends RoundProps {}

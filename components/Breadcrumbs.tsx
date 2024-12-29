@@ -2,9 +2,7 @@ import { useRouter } from "next/router";
 import gamesData from "../lib/data/gamesData.json";
 import Link from "next/link";
 
-interface BreadcrumbsProps {}
-
-const Breadcrumbs: React.FC<BreadcrumbsProps> = () => {
+const Breadcrumbs: React.FC = () => {
 	const router = useRouter();
 
 	const currentGame = gamesData.find(

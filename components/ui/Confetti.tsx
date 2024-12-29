@@ -2,9 +2,7 @@ import { motion } from "framer-motion";
 import React from "react";
 import shuffle from "lodash/shuffle";
 
-interface ConfettiProps {}
-
-const Confetti: React.FC<ConfettiProps> = () => {
+const Confetti: React.FC = () => {
 	const confettiColors = [
 		"blue",
 		"green",
