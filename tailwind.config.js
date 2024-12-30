@@ -139,7 +139,7 @@ module.exports = {
 				xs: "480px",
 			},
 			keyframes: {
-				blink: {
+				blinkColors: {
 					"0%, 100%": {
 						"--tw-bg-opacity": "0",
 						backgroundColor: "theme(colors.paper)",
@@ -149,9 +149,24 @@ module.exports = {
 						backgroundColor: "theme(colors.lime)",
 					},
 				},
+				wiggle1: {
+					"0%, 100%": { transform: "rotate(-8deg)" },
+					"50%": { transform: "rotate(-4deg)" },
+				},
+				wiggle2: {
+					"0%, 100%": { transform: "rotate(-12deg)" },
+					"50%": { transform: "rotate(-14deg)" },
+				},
+				wiggle3: {
+					"0%, 100%": { transform: "rotate(10deg)" },
+					"50%": { transform: "rotate(12deg)" },
+				},
 			},
 			animation: {
-				blink: "blink 1s infinite",
+				blinkColors: "blinkColors 1s infinite",
+				wiggle1: "wiggle1 1s ease-in-out infinite",
+				wiggle2: "wiggle2 1s ease-in-out infinite",
+				wiggle3: "wiggle3 1s ease-in-out infinite",
 			},
 		},
 	},

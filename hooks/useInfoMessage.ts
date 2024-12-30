@@ -77,6 +77,7 @@ const useInfoMessage = () => {
 	 * Update score message
 	 */
 	const updateScoreMessage = (message: string | null) => {
+		console.log(message);
 		if (scoreTimeoutRef.current !== null) {
 			clearTimeout(scoreTimeoutRef.current);
 		}
