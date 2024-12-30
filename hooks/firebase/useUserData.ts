@@ -24,7 +24,8 @@ const useUserData = () => {
 		firebaseDatabase: Database,
 		userId: string,
 		column: UserDataColumn
-	): Promise<string | number> => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	): Promise<any> => {
 		const dbref = ref(firebaseDatabase, `users/${userId}/${column}`);
 		try {
 			const snapshot = await get(dbref);
