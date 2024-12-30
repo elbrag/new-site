@@ -104,7 +104,7 @@ const Error404: React.FC = () => {
 								<Link
 									href="/"
 									aria-label="Home"
-									className="text-xl transform rotate-8 md:mb-6 underline hover:rotate-4 transition-transform ease-bouncy-2 ml-auto"
+									className="text-lg md:text-xl transform rotate-8 md:mb-6 underline hover:rotate-4 transition-transform ease-bouncy-2 ml-auto duration-200"
 								>
 									Back home
 								</Link>
