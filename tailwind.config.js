@@ -138,6 +138,21 @@ module.exports = {
 			screens: {
 				xs: "480px",
 			},
+			keyframes: {
+				blink: {
+					"0%, 100%": {
+						"--tw-bg-opacity": "0",
+						backgroundColor: "theme(colors.paper)",
+					},
+					"50%": {
+						"--tw-bg-opacity": "1",
+						backgroundColor: "theme(colors.lime)",
+					},
+				},
+			},
+			animation: {
+				blink: "blink 1s infinite",
+			},
 		},
 	},
 	plugins: [],
