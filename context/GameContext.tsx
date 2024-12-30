@@ -87,7 +87,8 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		removeCompletedAndCurrentRoundIndexes,
 	} = useContext(RoundContext);
 
-	const { setProgress, getRoundStatus } = useContext(ProgressContext);
+	const { safelySetProgress, progress, getRoundStatus } =
+		useContext(ProgressContext);
 
 	const { updateErrors } = useContext(ErrorContext);
 
@@ -202,8 +203,8 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 			(Array.isArray(completed) && completed.length === 0) ||
 			(!Array.isArray(completed) && completed === false);
 
-		await setProgress((prevProgress: ProgressProps[] | undefined) => {
-			const _prevProgress = prevProgress ?? [];
+		const newProgress = () => {
+			const _prevProgress = progress ?? [];
 			// Find the index of the object with the same game name
 			const existingGameIndex = _prevProgress.findIndex(
 				(item: ProgressProps) => item.game === game
@@ -308,7 +309,9 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				}
 				return newProgress;
 			}
-		});
+		};
+
+		safelySetProgress(newProgress());
 	};
 
 	/**

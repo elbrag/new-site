@@ -13,9 +13,7 @@ import { createContext, useState } from "react";
 
 interface ProgressContextProps {
 	progress: ProgressProps[] | undefined;
-	setProgress: (
-		progress: (prevProgress: ProgressProps[] | undefined) => ProgressProps[]
-	) => void;
+	safelySetProgress: (prevProgress: ProgressProps[] | undefined) => void;
 	getGameProgress: (
 		_game: GameName,
 		progress?: ProgressProps[]
@@ -34,7 +32,7 @@ interface ProgressContextProps {
 
 export const ProgressContext = createContext<ProgressContextProps>({
 	progress: undefined,
-	setProgress: () => {},
+	safelySetProgress: () => {},
 	getGameProgress: () => [],
 	getRoundStatus: () => null,
 	updateProgressState: () => {},
@@ -128,11 +126,20 @@ const ProgressContextProvider = ({
 		return completedRoundIds;
 	};
 
+	/**
+	 * Use the state setter for progress in this context
+	 *
+	 * Using it directly from GameContext triggers a rendering error
+	 */
+	const safelySetProgress = (_progress: ProgressProps[] | undefined) => {
+		setProgress(_progress);
+	};
+
 	return (
 		<ProgressContext.Provider
 			value={{
 				progress,
-				setProgress,
+				safelySetProgress,
 				getGameProgress,
 				getRoundStatus,
 				updateProgressState,
