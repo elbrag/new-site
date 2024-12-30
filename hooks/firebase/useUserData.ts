@@ -24,7 +24,7 @@ const useUserData = () => {
 		firebaseDatabase: Database,
 		userId: string,
 		column: UserDataColumn
-	): Promise<string> => {
+	): Promise<string | number> => {
 		const dbref = ref(firebaseDatabase, `users/${userId}/${column}`);
 		try {
 			const snapshot = await get(dbref);
