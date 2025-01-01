@@ -4,10 +4,11 @@ interface InputProps {
 	id?: string;
 	value: string | number;
 	label: string;
-	type?: "text" | "number" | "email" | "password";
+	type?: "text" | "number" | "email" | "password" | "textarea";
 	placeholder?: string;
 	className?: string;
-	onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+	readonly?: boolean;
+	onChange?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	onClickEnter?: (e: FormEvent<Element>) => void;
 	setMimickActive?: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -19,11 +20,14 @@ const Input: React.FC<InputProps> = ({
 	type = "text",
 	placeholder,
 	className,
+	readonly = false,
 	onChange,
 	onClickEnter,
 	setMimickActive,
 }) => {
-	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+	const handleKeyDown = (
+		e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => {
 		if (!onClickEnter) return;
 		if (e.key === "Enter" || e.keyCode === 13) {
 			if (setMimickActive) setMimickActive(true);
@@ -34,17 +38,20 @@ const Input: React.FC<InputProps> = ({
 		}
 	};
 
+	const Component = type === "textarea" ? "textarea" : "input";
+
 	return (
 		<label className={`w-full text-left block ${className}`}>
 			<div className="mb-1.5 font-alegreya uppercase">{label}</div>
-			<input
+			<Component
 				id={id}
-				className="border-2 border-military block w-full lg:text-lg px-4 py-2 bg-paper"
+				className="border-2 border-military block w-full lg:text-lg p-2 md:px-4 md:py-2 bg-paper"
 				type={type}
 				placeholder={placeholder}
 				value={value}
 				onChange={onChange}
 				onKeyDown={handleKeyDown}
+				readOnly={readonly}
 			/>
 		</label>
 	);
