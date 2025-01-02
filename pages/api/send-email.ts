@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import nodemailer from "nodemailer";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -8,46 +9,41 @@ export default async function handler(
 		return res.status(405).send("Method not allowed");
 	}
 
+	const { name, email, message, score } = JSON.parse(req.body);
+	const targetEmail = process.env.BREVO_TARGET_EMAIL;
+
+	const transporter = nodemailer.createTransport({
+		host: "smtp-relay.brevo.com",
+		port: 587,
+		secure: false,
+		auth: {
+			user: process.env.BREVO_SMTP_USERNAME,
+			pass: process.env.BREVO_SMTP_PASSWORD,
+		},
+	});
+
 	try {
-		const apiKey = process.env.BREVO_API_KEY;
-		const targetEmail = process.env.BREVO_TARGET_EMAIL;
-		const { name, email, message, score } = JSON.parse(req.body);
-
-		console.log(apiKey, targetEmail, name, email, message);
-
-		const response = await fetch("https://api.brevo.com/v3/smtp/email", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"api-key": `${apiKey}`,
-			},
-			body: JSON.stringify({
-				sender: {
-					name: "Ellen",
-					email: targetEmail,
-				},
-				to: [{ email: targetEmail }],
-				subject: `Game results from ${name}`,
-				htmlContent: `<html>
-                                <body>
-                                <h1>Game results from ${name}</h1>
-                                <br />
-                                <p><strong>Name:</strong> ${name}</p>
-                                <p><strong>Email:</strong> ${email}</p>
-                                <p><strong>Score:</strong> ${score}</p>
-                                <p><strong>Message:</strong></p>
-                                <p>${message}</p>
-                                </body>
-                            </html>
-                            `,
-			}),
+		const info = await transporter.sendMail({
+			from: `ellenbrage.com <${targetEmail}>`,
+			to: targetEmail,
+			subject: `Game results from ${name}`,
+			html: `<html>
+					  <body>
+						<h1>Game results from ${name}</h1>
+						<br />
+						<p><strong>Name:</strong> ${name}</p>
+						<p><strong>Email:</strong> ${email}</p>
+						<p><strong>Score:</strong> ${score}</p>
+						<p><strong>Message:</strong></p>
+						<p>${message}</p>
+					  </body>
+					</html>`,
 		});
-		if (!response.ok) {
-			throw new Error(`Error: ${response.statusText}`);
-		}
 
+		console.log("Message sent: %s", info.messageId);
 		res.status(200).send("Email sent successfully!");
 	} catch (err) {
+		console.error("Error sending email:", err);
 		res.status(500).send(`Failed to send email, reason: ${err}`);
 	}
 }
