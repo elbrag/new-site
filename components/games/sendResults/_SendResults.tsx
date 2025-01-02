@@ -12,6 +12,7 @@ const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 
 	// Input values
 	const [senderName, setSenderName] = useState("");
+	const [email, setEmail] = useState("");
 	const [message, setMessage] = useState("");
 	const [honey, setHoney] = useState<string>("");
 
@@ -34,9 +35,25 @@ const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 	/**
 	 * Send form
 	 */
-	const onSubmit = (e: FormEvent) => {
+	const onSubmit = async (e: FormEvent) => {
 		e.preventDefault();
-		console.log("Submit");
+		try {
+			const result = await fetch(
+				`${process.env.NEXT_PUBLIC_SITE_URL}/api/send-email`,
+				{
+					method: "POST",
+					body: JSON.stringify({
+						name: senderName,
+						email: email,
+						message: message,
+						score: currentScore,
+					}),
+				}
+			);
+			console.log(result);
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	return (
@@ -58,6 +75,13 @@ const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 						onChange: (e) => setSenderName(e.target.value),
 					})}
 					{...(username && { readonly: true })}
+					setMimickActive={setMimickActive}
+				/>
+				<Input
+					value={email}
+					label="E-mail address"
+					type="email"
+					onChange={(e) => setEmail(e.target.value)}
 					setMimickActive={setMimickActive}
 				/>
 				<Input
