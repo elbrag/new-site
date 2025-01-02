@@ -53,6 +53,7 @@ module.exports = {
 			paper: "#FFFCF7",
 			line1: "#e2e2e2",
 			line2: "#e8e8e8",
+			error: "#FF6A6A",
 			confetti: {
 				blue: "#8FD0FF",
 				green: "#82FF80",
@@ -167,6 +168,9 @@ module.exports = {
 				wiggle1: "wiggle1 1s ease-in-out infinite",
 				wiggle2: "wiggle2 1s ease-in-out infinite",
 				wiggle3: "wiggle3 1s ease-in-out infinite",
+			},
+			grayscale: {
+				70: "70%",
 			},
 		},
 	},

@@ -8,6 +8,7 @@ interface InputProps {
 	placeholder?: string;
 	className?: string;
 	readonly?: boolean;
+	required?: boolean;
 	onChange?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	onClickEnter?: (e: FormEvent<Element>) => void;
 	setMimickActive?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,6 +22,7 @@ const Input: React.FC<InputProps> = ({
 	placeholder,
 	className,
 	readonly = false,
+	required = false,
 	onChange,
 	onClickEnter,
 	setMimickActive,
@@ -45,13 +47,16 @@ const Input: React.FC<InputProps> = ({
 			<div className="mb-1.5 font-alegreya uppercase">{label}</div>
 			<Component
 				id={id}
-				className="border-2 border-military block w-full lg:text-lg p-2 md:px-4 md:py-2 bg-paper"
+				className={`border-2 border-military block w-full lg:text-lg p-2 md:px-4 md:py-2 ${
+					readonly ? "bg-line2 cursor-not-allowed" : "bg-paper"
+				}`}
 				type={type}
 				placeholder={placeholder}
 				value={value}
 				onChange={onChange}
 				onKeyDown={handleKeyDown}
 				readOnly={readonly}
+				required={required}
 			/>
 		</label>
 	);
