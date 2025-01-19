@@ -4,9 +4,6 @@ import {
 	GetServerSidePropsContext,
 	GetServerSidePropsResult,
 } from "next/types";
-import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "@/lib/helpers/firebase";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { CookieNames, getCookie } from "@/lib/helpers/cookies";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
 
