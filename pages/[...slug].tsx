@@ -7,6 +7,7 @@ import { CookieNames, getCookie } from "@/lib/helpers/cookies";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
 import { GetServerSideProps, GetServerSidePropsContext } from "next/types";
 import BarLoader from "@/components/ui/BarLoader";
+import BackButton from "@/components/ui/BackButton";
 interface GameComponentProps {
 	gameData: GameData;
 }
@@ -39,8 +40,9 @@ const GamePage = ({
 	);
 
 	return (
-		<div>
-			<div className="px-4 lg:px-12 pt-8 sm:pt-16 pb-16 flex flex-col items-center justify-center">
+		<div className="px-4 lg:px-12 pt-8 sm:pt-16 pb-16 flex-grow">
+			<BackButton className={gameUrl === "puzzle" ? "md:ml-6 lg:ml-12" : ""} />
+			<div className="flex-grow flex flex-col items-center justify-center">
 				<div className="w-full">
 					<GameComponent gameData={gameData} />
 				</div>
