@@ -110,7 +110,7 @@ const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 										Score: {currentScore}
 									</p>
 									<p className="mb-2">
-										That's really good! If you want it even higher before
+										That&apos;s really good! If you want it even higher before
 										sending it, go{" "}
 										<Button buttonStyle="link" label="play" href="/" /> some
 										more.
