@@ -64,6 +64,7 @@ const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 					}),
 				}
 			);
+			console.log(result);
 			if (result.status >= 200 && result.status < 300) {
 				setSuccess(true);
 				setLoading(false);
@@ -78,9 +79,6 @@ const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 	return (
 		<div className="md:px-6 lg:px-12">
 			<div className="max-w-144 mx-auto">
-				<h1 className="uppercase text-2xl lg:text-4xl mb-4 md:mb-6 text-center">
-					Send results
-				</h1>
 				<AnimatePresence>
 					{success ? (
 						<motion.div
@@ -89,78 +87,92 @@ const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 							exit={{ opacity: 0 }}
 							className="text-center"
 						>
-							<h2 className="text-xl lg:text-2xl">Thank you! 🤝</h2>
+							<h2 className="text-2xl lg:text-4xl mb-4 md:mb-6 ">
+								Thank you! 🤝
+							</h2>
 							<p>Looking forward to getting your message!</p>
 						</motion.div>
 					) : (
-						<motion.form
+						<motion.div
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
-							className="flex flex-col gap-y-4"
-							onSubmit={(e) => onSubmit(e)}
 						>
-							<div className="text-center">
-								<p className="text-xl lg:text-2xl mb-1.5">
-									Score: {currentScore}
-								</p>
-							</div>
-							<div>
-								<Input
-									value={senderName}
-									label="Name"
-									{...(!username && {
-										onChange: (e) => {
-											setSenderName(e.target.value);
-										},
-									})}
-									{...(username && { readonly: true })}
-									required={true}
-								/>
-							</div>
-							<div>
-								<Input
-									value={email}
-									label="E-mail address"
-									type="email"
-									onChange={(e) => {
-										setEmail(e.target.value);
-										setEmailError("");
-									}}
-									required={true}
-								/>
-								{emailError && (
-									<p className="text-sm text-error">{emailError}</p>
-								)}
-							</div>
-							<Input
-								value={message}
-								label="Message (if you'd like)"
-								type="textarea"
-								onChange={(e) => setMessage(e.target.value)}
-							/>
-							<input
-								className="hidden"
-								value={honey}
-								onChange={(e) => setHoney(e.target.value)}
-							/>
-							<div className="flex flex-col items-center mt-4 md:mt-6">
-								<div className="mb-6 text-center">
-									<Button
-										disabled={
-											!senderName.length || !email.length || honey.length > 0
-										}
-										label={loading ? "Sending…" : "Send"}
-										onClick={(e) => onSubmit(e)}
+							<h1 className="uppercase text-2xl lg:text-4xl mb-4 md:mb-6 text-center">
+								Send results
+							</h1>
+							<form
+								className="flex flex-col gap-y-4"
+								onSubmit={(e) => onSubmit(e)}
+							>
+								<div className="text-center">
+									<p className="text-xl lg:text-2xl mb-1.5">
+										Score: {currentScore}
+									</p>
+									<p className="mb-2">
+										That's really good! If you want it even higher before
+										sending it, go{" "}
+										<Button buttonStyle="link" label="play" href="/" /> some
+										more.
+									</p>
+								</div>
+								<div>
+									<Input
+										value={senderName}
+										label="Name"
+										{...(!username && {
+											onChange: (e) => {
+												setSenderName(e.target.value);
+											},
+										})}
+										{...(username && { readonly: true })}
+										required={true}
 									/>
-									{failed && (
-										<p className="mt-4 text-error">
-											Sorry, something went wrong. Please try again.
-										</p>
+								</div>
+								<div>
+									<Input
+										value={email}
+										label="E-mail address"
+										type="email"
+										onChange={(e) => {
+											setEmail(e.target.value);
+											setEmailError("");
+										}}
+										required={true}
+									/>
+									{emailError && (
+										<p className="text-sm text-error">{emailError}</p>
 									)}
 								</div>
-							</div>
-						</motion.form>
+								<Input
+									value={message}
+									label="Message (if you'd like)"
+									type="textarea"
+									onChange={(e) => setMessage(e.target.value)}
+								/>
+								<input
+									className="hidden"
+									value={honey}
+									onChange={(e) => setHoney(e.target.value)}
+								/>
+								<div className="flex flex-col items-center mt-4 md:mt-6">
+									<div className="mb-6 text-center">
+										<Button
+											disabled={
+												!senderName.length || !email.length || honey.length > 0
+											}
+											label={loading ? "Sending…" : "Send"}
+											onClick={(e) => onSubmit(e)}
+										/>
+										{failed && (
+											<p className="mt-4 text-error">
+												Sorry, something went wrong. Please try again.
+											</p>
+										)}
+									</div>
+								</div>
+							</form>
+						</motion.div>
 					)}
 				</AnimatePresence>
 			</div>

@@ -58,7 +58,7 @@ const Button: React.FC<ButtonProps> = ({
 
 	const activeLinkClasses = `active:text-lime active:scale-100`;
 	const hoverLinkClasses = `hover:rotate-4 hover:scale-110`;
-	const linkClasses = `underline underline-offset-3 decoration-2 transition-all ease-bouncy-2 duration-200 text-sm lg:text-base ${activeLinkClasses} ${hoverLinkClasses} ${disabledClasses}`;
+	const linkClasses = `inline-block underline underline-offset-3 decoration-2 transition-all ease-bouncy-2 duration-200 text-sm lg:text-base transform ${activeLinkClasses} ${hoverLinkClasses} ${disabledClasses}`;
 
 	const classes = buttonStyle === "link" ? linkClasses : buttonClasses;
 
