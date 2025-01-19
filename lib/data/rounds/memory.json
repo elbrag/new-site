@@ -159,22 +159,5 @@
                 "url": "island"
             }
         ]
-    },
-    {
-        "roundId": 9,
-        "description": "I have always been drawn to fantasy/mythology stories.",
-        "subtitle": "I prefer computer games on that theme, and I have been pretty far down the Tolkien rabbit hole.",
-        "images": [
-            {
-                "url": "archery",
-                "slotIndexes": [
-                    0,
-                    16
-                ]
-            },
-            {
-                "url": "archery"
-            }
-        ]
     }
 ]
