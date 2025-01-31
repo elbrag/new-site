@@ -10,10 +10,15 @@ import { ProgressProps, ProgressRoundProps } from "@/lib/types/progress";
 import { HangmanMaskedRoundProps } from "@/lib/types/rounds";
 import { Database } from "firebase/database";
 import { createContext, useState } from "react";
+import { isEqual } from "lodash";
 
 interface ProgressContextProps {
 	progress: ProgressProps[] | undefined;
-	safelySetProgress: (prevProgress: ProgressProps[] | undefined) => void;
+	setProgress: (
+		updater: (
+			prevProgress: ProgressProps[] | undefined
+		) => ProgressProps[] | undefined
+	) => void;
 	getGameProgress: (
 		_game: GameName,
 		progress?: ProgressProps[]
@@ -32,7 +37,7 @@ interface ProgressContextProps {
 
 export const ProgressContext = createContext<ProgressContextProps>({
 	progress: undefined,
-	safelySetProgress: () => {},
+	setProgress: () => {},
 	getGameProgress: () => [],
 	getRoundStatus: () => null,
 	updateProgressState: () => {},
@@ -126,20 +131,11 @@ const ProgressContextProvider = ({
 		return completedRoundIds;
 	};
 
-	/**
-	 * Use the state setter for progress in this context
-	 *
-	 * Using it directly from GameContext triggers a rendering error
-	 */
-	const safelySetProgress = (_progress: ProgressProps[] | undefined) => {
-		setProgress(_progress);
-	};
-
 	return (
 		<ProgressContext.Provider
 			value={{
 				progress,
-				safelySetProgress,
+				setProgress,
 				getGameProgress,
 				getRoundStatus,
 				updateProgressState,
