@@ -32,7 +32,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import { puzzleInitMessages } from "@/lib/helpers/messages";
-// import { getRandomColor } from "@/lib/helpers/effects";
 
 const Puzzle: React.FC = () => {
 	// Refs
@@ -48,6 +47,7 @@ const Puzzle: React.FC = () => {
 	const [showInitMessage, setShowInitMessage] = useState(false);
 	const [allowReset, setAllowReset] = useState(false);
 	const [allMatched, setAllMatched] = useState(false);
+	const [resetting, setResetting] = useState(false);
 
 	// Hooks
 	const {
@@ -385,11 +385,15 @@ const Puzzle: React.FC = () => {
 	 * Reset pieces
 	 */
 	const resetPieces = async () => {
+		setResetting(true);
 		await resetGame(
 			GameName.Puzzle,
 			puzzlePieces.map((p) => p.id)
 		);
 		resetGameBoard();
+		setTimeout(() => {
+			setResetting(false);
+		}, 300);
 	};
 
 	/**
@@ -656,7 +660,7 @@ const Puzzle: React.FC = () => {
 							/>
 						</div>
 					</div>
-					{guides.map((guide, i) => (
+					{/* {guides.map((guide, i) => (
 						<div
 							className="absolute w-4 h-4 "
 							style={{
@@ -666,13 +670,24 @@ const Puzzle: React.FC = () => {
 							}}
 							key={i}
 						></div>
-					))}
+					))} */}
 					<AnimatePresence>
 						{successMessage && <SuccessScreen text={successMessage} />}
 					</AnimatePresence>
+					<AnimatePresence>
+						{resetting && (
+							<motion.div
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+								transition={{ duration: 0.1 }}
+								className="absolute top-0 left-0 w-full h-full brightness-125 backdrop-saturate-100"
+							></motion.div>
+						)}
+					</AnimatePresence>
 				</div>
 			</div>
-			<div className="flex justify-center min-h-12 mt-6 md:mt-10 fixed bottom-20 sm:bottom-18 md:bottom-18  right-8">
+			<div className="flex justify-center min-h-12 mt-6 md:mt-10 fixed bottom-20 sm:bottom-18 md:bottom-18 right-8">
 				<AnimatePresence>
 					{gameInited.current && allowReset && (
 						<motion.div
