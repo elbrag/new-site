@@ -61,6 +61,7 @@ const MemoryRevealedImage: React.FC<MemoryRevealedImageProps> = ({
 			}}
 		>
 			<Image
+				priority={true}
 				className="min-h-full object-cover"
 				src={makeMemoryImgUrl(imgUrl)}
 				alt=""
