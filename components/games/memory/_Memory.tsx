@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import MemoryCard from "./MemoryCard";
 import { fetchGameData } from "@/lib/helpers/fetch";
-import { MemoryRoundProps } from "@/lib/types/rounds";
+import { MemoryImageProps, MemoryRoundProps } from "@/lib/types/rounds";
 import { AnimatePresence, motion } from "framer-motion";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import SuccessScreen from "@/components/ui/SuccessScreen";
@@ -139,6 +139,10 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 				card1Data.roundId === card2Data.roundId &&
 				!gameProgress.some((p) => p.roundId === card1Data.roundId)
 			) {
+				// Preload images for modal
+				card1Data.images.forEach((image: MemoryImageProps) => {
+					preloadImage(makeMemoryImgUrl(image.url));
+				});
 				setTimeout(async () => {
 					// Update progress and score
 					await updateProgress(GameName.Memory, card1Data.roundId, true);

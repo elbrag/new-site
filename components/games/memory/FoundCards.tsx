@@ -18,17 +18,6 @@ const FoundCards: React.FC<FoundCardsProps> = ({ cardData }) => {
 		return rotations;
 	}, []);
 
-	/**
-	 * Preload images
-	 */
-	useEffect(() => {
-		cardData.forEach((data) => {
-			data.images.forEach((image) => {
-				preloadImage(makeMemoryImgUrl(image.url));
-			});
-		});
-	}, [cardData]);
-
 	cardData = cardData.sort((a, b) => a.roundId - b.roundId);
 
 	return (
