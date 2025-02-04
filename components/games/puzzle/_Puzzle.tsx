@@ -619,7 +619,7 @@ const Puzzle: React.FC = () => {
 
 	return (
 		<div className="md:px-6 lg:px-12">
-			<div className="h-50vh md:h-70vh">
+			<div className="h-50vh md:h-70vh mb-24">
 				<div className="relative z-0 h-full bg-paper border border-line1 rounded-xl overflow-hidden">
 					<AnimatePresence>
 						{allMatched && (
@@ -672,17 +672,16 @@ const Puzzle: React.FC = () => {
 					</AnimatePresence>
 				</div>
 			</div>
-			<div className="flex justify-center min-h-12 mt-6 md:mt-10">
+			<div className="flex justify-center min-h-12 mt-6 md:mt-10 fixed bottom-20 sm:bottom-18 md:bottom-18  right-8">
 				<AnimatePresence>
 					{gameInited.current && allowReset && (
 						<motion.div
-							className="flex flex-col md:flex-row gap-4 md:gap-6  items-center"
+							className="flex gap-4 md:gap-6 items-center"
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
 							transition={{ duration: 0.4 }}
 						>
-							<p className="text-sm lg:text-base">Clean up and replay?</p>
 							<Button label="Reset" onClick={resetPieces} />
 						</motion.div>
 					)}

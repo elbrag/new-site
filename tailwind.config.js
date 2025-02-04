@@ -131,6 +131,9 @@ module.exports = {
 			height: {
 				...distances,
 			},
+			inset: {
+				...distances,
+			},
 			minHeight: { ...distances },
 			aspectRatio: {
 				"9/13": "9 / 13",
