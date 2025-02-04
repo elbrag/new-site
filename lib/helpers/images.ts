@@ -4,5 +4,5 @@ export const preloadImage = (url: string) => {
 };
 
 export const makeMemoryImgUrl = (path: string) => {
-	return `/static/images/memory/${path}.jpg`;
+	return `/static/images/memory/${path}.webp`;
 };
