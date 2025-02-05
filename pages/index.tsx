@@ -8,8 +8,6 @@ import { CookieNames, getCookie } from "@/lib/helpers/cookies";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
 
 const Home: React.FC = () => {
-	// const { userId } = useContext(FirebaseContext);
-
 	return <GameBoard />;
 };
 

@@ -3,6 +3,7 @@
  */
 export enum CookieNames {
 	FirebaseToken = "firebaseToken",
+	IntroShown = "introShown",
 }
 
 /**
