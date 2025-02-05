@@ -4,6 +4,7 @@ import useUserData from "./useUserData";
 
 const useUsername = () => {
 	const [username, setUsername] = useState<string | null>(null);
+
 	const { updateUserData, getUserData } = useUserData();
 
 	/**
@@ -29,7 +30,11 @@ const useUsername = () => {
 		setUsername(_username);
 	};
 
-	return { username, updateUsernameState, updateFirebaseUsername };
+	return {
+		username,
+		updateUsernameState,
+		updateFirebaseUsername,
+	};
 };
 
 export default useUsername;

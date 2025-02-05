@@ -5,10 +5,12 @@ import { AnimatePresence } from "framer-motion";
 import Modal from "./ui/Modal";
 import Input from "./ui/Input";
 import { FirebaseContext } from "@/context/FirebaseContext";
+import useUsername from "@/hooks/firebase/useUsername";
+import { InfoContext } from "@/context/InfoContext";
 
 export default function Username() {
-	const [showModal, setShowModal] = useState(false);
 	const { username, updateUsernameInFirebase } = useContext(GameContext);
+	const { showUsernameModal, setShowUsernameModal } = useContext(InfoContext);
 	const { signedIn } = useContext(FirebaseContext);
 	const [inputValue, setInputValue] = useState(username ?? "");
 	const [mimickActive, setMimickActive] = useState(false);
@@ -29,18 +31,18 @@ export default function Username() {
 	 * Focus input field when modal is open
 	 */
 	useEffect(() => {
-		if (showModal) {
+		if (showUsernameModal) {
 			(document.querySelector("input#username") as HTMLInputElement)?.focus();
 			presetInputValue();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [showModal]);
+	}, [showUsernameModal]);
 
 	/**
 	 * On button click
 	 */
 	const onButtonClick = () => {
-		setShowModal(true);
+		setShowUsernameModal(true);
 	};
 
 	/**
@@ -50,7 +52,7 @@ export default function Username() {
 		e.preventDefault();
 		await updateUsernameInFirebase(inputValue);
 		setTimeout(() => {
-			setShowModal(false);
+			setShowUsernameModal(false);
 		}, 100);
 	};
 
@@ -64,11 +66,17 @@ export default function Username() {
 			</div>
 			<Button buttonStyle="link" label="Change" onClick={onButtonClick} />
 			<AnimatePresence>
-				{showModal && (
-					<Modal onClose={() => setShowModal(false)} motionKey="username-modal">
-						<h2 className="text-xl lg:text-2xl mb-6 lg:mb-10 uppercase">
-							Update username
-						</h2>
+				{showUsernameModal && (
+					<Modal
+						onClose={() => setShowUsernameModal(false)}
+						motionKey="username-modal"
+					>
+						<div className="mb-6 lg:mb-10">
+							<h2 className="text-xl lg:text-2xl uppercase mb-2 md:mb-3">
+								Update username
+							</h2>
+							<p>You don&apos;t have to, but it&apos;s nice.</p>
+						</div>
 						<form onSubmit={(e) => e.preventDefault()}>
 							<Input
 								id="username"
@@ -81,7 +89,7 @@ export default function Username() {
 								onClickEnter={onUsernameSubmit}
 								setMimickActive={setMimickActive}
 							/>
-							<div className="mb-8 flex justify-center">
+							<div className="mb-6 flex justify-center">
 								<Button
 									label="Update"
 									onClick={onUsernameSubmit}
