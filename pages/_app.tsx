@@ -13,6 +13,7 @@ import Head from "next/head";
 import gamesData from "../lib/data/gamesData.json";
 import { useEffect, useState } from "react";
 import InfoContextProvider from "@/context/InfoContext";
+import IntroModal from "@/components/IntroModal";
 
 const delaGothicOne = Dela_Gothic_One({
 	weight: "400",
@@ -66,8 +67,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 					isHome ? "md:h-screen" : ""
 				} ${fonts.join(" ")}`}
 			>
-				<Navigation />
 				<InfoContextProvider>
+					<Navigation />
 					<ErrorContextProvider>
 						<ProgressContextProvider>
 							<RoundContextProvider>
@@ -77,6 +78,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 											<Component {...pageProps} />
 										</div>
 										<Footer />
+										<IntroModal />
 									</GameContextProvider>
 								</FirebaseContextProvider>
 							</RoundContextProvider>
