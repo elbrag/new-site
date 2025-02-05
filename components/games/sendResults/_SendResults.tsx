@@ -85,7 +85,7 @@ const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
-							className="text-center"
+							className="text-center mb-8 md:mb-12"
 						>
 							<h2 className="text-2xl lg:text-4xl mb-4 md:mb-6 ">
 								Thank you! 🤝

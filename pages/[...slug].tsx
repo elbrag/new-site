@@ -40,7 +40,7 @@ const GamePage = ({
 	);
 
 	return (
-		<div className="px-4 lg:px-12 pt-8 sm:pt-16 pb-16 flex-grow">
+		<div className="px-4 lg:px-12 pt-8 sm:pt-16 pb-16 flex-grow flex flex-col">
 			<BackButton className={gameUrl === "puzzle" ? "md:ml-6 lg:ml-12" : ""} />
 			<div className="flex-grow flex flex-col items-center justify-center">
 				<div className="w-full">

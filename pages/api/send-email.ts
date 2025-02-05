@@ -9,20 +9,20 @@ export default async function handler(
 		return res.status(405).send("Method not allowed");
 	}
 
-	const { name, email, message, score } = JSON.parse(req.body);
-	const targetEmail = process.env.BREVO_TARGET_EMAIL;
-
-	const transporter = nodemailer.createTransport({
-		host: "smtp-relay.brevo.com",
-		port: 587,
-		secure: false,
-		auth: {
-			user: process.env.BREVO_SMTP_USERNAME,
-			pass: process.env.BREVO_SMTP_PASSWORD,
-		},
-	});
-
 	try {
+		const { name, email, message, score } = JSON.parse(req.body);
+		const targetEmail = process.env.BREVO_TARGET_EMAIL;
+
+		const transporter = nodemailer.createTransport({
+			host: "smtp-relay.brevo.com",
+			port: 587,
+			secure: false,
+			auth: {
+				user: process.env.BREVO_SMTP_USERNAME,
+				pass: process.env.BREVO_SMTP_PASSWORD,
+			},
+		});
+
 		const info = await transporter.sendMail({
 			from: `ellenbrage.com <${targetEmail}>`,
 			to: targetEmail,
