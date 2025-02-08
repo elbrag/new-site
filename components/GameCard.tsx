@@ -22,14 +22,14 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 		switch (url) {
 			case GameName.Hangman:
 				classes +=
-					"w-[150%] h-[150%] lg:w-[200%] lg:h-[200%] -translate-y-1/3 hover:scale-110 hover:-rotate-6";
+					"w-[150%] h-[150%] lg:w-[200%] lg:h-[200%] -translate-y-1/3 hover:scale-110 hover:-rotate-8";
 				break;
 			case GameName.Memory:
 				classes += "w-[115%] h-[115%] hover:scale-110 hover:rotate-6";
 				break;
 			case GameName.Puzzle:
 				classes +=
-					"w-[180%] h-[180%] -translate-x-[80%] hover:-translate-x-[20%]";
+					"w-[180%] h-[180%] xl:w-[150%] xl:h-[150%] -translate-x-[80%] hover:-translate-x-[20%]";
 				break;
 			case GameName.SendResults:
 				classes += "rotate-5 w-[105%] h-[105%] hover:scale-110 hover:rotate-20";
