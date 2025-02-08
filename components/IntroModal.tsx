@@ -3,10 +3,12 @@ import Modal from "@/components/ui/Modal";
 import { InfoContext } from "@/context/InfoContext";
 import { CookieNames, getCookie, setCookie } from "@/lib/helpers/cookies";
 import { useContext, useEffect } from "react";
+import { FirebaseContext } from "@/context/FirebaseContext";
 
 export default function IntroModal() {
 	const { setShowUsernameModal, showIntroModal, setShowIntroModal } =
 		useContext(InfoContext);
+	const { signedIn } = useContext(FirebaseContext);
 
 	/**
 	 * Get "introShown" cookie
@@ -19,12 +21,16 @@ export default function IntroModal() {
 	 * Show modal if intro has not been shown
 	 */
 	useEffect(() => {
+		console.log("signedIn", signedIn);
 		const introShownCookie = getIntroShownCookie();
 		const introHasBeenShown = introShownCookie
 			? JSON.parse(introShownCookie)
 			: false;
-		if (!introHasBeenShown) setShowIntroModal(true);
-	}, []);
+		if (!introHasBeenShown && signedIn)
+			setTimeout(() => {
+				setShowIntroModal(true);
+			}, 500);
+	}, [signedIn]);
 
 	/**
 	 * On close intro modal
@@ -56,10 +62,13 @@ export default function IntroModal() {
 							</p>
 							<p className="mb-3">
 								There are currently 3 games that you can play. You will be able
-								to see them all after closing this modal. When you are happy
-								with your score (which is shown at the bottom right corner by
-								the way), make sure to send me a message to show me how well you
-								did, and drop me a line or two.
+								to see them all after closing this modal. If you exit a game you
+								can always come back later, your progress is auto-saved.
+							</p>
+							<p className="mb-3">
+								When you are happy with your score (which is shown down there
+								👇), make sure to send me a message to show me how well you did,
+								and drop me a line or two.
 							</p>
 							<p>Hope to hear from you soon! 🪐</p>
 						</div>
