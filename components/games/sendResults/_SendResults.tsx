@@ -64,13 +64,12 @@ const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 					}),
 				}
 			);
-			console.log(result);
 			if (result.status >= 200 && result.status < 300) {
 				setSuccess(true);
 				setLoading(false);
 			}
 		} catch (err) {
-			console.log(err);
+			console.error(err);
 			setFailed(true);
 			setLoading(false);
 		}

@@ -9,7 +9,18 @@ interface FactsListProps {
 const FactsList: React.FC<FactsListProps> = ({ facts }) => {
 	return (
 		<div className="flex flex-col items-center text-center">
-			<h2 className="font-alegreya lg:text-lg mb-12">{wellDoneHeading}</h2>
+			{facts.length ? (
+				<h2 className="font-alegreya lg:text-lg mb-12">{wellDoneHeading}</h2>
+			) : (
+				<>
+					<h2 className="mb-4 lg:mb-6">
+						You didn&apos;t find anything out! ¯\_(ツ)_/¯
+					</h2>
+					<p className="font-alegreya lg:text-lg">
+						But don&apos;t worry, I&apos;ll tell you over a cup of coffee!
+					</p>
+				</>
+			)}
 			<ul>
 				{facts.map((fact, index) => (
 					<motion.li

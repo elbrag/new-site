@@ -21,7 +21,6 @@ export default function IntroModal() {
 	 * Show modal if intro has not been shown
 	 */
 	useEffect(() => {
-		console.log("signedIn", signedIn);
 		const introShownCookie = getIntroShownCookie();
 		const introHasBeenShown = introShownCookie
 			? JSON.parse(introShownCookie)

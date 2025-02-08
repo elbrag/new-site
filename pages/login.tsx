@@ -131,7 +131,7 @@ export const getServerSideProps = async (
 			};
 		}
 	} catch (e) {
-		console.log("Error checking token: ", e);
+		console.error("Error checking token: ", e);
 		res.setHeader(
 			"Set-Cookie",
 			`${CookieNames.FirebaseToken}=; Max-Age=0; path=/`

@@ -119,6 +119,7 @@ const ProgressContextProvider = ({
 				// For array types of progress
 				if (Array.isArray(p.completed)) {
 					if (
+						p.roundId === words.roundId &&
 						p.completed?.length === nrOfChars &&
 						!completedRoundIds.includes(p.roundId)
 					) {

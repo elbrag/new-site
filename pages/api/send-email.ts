@@ -40,7 +40,6 @@ export default async function handler(
 					</html>`,
 		});
 
-		console.log("Message sent: %s", info.messageId);
 		res.status(200).send("Email sent successfully!");
 	} catch (err) {
 		console.error("Error sending email:", err);

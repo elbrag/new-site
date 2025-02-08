@@ -133,8 +133,8 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		if (allRoundsPassed) {
 			updateSuccessMessage(
 				roundFailed
-					? "That was the last round. You did your best <3"
-					: "That was the last round! Good job!"
+					? "That was all. You did your best <3"
+					: "That was all! Good job!"
 			);
 			setTimeout(() => {
 				updateFinalResult();

@@ -12,7 +12,7 @@ export default function handler(
 		returnData = getMaskedWords();
 	}
 	if (req.method === "POST") {
-		if (req.body?.foundRoundIds?.length) {
+		if (req.body?.foundRoundIds) {
 			// Request for complete words by round ids
 			returnData = getCompleteWords(req.body.foundRoundIds);
 		} else {
@@ -41,9 +41,11 @@ const getMaskedWords = () => {
  * Get complete words
  */
 const getCompleteWords = (roundIds: number[]) => {
-	return hangman.filter((round) => {
-		return roundIds.includes(round.roundId);
-	});
+	return (
+		hangman.filter((round) => {
+			return roundIds.includes(round.roundId);
+		}) ?? []
+	);
 };
 
 /**
