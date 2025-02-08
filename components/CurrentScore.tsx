@@ -9,7 +9,11 @@ export default function CurrentScore() {
 	const { signedIn } = useContext(FirebaseContext);
 
 	return (
-		<div className={`current-score ${!signedIn && "opacity-0"}`}>
+		<div
+			className={`current-score flex flex-col justify-center ${
+				!signedIn && "opacity-0"
+			}`}
+		>
 			<div className="flex items-center gap-2 leading-none">
 				<p className="uppercase sm:text-lg font-alegreya">Score:</p>
 				<span className="relative">

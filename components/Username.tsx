@@ -57,7 +57,7 @@ export default function Username() {
 	};
 
 	return signedIn ? (
-		<div className="flex items-center mb-1 md:mb-0.5">
+		<div className="flex items-center mb-1 sm:mb-0.5">
 			<p className="uppercase sm:text-lg font-alegreya leading-none mt-1">
 				Username:
 			</p>

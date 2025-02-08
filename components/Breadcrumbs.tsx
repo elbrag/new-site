@@ -14,7 +14,7 @@ const Breadcrumbs: React.FC = () => {
 
 	return (
 		<div className="flex flex-col justify-center md:min-h-9">
-			<ul className="flex leading-none mt-2 lg:mt-1">
+			<ul className="flex leading-none mt-2 sm:mt-1">
 				{currentGame ? (
 					<>
 						<li>
