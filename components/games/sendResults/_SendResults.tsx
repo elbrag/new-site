@@ -110,10 +110,20 @@ const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 										Score: {currentScore}
 									</p>
 									<p className="mb-2">
-										That&apos;s really good! If you want it even higher before
-										sending it, go{" "}
-										<Button buttonStyle="link" label="play" href="/" /> some
-										more.
+										{currentScore > 0 ? (
+											<>
+												That&apos;s really good! If you want it even higher
+												before sending it, go{" "}
+												<Button buttonStyle="link" label="play" href="/" /> some
+												more.
+											</>
+										) : (
+											<>
+												To get yourself a score to send, go{" "}
+												<Button buttonStyle="link" label="play" href="/" /> some
+												games.
+											</>
+										)}
 									</p>
 								</div>
 								<div>
