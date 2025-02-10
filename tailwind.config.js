@@ -181,7 +181,8 @@ module.exports = {
 	safelist: [
 		{ pattern: /font-/ },
 		{ pattern: /border-/, variants: ["sm", "md", "lg"] },
-		{ pattern: /scale-/, variants: ["md", "lg"] },
+		{ pattern: /scale-/, variants: ["md", "lg", "hover"] },
+		{ pattern: /rotate-/, variants: ["md", "lg", "hover"] },
 		{ pattern: /grid-cols-/, variants: ["md", "lg"] },
 		{ pattern: /text-/ },
 		{ pattern: /w-/, variants: ["md", "lg"] },
