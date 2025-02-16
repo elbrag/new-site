@@ -5,7 +5,7 @@ interface ModalProps {
 	onClose: () => void;
 	className?: string;
 	motionKey: string;
-	extraPaddedOnMobile: boolean;
+	extraPaddedOnMobile?: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
