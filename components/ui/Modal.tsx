@@ -5,6 +5,7 @@ interface ModalProps {
 	onClose: () => void;
 	className?: string;
 	motionKey: string;
+	extraPaddedOnMobile: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -12,9 +13,14 @@ const Modal: React.FC<ModalProps> = ({
 	onClose,
 	className,
 	motionKey,
+	extraPaddedOnMobile = true,
 }) => {
 	return (
-		<div className="modal text-military fixed top-0 left-0 w-screen h-screen flex items-start md:items-center justify-center pt-30 md:pt-0 z-20">
+		<div
+			className={`modal text-military fixed top-0 left-0 w-screen h-screen flex items-start md:items-center justify-center z-20 md:pt-0 ${
+				extraPaddedOnMobile ? "pt-30" : "pt-14"
+			}`}
+		>
 			<motion.div
 				key={motionKey}
 				className="relative max-w-[calc(100vw-1rem)]"

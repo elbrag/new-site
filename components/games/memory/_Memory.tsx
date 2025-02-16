@@ -327,6 +327,7 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 					<AnimatePresence>
 						{modalCardContent && (
 							<Modal
+								extraPaddedOnMobile={false}
 								onClose={onModalClose}
 								className="overflow-hidden md:max-w-200"
 								motionKey="memory-modal"

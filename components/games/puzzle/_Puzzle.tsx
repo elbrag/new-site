@@ -615,7 +615,7 @@ const Puzzle: React.FC = () => {
 	 */
 	useEffect(() => {
 		if (allRoundsPassed) {
-			updateSuccessMessage("That was the last one! Good job.");
+			updateSuccessMessage("It's complete! Good job.");
 			setAllMatchedIfAllCompleted();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
