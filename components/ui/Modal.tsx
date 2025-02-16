@@ -14,8 +14,7 @@ const Modal: React.FC<ModalProps> = ({
 	motionKey,
 }) => {
 	return (
-		<div className="modal text-military fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-10">
-			{/* Modal container */}
+		<div className="modal text-military fixed top-0 left-0 w-screen h-screen flex items-start md:items-center justify-center pt-30 md:pt-0 z-20">
 			<motion.div
 				key={motionKey}
 				className="relative max-w-[calc(100vw-1rem)]"
@@ -27,10 +26,8 @@ const Modal: React.FC<ModalProps> = ({
 				<div
 					className={`bg-paper p-4 lg:py-8 lg:px-12 w-screen max-w-full md:max-w-144 flex flex-col items-center rounded-xl z-1 text-center max-h-[85vh] overflow-y-auto ${className}`}
 				>
-					{/* Content */}
 					{children}
 				</div>
-				{/* Close button */}
 				<motion.button
 					initial={{ rotate: -180, translateY: "50%" }}
 					animate={{ rotate: 0, translateY: "-100%" }}
@@ -42,7 +39,6 @@ const Modal: React.FC<ModalProps> = ({
 					<div className="w-10 h-[2px] bg-lime absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-45 rounded-sm"></div>
 				</motion.button>
 			</motion.div>
-			{/* Overlay */}
 			<motion.div
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 0.6 }}

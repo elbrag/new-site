@@ -62,7 +62,7 @@ export default function Username() {
 				Username:
 			</p>
 			<div className="min-w-12 relative ml-2 mr-4 flex justify-center sm:text-lg leading-none">
-				{username}
+				{username ?? "Undefined"}
 			</div>
 			<Button buttonStyle="link" label="Change" onClick={onButtonClick} />
 			<AnimatePresence>

@@ -18,7 +18,7 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 		: null;
 
 	const { ref, inView, entry } = useInView({
-		threshold: 0.8,
+		threshold: 1,
 	});
 
 	const getImageContainerClasses = () => {
