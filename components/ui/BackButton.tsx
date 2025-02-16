@@ -4,7 +4,7 @@ const BackButton: React.FC<{ className?: string }> = ({ className }) => {
 	return (
 		<div className="back-button">
 			<Link
-				className={`underline underline-offset-3 text-sm lg:text-base ${className}`}
+				className={`block underline underline-offset-3 text-sm lg:text-base ${className}`}
 				href="/"
 			>
 				&#8610; Back to Games
