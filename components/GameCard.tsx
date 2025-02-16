@@ -28,24 +28,18 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 		switch (url) {
 			case GameName.Hangman:
 				classes += "w-[150%] h-[150%] lg:w-[200%] lg:h-[200%] -translate-y-1/3";
-				//lg:hover:scale-110 lg:hover:-rotate-8
 				break;
 			case GameName.Memory:
-				classes += "w-[115%] h-[115%] ";
-				//lg:hover:scale-110 lg:hover:rotate-6
+				classes += "w-[115%] h-[115%]";
 				break;
 			case GameName.Puzzle:
-				classes +=
-					"w-[180%] h-[180%] xl:w-[150%] xl:h-[150%] -translate-x-[80%]";
-				//lg:hover:-translate-x-[20%]
+				classes += "w-[180%] h-[180%] xl:w-[150%] xl:h-[150%]";
 				break;
 			case GameName.SendResults:
-				classes += " w-[105%] h-[105%] rotate-5";
-				//lg:rotate-5 lg:hover:scale-110 lg:hover:rotate-20
+				classes += " w-[105%] h-[105%]";
 				break;
 			case GameName.ComingSoon:
-				classes += "w-full h-full flex justify-center items-center -rotate-6";
-				//lg:rotate-6
+				classes += "w-full h-full flex justify-center items-center";
 				break;
 		}
 
@@ -109,12 +103,8 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 			? inView
 				? animatedClasses
 				: getNonAnimatedClasses()
-			: animatedClassesHover;
+			: `${getNonAnimatedClasses()} ${animatedClassesHover}`;
 	};
-
-	useEffect(() => {
-		console.log("inview", url);
-	}, [inView]);
 
 	return (
 		<StyledLink
