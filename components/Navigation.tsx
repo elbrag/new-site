@@ -9,7 +9,7 @@ export default function Navigation() {
 	const { setShowIntroModal } = useContext(InfoContext);
 
 	return (
-		<header className="py-2.5 sm:py-4 px-5 fixed top-0 bg-military text-lime w-full z-10">
+		<header className="py-2.5 sm:py-4 px-3 sm:px-5 fixed top-0 bg-military text-lime w-full z-10">
 			<nav className="flex justify-between items-end lg:items-center">
 				<div className="flex flex-col sm:flex-row sm:items-center">
 					<Link href="/" aria-label="Home" className="block mr-6 md:mr-8">
