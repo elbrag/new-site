@@ -206,6 +206,11 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 				} else {
 					// Show that error occurred
 					setSignalError(true);
+					if (getGameErrors(GameName.Hangman).length === 0) {
+						document
+							.getElementById("errorList")
+							?.scrollIntoView({ behavior: "smooth" });
+					}
 					setTimeout(() => {
 						setSignalError(false);
 					}, 600);
@@ -275,22 +280,24 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 						{/* Man  */}
 						<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
 						{/* Error list */}
-						{!!getGameErrors(GameName.Hangman).length && (
-							<div className="errors mt-8 mb-4 sm:mt-10 sm:mb-6">
-								<ul className="flex gap-2 justify-center flex-wrap">
-									{getGameErrors(GameName.Hangman).map(
-										(err: string, i: number) => (
-											<li
-												className="uppercase text-xl lg:text-2xl"
-												key={`error-${i}`}
-											>
-												{err}
-											</li>
-										)
-									)}
-								</ul>
-							</div>
-						)}
+						<div id="errorList">
+							{!!getGameErrors(GameName.Hangman).length && (
+								<div className="errors mt-8 mb-4 sm:mt-10 sm:mb-6">
+									<ul className="flex gap-2 justify-center flex-wrap">
+										{getGameErrors(GameName.Hangman).map(
+											(err: string, i: number) => (
+												<li
+													className="uppercase text-xl lg:text-2xl"
+													key={`error-${i}`}
+												>
+													{err}
+												</li>
+											)
+										)}
+									</ul>
+								</div>
+							)}
+						</div>
 					</div>
 					<AnimatePresence>
 						{successMessage && <SuccessScreen text={successMessage} />}

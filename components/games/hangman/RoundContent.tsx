@@ -41,10 +41,10 @@ const RoundContent: React.FC<RoundContentProps> = ({
 			transition={{ duration: 0.5 }}
 			key={motionKey}
 		>
-			<h2 className="text-center font-alegreya text-md md:text-lg mb-6 sm:mb-10">
+			<h2 className="text-center font-alegreya text-md md:text-lg mb-4 sm:mb-10">
 				{description}
 			</h2>
-			<div className="words flex gap-5 sm:gap-6 mb-14 lg:mb-16 flex-wrap justify-center">
+			<div className="words flex gap-4 sm:gap-6 mb-12 sm:mb-14 lg:mb-16 flex-wrap justify-center">
 				{(() => {
 					let indexOutOfTotal = 0;
 					return maskedWord.map((wordCount: number, i: number) => {
