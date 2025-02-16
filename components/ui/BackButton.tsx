@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const BackButton: React.FC<{ className?: string }> = ({ className }) => {
 	return (
-		<div className="mb-6 lg:mb-8">
+		<div className="back-button">
 			<Link
 				className={`underline underline-offset-3 text-sm lg:text-base ${className}`}
 				href="/"

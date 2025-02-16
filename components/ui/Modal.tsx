@@ -32,7 +32,7 @@ const Modal: React.FC<ModalProps> = ({
 					initial={{ rotate: -180, translateY: "50%" }}
 					animate={{ rotate: 0, translateY: "-100%" }}
 					transition={{ duration: 0.4, delay: 0.3 }}
-					className="h-10 w-10 sm:w-12 sm:h-12 absolute -top-2 right-2 -translate-y-full p-2 bg-military rounded-lg -z-1"
+					className="h-10 w-10 sm:w-12 sm:h-12 absolute -top-2 right-2 -translate-y-full p-2 bg-military rounded-lg -z-1 border border-lime"
 					onClick={onClose}
 				>
 					<div className="w-10 h-[2px] bg-lime absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-sm"></div>

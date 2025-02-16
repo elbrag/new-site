@@ -26,6 +26,7 @@ import { uniqBy } from "lodash";
 import styled from "styled-components";
 import { makeMemoryImgUrl, preloadImage } from "@/lib/helpers/images";
 import DotLoader from "@/components/ui/DotLoader";
+import BackButton from "@/components/ui/BackButton";
 interface MemoryProps {
 	gameData: MemoryGameData;
 }
@@ -294,6 +295,9 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 									duration: 0.5,
 								}}
 							>
+								<div className="col-span-full sm:mb-6">
+									<BackButton />
+								</div>
 								{Array.from({
 									length: cardCount,
 								}).map((_, index) => (
