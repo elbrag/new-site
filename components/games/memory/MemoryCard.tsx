@@ -85,7 +85,7 @@ const StyledBackside = styled.div`
 		position: absolute;
 		border-radius: 100%;
 		color: #485945;
-		background-color: #5efc5b;
+		background-color: #7ffd45;
 		font-size: 1.25rem;
 		display: flex;
 		align-items: center;
@@ -95,7 +95,7 @@ const StyledBackside = styled.div`
 		transform: translate(-50%, -50%);
 		width: 2rem;
 		height: 2rem;
-		border: 0.125rem solid #5efc5b;
+		border: 0.125rem solid #7ffd45;
 	}
 	&:before {
 		content: "?";
@@ -105,6 +105,6 @@ const StyledBackside = styled.div`
 		transform: translate(-50%, -50%);
 		width: 100%;
 		height: 100%;
-		border: 0.075rem solid #5efc5b;
+		border: 0.075rem solid #7ffd45;
 	}
 `;

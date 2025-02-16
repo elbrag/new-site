@@ -49,7 +49,7 @@ module.exports = {
 			military: "#3c4d39",
 			yellow: "#fff267",
 			black: "#000",
-			lime: "#5EFC5B",
+			lime: "#7ffd45",
 			cream: "#F7EBDB",
 			paper: "#FFFCF7",
 			line1: "#e2e2e2",
