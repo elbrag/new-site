@@ -50,10 +50,10 @@ const Login: React.FC = () => {
 	return (
 		<div className="login min-h-80vh flex justify-center items-center">
 			<div className="max-w-144 px-6 lg:px-12 flex flex-col justify-center">
-				<h1 className="uppercase text-2xl lg:text-4xl mb-4 text-center">
-					Greetings!
-				</h1>
-				<p className="text-lg lg:text-xl">Do you have a password?</p>
+				<div className="text-center">
+					<h1 className="uppercase text-2xl lg:text-4xl mb-4">Greetings!</h1>
+					<p className="text-lg lg:text-xl">Do you have a password?</p>
+				</div>
 				<div className="mt-10">
 					<form
 						onSubmit={(e: FormEvent) => {
