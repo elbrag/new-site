@@ -19,6 +19,10 @@ const FoundCards: React.FC<FoundCardsProps> = ({ cardData }) => {
 		return rotations;
 	}, []);
 
+	useEffect(() => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	}, []);
+
 	cardData = cardData.sort((a, b) => a.roundId - b.roundId);
 
 	return (
