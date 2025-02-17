@@ -12,6 +12,8 @@ const Breadcrumbs: React.FC = () => {
 	const crumbClasses = "uppercase";
 	const slashClasses = "mx-2";
 
+	const isLogin = router.asPath === "/login";
+
 	return (
 		<div className="flex flex-col justify-center md:min-h-9">
 			<ul className="flex leading-none mt-2 sm:mt-1">
@@ -35,11 +37,9 @@ const Breadcrumbs: React.FC = () => {
 						</li>
 					</>
 				) : (
-					<>
-						<li className={`${crumbClasses} text-md sm:text-xl-sans`}>
-							Pick a game
-						</li>
-					</>
+					<li className={`${crumbClasses} text-md sm:text-xl-sans`}>
+						{isLogin ? "Log in" : "Pick a game"}
+					</li>
 				)}
 			</ul>
 		</div>
