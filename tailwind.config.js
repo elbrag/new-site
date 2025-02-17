@@ -67,9 +67,8 @@ module.exports = {
 			},
 		},
 		fontSize: {
-			"7xl": "5.375vw",
-			"6xl": "4.25vw",
-			"5xl": "4vw",
+			// rem sizes
+			"5xl": "3.375rem",
 			"4xl": "2.5rem",
 			"3xl": "2rem",
 			"2xl": "1.75rem",
@@ -79,6 +78,12 @@ module.exports = {
 			md: "1.125rem",
 			base: "1rem",
 			sm: "0.875rem",
+			// vw sizes
+			"2xl-vw": "14vw",
+			"xl-vw": "7vw",
+			"lg-vw": "5vw",
+			"md-vw": "4.25vw",
+			"sm-vw": "4vw",
 		},
 		extend: {
 			backgroundImage: {

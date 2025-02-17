@@ -118,7 +118,7 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 				{coverImage ? (
 					<SvgImage width={100} height={100} suffix="%" image={coverImage} />
 				) : locked ? (
-					<h2 className="text-4xl lg:text-7xl text-center uppercase leading-none w-full break-words">
+					<h2 className="text-2xl-vw xs:text-xl-vw md:text-lg-vw text-center uppercase leading-none w-full break-words">
 						Coming soon
 					</h2>
 				) : (
