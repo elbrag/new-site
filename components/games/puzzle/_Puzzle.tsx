@@ -32,6 +32,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import { puzzleInitMessages } from "@/lib/helpers/messages";
+import BackButton from "@/components/ui/BackButton";
 
 const Puzzle: React.FC = () => {
 	// Refs
@@ -623,6 +624,7 @@ const Puzzle: React.FC = () => {
 
 	return (
 		<div className="md:px-6 lg:px-12">
+			<BackButton className={`mb-6 lg:mb-8`} />
 			<div className="h-50vh md:h-70vh mb-24">
 				<div className="relative z-0 h-full bg-paper border border-line1 rounded-xl overflow-hidden">
 					<AnimatePresence>

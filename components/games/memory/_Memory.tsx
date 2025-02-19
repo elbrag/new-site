@@ -27,6 +27,7 @@ import styled from "styled-components";
 import { makeMemoryImgUrl, preloadImage } from "@/lib/helpers/images";
 import DotLoader from "@/components/ui/DotLoader";
 import BackButton from "@/components/ui/BackButton";
+import InstructionText from "@/components/ui/InstructionText";
 interface MemoryProps {
 	gameData: MemoryGameData;
 }
@@ -295,8 +296,15 @@ const Memory: React.FC<MemoryProps> = ({ gameData }) => {
 									duration: 0.5,
 								}}
 							>
-								<div className="col-span-full sm:mb-6">
+								<div className="col-span-full sm:mb-6 flex justify-between">
 									<BackButton />
+									<AnimatePresence>
+										{!foundCardData.length ? (
+											<InstructionText text="Match the cards!" />
+										) : (
+											<></>
+										)}
+									</AnimatePresence>
 								</div>
 								{Array.from({
 									length: cardCount,

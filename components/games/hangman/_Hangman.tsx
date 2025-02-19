@@ -5,7 +5,7 @@ import { GameContext } from "@/context/GameContext";
 import { HangmanGameData, GameName } from "@/lib/types/game";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import InfoMessage from "@/components/ui/InfoMessage";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import HangedMan, { hangmanPartsInOrder } from "./HangedMan";
 import SuccessScreen from "@/components/ui/SuccessScreen";
 import FailedScreen from "@/components/ui/FailedScreen";
@@ -19,6 +19,8 @@ import FactsList from "@/components/ui/FactsList";
 import { HangmanRevealedRoundProps } from "@/lib/types/rounds";
 import Pagination from "./Pagination";
 import DotLoader from "@/components/ui/DotLoader";
+import BackButton from "@/components/ui/BackButton";
+import InstructionText from "@/components/ui/InstructionText";
 
 interface HangmanProps {
 	gameData: HangmanGameData;
@@ -133,7 +135,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		if (allRoundsPassed) {
 			updateSuccessMessage(
 				roundFailed
-					? "That was all. You did your best <3"
+					? "All done! You did your best <3"
 					: "That was all! Good job!"
 			);
 			setTimeout(() => {
@@ -225,89 +227,102 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 	return (
 		<div className="hangman min-h-[80vh] flex flex-col justify-center w-full">
 			{readyToRenderGame ? (
-				<div className="grid lg:grid-cols-5 gap-4 lg:mb-[10vh]">
-					{/* Game  */}
-					<div className="lg:col-span-3 flex flex-col border rounded-lg border-line1 p-4 pb-10 bg-paper w-full">
-						<div className="mb-4 lg:mb-8">
-							<Pagination
-								itemLength={numberOfRounds}
-								activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
-							/>
-						</div>
-						<div className="flex flex-col items-center w-full">
-							{/* Round */}
-							{maskedWords?.length ? (
-								<AnimatePresence mode="wait">
-									<RoundContent
-										motionKey={`round-${getGameCurrentRoundIndex(
-											GameName.Hangman
-										)}`}
-										roundStatus={getRoundStatus(GameName.Hangman, roundId)}
-										description={
-											maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
-												?.description
-										}
-										maskedWord={
-											maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
-												.maskedWord
-										}
-									/>
-								</AnimatePresence>
+				<>
+					<div className="flex justify-between mb-2">
+						<BackButton className={`mb-6 lg:mb-8`} />
+						<AnimatePresence>
+							{getGameCurrentRoundIndex(GameName.Hangman) === 0 ? (
+								<InstructionText text="Find the right words!" />
 							) : (
-								<div className="h-16"></div>
+								<></>
 							)}
-							{/* Input + input feedback */}
-							<div className="relative">
-								<LetterInput
-									onClick={(value) => {
-										checkLetter(value);
-									}}
+						</AnimatePresence>
+					</div>
+
+					<div className="grid lg:grid-cols-5 gap-4 lg:mb-[10vh] z-1">
+						{/* Game  */}
+						<div className="lg:col-span-3 flex flex-col border rounded-lg border-line1 p-4 pb-10 bg-paper w-full">
+							<div className="mb-4 lg:mb-8">
+								<Pagination
+									itemLength={numberOfRounds}
+									activeItemIndex={getGameCurrentRoundIndex(GameName.Hangman)}
 								/>
-								<AnimatePresence>
-									{infoMessage && (
-										<div className="absolute -bottom-4 translate-y-full md:translate-y-0 translate-x-1/2 -left-5 w-full md:left-0 md:right-0 md:top-0 md:translate-x-full z-10">
-											<InfoMessage text={infoMessage} />
-										</div>
-									)}
-								</AnimatePresence>
+							</div>
+							<div className="flex flex-col items-center w-full">
+								{/* Round */}
+								{maskedWords?.length ? (
+									<AnimatePresence mode="wait">
+										<RoundContent
+											motionKey={`round-${getGameCurrentRoundIndex(
+												GameName.Hangman
+											)}`}
+											roundStatus={getRoundStatus(GameName.Hangman, roundId)}
+											description={
+												maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
+													?.description
+											}
+											maskedWord={
+												maskedWords[getGameCurrentRoundIndex(GameName.Hangman)]
+													.maskedWord
+											}
+										/>
+									</AnimatePresence>
+								) : (
+									<div className="h-16"></div>
+								)}
+								{/* Input + input feedback */}
+								<div className="relative">
+									<LetterInput
+										onClick={(value) => {
+											checkLetter(value);
+										}}
+									/>
+									<AnimatePresence>
+										{infoMessage && (
+											<div className="absolute -bottom-4 translate-y-full md:translate-y-0 translate-x-1/2 -left-5 w-full md:left-0 md:right-0 md:top-0 md:translate-x-full z-10">
+												<InfoMessage text={infoMessage} />
+											</div>
+										)}
+									</AnimatePresence>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div
-						className={`flex flex-col items-center lg:col-span-2 border rounded-lg border-line1 p-4 sm:pt-8 transition-colors duration-200 ease-in-out ${
-							signalError ? "bg-lime" : "bg-paper"
-						}`}
-					>
-						{/* Man  */}
-						<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
-						{/* Error list */}
-						<div id="errorList">
-							{!!getGameErrors(GameName.Hangman).length && (
-								<div className="errors mt-8 mb-4 sm:mt-10 sm:mb-6">
-									<ul className="flex gap-2 justify-center flex-wrap">
-										{getGameErrors(GameName.Hangman).map(
-											(err: string, i: number) => (
-												<li
-													className="uppercase text-xl lg:text-2xl"
-													key={`error-${i}`}
-												>
-													{err}
-												</li>
-											)
-										)}
-									</ul>
-								</div>
-							)}
+						<div
+							className={`flex flex-col items-center lg:col-span-2 border rounded-lg border-line1 p-4 sm:pt-8 transition-colors duration-200 ease-in-out ${
+								signalError ? "bg-lime" : "bg-paper"
+							}`}
+						>
+							{/* Man  */}
+							<HangedMan errorLength={getGameErrors(GameName.Hangman).length} />
+							{/* Error list */}
+							<div id="errorList">
+								{!!getGameErrors(GameName.Hangman).length && (
+									<div className="errors mt-8 mb-4 sm:mt-10 sm:mb-6">
+										<ul className="flex gap-2 justify-center flex-wrap">
+											{getGameErrors(GameName.Hangman).map(
+												(err: string, i: number) => (
+													<li
+														className="uppercase text-xl lg:text-2xl"
+														key={`error-${i}`}
+													>
+														{err}
+													</li>
+												)
+											)}
+										</ul>
+									</div>
+								)}
+							</div>
 						</div>
+						<AnimatePresence>
+							{successMessage && <SuccessScreen text={successMessage} />}
+						</AnimatePresence>
+						<AnimatePresence>
+							{failedMessage && <FailedScreen text={failedMessage} />}
+							{/* <Confetti /> */}
+						</AnimatePresence>
 					</div>
-					<AnimatePresence>
-						{successMessage && <SuccessScreen text={successMessage} />}
-					</AnimatePresence>
-					<AnimatePresence>
-						{failedMessage && <FailedScreen text={failedMessage} />}
-						{/* <Confetti /> */}
-					</AnimatePresence>
-				</div>
+				</>
 			) : (
 				<DotLoader />
 			)}
