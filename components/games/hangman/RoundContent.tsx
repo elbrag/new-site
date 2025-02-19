@@ -21,6 +21,7 @@ const RoundContent: React.FC<RoundContentProps> = ({
 	maskedWord,
 }) => {
 	const [signalUpdate, setSignalUpdate] = useState(false);
+	const [mountDone, setMountDone] = useState(false);
 
 	/**
 	 * Get letter to show in slot
@@ -35,10 +36,14 @@ const RoundContent: React.FC<RoundContentProps> = ({
 	};
 
 	useEffect(() => {
-		setSignalUpdate(true);
-		setTimeout(() => {
-			setSignalUpdate(false);
-		}, 600);
+		if (mountDone) {
+			setSignalUpdate(true);
+			setTimeout(() => {
+				setSignalUpdate(false);
+			}, 600);
+		} else {
+			setMountDone(true);
+		}
 	}, [roundStatus]);
 
 	return (
