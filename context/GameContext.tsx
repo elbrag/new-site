@@ -98,7 +98,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	/**
 	 * Check if completed
 	 */
-	const checkIfCompleted = (
+	const checkIfRoundCompleted = (
 		_progress: ProgressProps[],
 		game: GameName,
 		roundId: number
@@ -277,7 +277,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				);
 
 				// Check if the current round is completed
-				if (checkIfCompleted(updatedProgress, game, roundId)) {
+				if (checkIfRoundCompleted(updatedProgress, game, roundId)) {
 					onRoundComplete(game);
 				}
 
@@ -304,7 +304,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				);
 
 				// Check if the current round is completed
-				if (checkIfCompleted(newProgress, game, roundId)) {
+				if (checkIfRoundCompleted(newProgress, game, roundId)) {
 					onRoundComplete(game);
 				}
 				return newProgress;
