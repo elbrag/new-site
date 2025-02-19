@@ -8,13 +8,15 @@ import { useInView } from "react-intersection-observer";
 import { isMobile } from "react-device-detect";
 import { ProgressContext } from "@/context/ProgressContext";
 import { GameContext } from "@/context/GameContext";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface GameCardProps {
 	slug: GameName;
 	locked?: boolean;
+	index: number;
 }
 
-const GameCard: React.FC<GameCardProps> = ({ slug, locked = false }) => {
+const GameCard: React.FC<GameCardProps> = ({ slug, locked = false, index }) => {
 	// Cover image
 	const coverImage = !locked
 		? getEnumValue(SvgImageMotifs, kebabToPascal(`${slug}`))
@@ -156,11 +158,24 @@ const GameCard: React.FC<GameCardProps> = ({ slug, locked = false }) => {
 					<></>
 				)}
 			</div>
-			{gameCompleted ? (
-				<div className="absolute bottom-2 right-2">🌟</div>
-			) : (
-				<></>
-			)}
+			<AnimatePresence>
+				{gameCompleted ? (
+					<motion.div
+						initial={{ rotate: -120, scale: 0, y: 12 }}
+						animate={{ rotate: 0, scale: 1, y: 0 }}
+						transition={{
+							duration: 0.5,
+							ease: [0.68, 0.05, 0.27, 1.25],
+							delay: 0.2 * index,
+						}}
+						className="absolute bottom-2 right-3 text-lg"
+					>
+						🏆
+					</motion.div>
+				) : (
+					<></>
+				)}
+			</AnimatePresence>
 		</StyledLink>
 	);
 };

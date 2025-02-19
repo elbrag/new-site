@@ -12,6 +12,7 @@ const GameBoard: React.FC = () => {
 				{gameSlugs.map((gameSlug, i) => (
 					<li key={i}>
 						<GameCard
+							index={i}
 							slug={gameSlug}
 							locked={gameSlug === GameName.ComingSoon}
 						/>
