@@ -26,6 +26,8 @@ import {
 	userIdIsMissing,
 } from "@/lib/helpers/errorThrowMessages";
 import { useRouter } from "next/router";
+import { fetchGameData } from "@/lib/helpers/fetch";
+import usePuzzleFunctions from "@/hooks/games/usePuzzleFunctions";
 interface GameContextProps {
 	gameSlugs: GameName[];
 	currentScore: number;
@@ -42,6 +44,7 @@ interface GameContextProps {
 	scoreMessage: string | null;
 	onRoundFail: (_game: GameName) => void;
 	resetGame: (game: GameName, roundIds: number[]) => void;
+	checkIfGameCompleted: (game: GameName) => Promise<boolean>;
 }
 
 export const GameContext = createContext<GameContextProps>({
@@ -53,6 +56,7 @@ export const GameContext = createContext<GameContextProps>({
 	scoreMessage: null,
 	onRoundFail: () => {},
 	resetGame: () => {},
+	checkIfGameCompleted: async () => false,
 });
 
 interface GameContextProviderProps {
@@ -85,9 +89,11 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		setRoundFailed,
 		roundLength,
 		removeCompletedAndCurrentRoundIndexes,
+		getGameCompletedRoundIndexes,
 	} = useContext(RoundContext);
 
-	const { setProgress, getRoundStatus } = useContext(ProgressContext);
+	const { progress, setProgress, getRoundStatus, getGameProgress } =
+		useContext(ProgressContext);
 
 	const { updateErrors } = useContext(ErrorContext);
 
@@ -338,6 +344,46 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 		}
 	};
 
+	/**
+	 * Check if game completed
+	 */
+	const checkIfGameCompleted = async (game: GameName): Promise<boolean> => {
+		switch (game) {
+			case GameName.Hangman:
+				const maskedWords = await fetchGameData(GameName.Hangman, "GET");
+				const completedRoundIndexes = getGameCompletedRoundIndexes(
+					GameName.Hangman
+				);
+				return completedRoundIndexes.includes(maskedWords.length - 1);
+			case GameName.Memory:
+				const cardCount = await fetchGameData(GameName.Memory, "GET");
+				const nrOfRounds = cardCount / 2;
+				const memoryGameProgress = await getGameProgress(
+					GameName.Memory,
+					progress
+				);
+				const foundMatchesIds = memoryGameProgress.map(
+					(match) => match.roundId
+				);
+				const foundMatchesData = await fetchGameData(GameName.Memory, "POST", {
+					foundMatchesIds,
+				});
+				return foundMatchesData.length === nrOfRounds;
+			case GameName.Puzzle:
+				const puzzleGameProgress = await getGameProgress(
+					GameName.Puzzle,
+					progress
+				);
+				const { puzzlePieces } = usePuzzleFunctions();
+				const nrOfCompletedRounds = puzzleGameProgress.filter(
+					(p) => p.completed
+				)?.length;
+
+				return nrOfCompletedRounds === puzzlePieces.length;
+		}
+		return false;
+	};
+
 	return (
 		<GameContext.Provider
 			value={{
@@ -349,6 +395,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				scoreMessage,
 				onRoundFail,
 				resetGame,
+				checkIfGameCompleted,
 			}}
 		>
 			{children}

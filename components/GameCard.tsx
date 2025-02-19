@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import SvgImage, { SvgImageMotifs } from "./ui/SvgImage";
 import { getEnumValue, kebabToPascal } from "@/lib/helpers/formatting";
@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { useInView } from "react-intersection-observer";
 import { isMobile } from "react-device-detect";
 import { ProgressContext } from "@/context/ProgressContext";
+import { GameContext } from "@/context/GameContext";
 
 interface GameCardProps {
 	slug: GameName;
@@ -19,15 +20,16 @@ const GameCard: React.FC<GameCardProps> = ({ slug, locked = false }) => {
 		? getEnumValue(SvgImageMotifs, kebabToPascal(`${slug}`))
 		: null;
 
-	const { progress, getGameProgress } = useContext(ProgressContext);
-
+	const { progress } = useContext(ProgressContext);
+	const { checkIfGameCompleted } = useContext(GameContext);
+	const [gameCompleted, setGameCompleted] = useState(false);
 	/**
 	 * Check progress for this game
 	 */
 	useEffect(() => {
 		const checkProgress = async () => {
-			const gameProgress = await getGameProgress(slug, progress);
-			console.log(gameProgress);
+			const gameIsCompleted = await checkIfGameCompleted(slug);
+			setGameCompleted(gameIsCompleted);
 		};
 		checkProgress();
 	}, [progress]);
@@ -154,6 +156,11 @@ const GameCard: React.FC<GameCardProps> = ({ slug, locked = false }) => {
 					<></>
 				)}
 			</div>
+			{gameCompleted ? (
+				<div className="absolute bottom-2 right-2">🌟</div>
+			) : (
+				<></>
+			)}
 		</StyledLink>
 	);
 };
