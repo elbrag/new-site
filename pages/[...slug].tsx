@@ -21,13 +21,13 @@ const GamePage = ({
 	if (!game) {
 		return <div>Game not found</div>;
 	}
-	const gameUrl = game.url;
+	const gameSlug = game.slug;
 
 	const GameComponent = dynamic<GameComponentProps>(
 		() =>
 			import(
-				`../components/games/${kebabToPascal(gameUrl)}/_${kebabToCamel(
-					gameUrl
+				`../components/games/${kebabToPascal(gameSlug)}/_${kebabToCamel(
+					gameSlug
 				)}.tsx`
 			),
 		{
@@ -41,12 +41,12 @@ const GamePage = ({
 
 	return (
 		<div className="px-4 lg:px-12 pt-8 sm:pt-16 pb-16 flex-grow flex flex-col">
-			{gameUrl === "memory" ? (
+			{gameSlug === "memory" ? (
 				<></>
 			) : (
 				<BackButton
 					className={`mb-6 lg:mb-8 ${
-						gameUrl === "puzzle" ? "md:ml-6 lg:ml-12" : ""
+						gameSlug === "puzzle" ? "md:ml-6 lg:ml-12" : ""
 					}`}
 				/>
 			)}
@@ -86,7 +86,7 @@ export const getServerSideProps: GetServerSideProps = async (
 			},
 		};
 
-	const game = gamesData.find((game) => game.url === params?.slug?.[0]);
+	const game = gamesData.find((game) => game.slug === params?.slug?.[0]);
 
 	if (!game) {
 		return {
@@ -96,10 +96,10 @@ export const getServerSideProps: GetServerSideProps = async (
 
 	let gameData: GameData = {};
 
-	if (game?.url === GameName.Hangman) {
+	if (game?.slug === GameName.Hangman) {
 		const maskedWords = await fetchGameData(GameName.Hangman, "GET");
 		gameData = { maskedWords };
-	} else if (game?.url === GameName.Memory) {
+	} else if (game?.slug === GameName.Memory) {
 		const cardCount = await fetchGameData(GameName.Memory, "GET");
 		gameData = { cardCount };
 	}

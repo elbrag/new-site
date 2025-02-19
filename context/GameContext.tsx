@@ -27,7 +27,7 @@ import {
 } from "@/lib/helpers/errorThrowMessages";
 import { useRouter } from "next/router";
 interface GameContextProps {
-	gameUrls: string[];
+	gameSlugs: GameName[];
 	currentScore: number;
 	username: string | null;
 	updateUsernameInFirebase: (_username: string) => void;
@@ -45,7 +45,7 @@ interface GameContextProps {
 }
 
 export const GameContext = createContext<GameContextProps>({
-	gameUrls: [],
+	gameSlugs: [],
 	currentScore: 0,
 	username: null,
 	updateUsernameInFirebase: () => {},
@@ -60,8 +60,8 @@ interface GameContextProviderProps {
 }
 
 const GameContextProvider = ({ children }: GameContextProviderProps) => {
-	// Game urls from data
-	const gameUrls = gamesData.map((game: GameProps) => game.url);
+	// Game slugs from data
+	const gameSlugs = gamesData.map((game) => game.slug as GameName);
 
 	/**
 	 * Hooks
@@ -330,7 +330,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	 * Calculate score for game and pass score on to updateScoreInFirebase
 	 */
 	const updateScore = (game: GameName) => {
-		const gameToScore = gamesData.find((data) => data.url === game);
+		const gameToScore = gamesData.find((data) => data.slug === game);
 		const score = gameToScore ? gameToScore.scorePerRound : null;
 		if (score) {
 			updateScoreInFirebase(score);
@@ -341,7 +341,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 	return (
 		<GameContext.Provider
 			value={{
-				gameUrls,
+				gameSlugs,
 				currentScore,
 				username,
 				updateUsernameInFirebase,

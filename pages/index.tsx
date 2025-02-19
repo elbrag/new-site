@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import GameBoard from "@/components/GameBoard";
 import {
 	GetServerSidePropsContext,
 	GetServerSidePropsResult,
 } from "next/types";
-import { CookieNames, getCookie, setCookie } from "@/lib/helpers/cookies";
+import { CookieNames, getCookie } from "@/lib/helpers/cookies";
 import { firebaseAdmin } from "@/lib/helpers/firebaseAdmin";
 
 const Home: React.FC = () => {

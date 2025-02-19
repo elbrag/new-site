@@ -14,7 +14,7 @@ export enum GameName {
 }
 
 export interface GameProps {
-	url: string;
+	slug: `${GameName}`;
 	title: string;
 	scorePerRound: number;
 }

@@ -49,7 +49,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 			if (isHome) return "Pick a game!";
 			const path = router.asPath.split("/")[1];
 			if (path === "login") return "Login";
-			const gamePathMatch = gamesData.find((game) => game.url === path);
+			const gamePathMatch = gamesData.find((game) => game.slug === path);
 			if (gamePathMatch) return gamePathMatch.title;
 			return "";
 		};

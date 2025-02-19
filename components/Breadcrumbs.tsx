@@ -6,7 +6,7 @@ const Breadcrumbs: React.FC = () => {
 	const router = useRouter();
 
 	const currentGame = gamesData.find(
-		(game) => router.asPath.split("/")[1] === game.url
+		(game) => router.asPath.split("/")[1] === game.slug
 	);
 
 	const crumbClasses = "uppercase";

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import Link from "next/link";
 import SvgImage, { SvgImageMotifs } from "./ui/SvgImage";
 import { getEnumValue, kebabToPascal } from "@/lib/helpers/formatting";
@@ -6,26 +6,45 @@ import { GameName } from "@/lib/types/game";
 import styled from "styled-components";
 import { useInView } from "react-intersection-observer";
 import { isMobile } from "react-device-detect";
+import { ProgressContext } from "@/context/ProgressContext";
 
 interface GameCardProps {
-	url: string;
+	slug: GameName;
 	locked?: boolean;
 }
 
-const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
+const GameCard: React.FC<GameCardProps> = ({ slug, locked = false }) => {
+	// Cover image
 	const coverImage = !locked
-		? getEnumValue(SvgImageMotifs, kebabToPascal(url))
+		? getEnumValue(SvgImageMotifs, kebabToPascal(`${slug}`))
 		: null;
 
-	const { ref, inView, entry } = useInView({
+	const { progress, getGameProgress } = useContext(ProgressContext);
+
+	/**
+	 * Check progress for this game
+	 */
+	useEffect(() => {
+		const checkProgress = async () => {
+			const gameProgress = await getGameProgress(slug, progress);
+			console.log(gameProgress);
+		};
+		checkProgress();
+	}, [progress]);
+
+	// Intersection observer
+	const { ref, inView } = useInView({
 		threshold: 1,
 	});
 
+	/**
+	 * Image container classes
+	 */
 	const getImageContainerClasses = () => {
 		let classes =
 			"absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-scale transition-transform duration-500 ease-bouncy-1 ";
 
-		switch (url) {
+		switch (slug) {
 			case GameName.Hangman:
 				classes += "w-[150%] h-[150%] lg:w-[200%] lg:h-[200%] -translate-y-1/3";
 				break;
@@ -46,12 +65,19 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 		return classes;
 	};
 
-	const crop = !locked && url != GameName.SendResults && url != GameName.Memory;
+	// Crop?
+	const crop =
+		!locked && slug != GameName.SendResults && slug != GameName.Memory;
 
+	// Truly sorry to my future self for this class building, it's due to Tailwind dynamic class constraints. Don't forget to update everywhere when changes are made ;-;
+
+	/**
+	 * Non animated classes
+	 */
 	const getNonAnimatedClasses = () => {
 		let nonAnimatedClasses = "";
 
-		switch (url) {
+		switch (slug) {
 			case GameName.Hangman:
 				nonAnimatedClasses = "";
 				break;
@@ -72,11 +98,14 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 		return nonAnimatedClasses;
 	};
 
+	/**
+	 * Animated classes
+	 */
 	const getAnimatedClasses = () => {
 		let animatedClasses = "";
 		let animatedClassesHover = "";
 
-		switch (url) {
+		switch (slug) {
 			case GameName.Hangman:
 				animatedClasses = "scale-110 -rotate-8";
 				animatedClassesHover = "hover:scale-110 hover:-rotate-8";
@@ -112,7 +141,7 @@ const GameCard: React.FC<GameCardProps> = ({ url, locked = false }) => {
 			className={`game-card border-military border-2 rounded-lg h-full aspect-square md:aspect-auto flex items-center justify-center relative ${
 				locked ? "bg-cream" : "bg-lime"
 			} ${crop ? "overflow-hidden" : "z-1"}`}
-			href={locked ? "" : url}
+			href={locked ? "" : slug}
 		>
 			<div className={`${getImageContainerClasses()} ${getAnimatedClasses()}`}>
 				{coverImage ? (
