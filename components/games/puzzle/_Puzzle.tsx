@@ -619,7 +619,7 @@ const Puzzle: React.FC = () => {
 	return (
 		<div className="md:px-6 lg:px-12">
 			<BackButton className={`mb-6 lg:mb-8`} />
-			<div className="h-50vh md:h-70vh mb-24">
+			<div className="h-60vh sm:h-70vh lg:h-80vh mb-24">
 				<div className="relative z-0 h-full bg-paper border border-line1 rounded-xl overflow-hidden">
 					<AnimatePresence>
 						{allMatched && (
@@ -648,7 +648,10 @@ const Puzzle: React.FC = () => {
 						className="w-full h-full"
 					/>
 					<div className="reference-image absolute w-full h-full left-0 top-0 -z-1 flex justify-center items-center">
-						<div ref={refImageRef} className="max-w-[80%] lg:max-w-[90%]">
+						<div
+							ref={refImageRef}
+							className="max-w-[70%] sm:max-w-[60%] xl:max-w-[70%]"
+						>
 							<SvgImage
 								image={SvgImageMotifs.FullLogo}
 								width={refImgOriginalWidth}

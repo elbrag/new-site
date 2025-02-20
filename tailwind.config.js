@@ -21,6 +21,7 @@ const distances = {
 	"2/3": "66.67%",
 	"3/5": "60%",
 	"50vh": "50vh",
+	"60vh": "60vh",
 	"70vh": "70vh",
 	"80vh": "80vh",
 	inherit: "inherit",
