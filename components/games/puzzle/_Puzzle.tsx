@@ -563,22 +563,15 @@ const Puzzle: React.FC = () => {
 	 */
 	useEffect(() => {
 		if (userId && !gameInited.current && progressRef.current) {
+			const _numberOfRounds = puzzlePieces.length;
+			setNumberOfRounds(_numberOfRounds);
+
 			gameInited.current = true;
 			initGame();
-			// Check if all completed
-			setAllMatchedIfAllCompleted();
+			setAllMatchedIfAllCompleted(_numberOfRounds);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [initGame, userId, progressRef]);
-
-	/**
-	 * Set number of rounds initially
-	 */
-	useEffect(() => {
-		if (puzzlePieces.length && numberOfRounds === 0)
-			setNumberOfRounds(puzzlePieces.length);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [numberOfRounds, puzzlePieces.length]);
 
 	/**
 	 * Watch matching piece, run onPieceFit and then unset state
@@ -597,14 +590,15 @@ const Puzzle: React.FC = () => {
 	/**
 	 * If progress says all are completed, set all matched to display message in heading
 	 */
-	const setAllMatchedIfAllCompleted = async () => {
+	const setAllMatchedIfAllCompleted = async (_numberOfRounds?: number) => {
+		_numberOfRounds = _numberOfRounds ?? numberOfRounds;
 		const gameProgress = await getGameProgress(
 			GameName.Puzzle,
 			progressRef.current
 		);
 		if (
 			gameProgress.length > 0 &&
-			gameProgress.length === numberOfRounds &&
+			gameProgress.length === _numberOfRounds &&
 			gameProgress.every((round) => round.completed)
 		) {
 			setAllMatched(true);
@@ -616,7 +610,7 @@ const Puzzle: React.FC = () => {
 	 */
 	useEffect(() => {
 		if (allRoundsPassed) {
-			updateSuccessMessage("It's complete! Good job.");
+			updateSuccessMessage("That's it! Good job.");
 			setAllMatchedIfAllCompleted();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

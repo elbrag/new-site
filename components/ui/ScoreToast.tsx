@@ -21,7 +21,7 @@ const ScoreToast: React.FC<ScoreToastProps> = ({ text }) => {
 			}}
 			exit={{ rotate: -180, scale: 0, y: "-4rem" }}
 			transition={{ duration: 0.5 }}
-			className="fixed top-20 md:top-22 right-6 sm:right-8 rounded-xl bg-lime text-military py-0.5 px-1"
+			className="fixed z-2 top-20 md:top-22 right-6 sm:right-8 rounded-xl bg-lime text-military py-0.5 px-1"
 		>
 			{text}
 		</motion.div>

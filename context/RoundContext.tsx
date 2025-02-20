@@ -20,7 +20,7 @@ import {
 	CurrentRoundIndexProps,
 } from "@/lib/types/rounds";
 import { Database } from "firebase/database";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 interface RoundContextProps {
 	currentRoundIndexes: CurrentRoundIndexProps[];
