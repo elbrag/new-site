@@ -81,8 +81,6 @@ const Puzzle: React.FC = () => {
 	const wallCategory = 0x0001;
 	const pieceCategory = 0x0002;
 
-	const debouncedResize = debounce(() => resizeHandler(), 2000);
-
 	/**
 	 * Setup canvas dimensions
 	 */
@@ -388,34 +386,44 @@ const Puzzle: React.FC = () => {
 	 * Reset pieces
 	 */
 	const resetPieces = async () => {
-		setResetting(true);
 		await resetGame(
 			GameName.Puzzle,
 			puzzlePieces.map((p) => p.id)
 		);
-		resetGameBoard();
 		setTimeout(() => {
-			setResetting(false);
-		}, 300);
+			resetGameBoard();
+		}, 100);
 	};
 
 	/**
 	 * Reset game
 	 */
 	const resetGameBoard = async () => {
+		if (resetting) return;
+		setResetting(true);
+		window.removeEventListener("resize", debouncedResizeRef.current);
+
 		const canvas = canvasRef.current;
 		const engine = engineRef.current;
 		const render = renderRef.current;
 
 		if (canvas && engine) {
-			Composite.clear(engine.world, false);
+			engine.world.bodies.slice().forEach((body) => {
+				Composite.remove(engine.world, body, true);
+			});
+			Composite.clear(engine.world, true);
+			World.clear(engine.world, false);
+
 			Engine.clear(engine);
+
 			if (render) Render.stop(render);
+
 			engineRef.current = Engine.create();
 
 			setTimeout(() => {
 				initGame();
-			}, 100);
+				setResetting(false);
+			}, 200);
 		}
 	};
 
@@ -432,12 +440,13 @@ const Puzzle: React.FC = () => {
 	const resizeHandler = () => {
 		resetGameBoard();
 	};
+	// Debounced resize function
+	const debouncedResizeRef = useRef(debounce(resizeHandler, 2000));
+
 	/**
 	 * Init game
 	 */
 	const initGame = useCallback(async () => {
-		window.removeEventListener("resize", debouncedResize);
-
 		setAllMatched(false);
 		// Define canvas, reference image and engine and check that they exist
 		const refImg = refImageRef.current;
@@ -497,7 +506,7 @@ const Puzzle: React.FC = () => {
 		Runner.run(runner, engine);
 
 		// Resize event listener
-		window.addEventListener("resize", debouncedResize);
+		window.addEventListener("resize", debouncedResizeRef.current);
 
 		// Clean up
 		return () => {
@@ -507,7 +516,7 @@ const Puzzle: React.FC = () => {
 			if (removeDragEvent) {
 				removeDragEvent();
 			}
-			window.removeEventListener("resize", debouncedResize);
+			window.removeEventListener("resize", debouncedResizeRef.current);
 		};
 	}, [
 		addPuzzlePieces,
