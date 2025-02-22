@@ -51,13 +51,13 @@ const GameCard: React.FC<GameCardProps> = ({ slug, locked = false, index }) => {
 		switch (slug) {
 			case GameName.Hangman:
 				classes +=
-					"w-[152%] h-[152%] md:w-[130%] md:h-[130%] lg:w-[170%] lg:h-[170%] -translate-y-1/3";
+					"w-[152%] h-[152%] md:w-[130%] md:h-[130%] lg:w-[170%] lg:h-[170%] xl:w-[200%] xl:h-[200%] -translate-y-1/3";
 				break;
 			case GameName.Memory:
 				classes += "w-[115%] h-[115%]";
 				break;
 			case GameName.Puzzle:
-				classes += "w-[180%] h-[180%] xl:w-[155%] xl:h-[155%]";
+				classes += "w-[180%] xl:w-[150%] max-h-full";
 				break;
 			case GameName.SendResults:
 				classes += " w-[105%] h-[105%]";
@@ -169,7 +169,7 @@ const GameCard: React.FC<GameCardProps> = ({ slug, locked = false, index }) => {
 							ease: [0.68, 0.05, 0.27, 1.25],
 							delay: 0.2 * index,
 						}}
-						className="absolute bottom-2 right-3 text-lg"
+						className="absolute bottom-2 right-3 text-lg xl:text-xl"
 					>
 						🏆
 					</motion.div>

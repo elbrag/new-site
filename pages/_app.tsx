@@ -74,7 +74,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 								<FirebaseContextProvider>
 									<GameContextProvider>
 										<Navigation />
-										<div className="page-content flex-grow h-full flex flex-col justify-center mx-3 sm:mx-5 mt-18 sm:mt-16 lg:mt-18 xl:mt-20 2xl:mt-24 mb-14">
+										<div className="page-content flex-grow h-full flex flex-col justify-center mx-3 sm:mx-5 mt-18 sm:mt-16 lg:mt-18 xl:mt-20 2xl:mt-22 mb-14">
 											<Component {...pageProps} />
 										</div>
 										<Footer />
