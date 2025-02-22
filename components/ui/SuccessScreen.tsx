@@ -13,7 +13,7 @@ const SuccessScreen: React.FC<SuccessScreenProps> = ({ text }) => {
 			animate={{ rotate: 10, scale: 1 }}
 			exit={{ rotate: -30, scale: 0 }}
 			transition={{ duration: 0.5 }}
-			className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center"
+			className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-20"
 		>
 			<div className="px-8 py-4 sm:px-12 sm:py-8 text-lg sm:text-2xl bg-yellow rounded-xl select-none">
 				{text}
