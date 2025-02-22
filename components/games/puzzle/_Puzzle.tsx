@@ -81,6 +81,8 @@ const Puzzle: React.FC = () => {
 	const wallCategory = 0x0001;
 	const pieceCategory = 0x0002;
 
+	const debouncedResize = debounce(() => resizeHandler(), 2000);
+
 	/**
 	 * Setup canvas dimensions
 	 */
@@ -409,7 +411,11 @@ const Puzzle: React.FC = () => {
 			Composite.clear(engine.world, false);
 			Engine.clear(engine);
 			if (render) Render.stop(render);
-			initGame();
+			engineRef.current = Engine.create();
+
+			setTimeout(() => {
+				initGame();
+			}, 100);
 		}
 	};
 
@@ -423,58 +429,15 @@ const Puzzle: React.FC = () => {
 	/**
 	 * Resize handler for the canvas
 	 */
-	const resizeHandler = useCallback(
-		(
-			canvas: HTMLCanvasElement,
-			refImg: HTMLDivElement,
-			engine: Engine,
-			removeDragEvent: (() => void) | undefined
-		) => {
-			Composite.clear(engine.world, false);
-
-			// Get updated dimensions
-			setupCanvas(canvas);
-			const { refImgWidth, refImgHeight, sizeScale } = getBasicDimensions(
-				canvas,
-				refImg
-			);
-			const { imageStartX, imageStartY } = getImageStartCoords(
-				canvas.width,
-				canvas.height,
-				refImgWidth,
-				refImgHeight
-			);
-
-			// Re-add walls and puzzle pieces
-			addWalls(engine.world, canvas.width, canvas.height);
-			addPuzzlePieces(engine.world, imageStartX, imageStartY, sizeScale);
-
-			// Reset the interactive state
-			const interactiveStateResult = setInteractiveState(
-				canvas,
-				engine,
-				engine.world
-			);
-			const newRemoveDragEvent = interactiveStateResult.removeEvent;
-
-			// Clean up the previous drag event
-			if (removeDragEvent) {
-				removeDragEvent();
-			}
-			removeDragEvent = newRemoveDragEvent;
-		},
-		[
-			addPuzzlePieces,
-			getBasicDimensions,
-			getImageStartCoords,
-			setInteractiveState,
-		]
-	);
-
+	const resizeHandler = () => {
+		resetGameBoard();
+	};
 	/**
 	 * Init game
 	 */
 	const initGame = useCallback(async () => {
+		window.removeEventListener("resize", debouncedResize);
+
 		setAllMatched(false);
 		// Define canvas, reference image and engine and check that they exist
 		const refImg = refImageRef.current;
@@ -534,10 +497,6 @@ const Puzzle: React.FC = () => {
 		Runner.run(runner, engine);
 
 		// Resize event listener
-		const debouncedResize = debounce(
-			() => resizeHandler(canvas, refImg, engine, removeDragEvent),
-			1000
-		);
 		window.addEventListener("resize", debouncedResize);
 
 		// Clean up
