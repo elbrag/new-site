@@ -90,6 +90,9 @@ const SendResults: React.FC<SendResultsProps> = ({ gameData }) => {
 								Thank you! 🤝
 							</h2>
 							<p>Looking forward to getting your message!</p>
+							<div className="mt-4 md:mt-6">
+								<Button label="Play more games" href="/" />
+							</div>
 						</motion.div>
 					) : (
 						<motion.div
