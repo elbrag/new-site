@@ -106,6 +106,7 @@ module.exports = {
 				5: "5deg",
 				8: "8deg",
 				10: "10deg",
+				15: "15deg",
 				20: "20deg",
 			},
 			transitionDuration: {
@@ -182,6 +183,9 @@ module.exports = {
 			},
 			grayscale: {
 				70: "70%",
+			},
+			scale: {
+				108: "108%",
 			},
 		},
 	},

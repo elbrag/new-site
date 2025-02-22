@@ -50,13 +50,14 @@ const GameCard: React.FC<GameCardProps> = ({ slug, locked = false, index }) => {
 
 		switch (slug) {
 			case GameName.Hangman:
-				classes += "w-[150%] h-[150%] lg:w-[200%] lg:h-[200%] -translate-y-1/3";
+				classes +=
+					"w-[152%] h-[152%] md:w-[130%] md:h-[130%] lg:w-[170%] lg:h-[170%] -translate-y-1/3";
 				break;
 			case GameName.Memory:
 				classes += "w-[115%] h-[115%]";
 				break;
 			case GameName.Puzzle:
-				classes += "w-[180%] h-[180%] xl:w-[150%] xl:h-[150%]";
+				classes += "w-[180%] h-[180%] xl:w-[155%] xl:h-[155%]";
 				break;
 			case GameName.SendResults:
 				classes += " w-[105%] h-[105%]";
@@ -115,16 +116,16 @@ const GameCard: React.FC<GameCardProps> = ({ slug, locked = false, index }) => {
 				animatedClassesHover = "hover:scale-110 hover:-rotate-8";
 				break;
 			case GameName.Memory:
-				animatedClasses = "scale-110 rotate-6";
-				animatedClassesHover = "hover:scale-110 hover:rotate-6";
+				animatedClasses = "scale-105 rotate-6";
+				animatedClassesHover = "hover:scale-105 hover:rotate-6";
 				break;
 			case GameName.Puzzle:
 				animatedClasses = "-translate-x-[20%]";
 				animatedClassesHover = "hover:-translate-x-[20%]";
 				break;
 			case GameName.SendResults:
-				animatedClasses = "scale-110 rotate-20";
-				animatedClassesHover = "hover:scale-110 hover:rotate-20";
+				animatedClasses = "scale-105 rotate-15";
+				animatedClassesHover = "hover:scale-105 hover:rotate-15";
 				break;
 			case GameName.ComingSoon:
 				animatedClasses = "-rotate-10";

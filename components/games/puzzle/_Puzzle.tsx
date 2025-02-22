@@ -22,7 +22,7 @@ import { debounce } from "lodash";
 import Button from "@/components/ui/Button";
 import SvgImage, { SvgImageMotifs } from "@/components/ui/SvgImage";
 import usePuzzleFunctions from "@/hooks/games/usePuzzleFunctions";
-import { Coord, CustomMatterBody, Guide } from "@/lib/types/puzzle";
+import { CustomMatterBody } from "@/lib/types/puzzle";
 import { GameContext } from "@/context/GameContext";
 import { RoundContext } from "@/context/RoundContext";
 import { ProgressContext } from "@/context/ProgressContext";
@@ -43,7 +43,6 @@ const Puzzle: React.FC = () => {
 	const gameInited = useRef(false);
 
 	// States
-	const [guides, setGuides] = useState<Guide[]>([]);
 	const [matchingPieceId, setMatchingPieceId] = useState<number | null>(null);
 	const [showInitMessage, setShowInitMessage] = useState(false);
 	const [allowReset, setAllowReset] = useState(false);
@@ -373,10 +372,6 @@ const Puzzle: React.FC = () => {
 				}
 
 				Composite.add(world, body);
-
-				// const guideColor = getRandomColor();
-				// createGuideline(body.steeringCoords.topRight, guideColor);
-				// createGuideline(body.steeringCoords.bottomLeft, guideColor);
 			});
 		},
 		[puzzlePieces, progressRef, getGameProgress]
@@ -425,13 +420,6 @@ const Puzzle: React.FC = () => {
 				setResetting(false);
 			}, 200);
 		}
-	};
-
-	/**
-	 * Create guidelines, helpful for debugging
-	 */
-	const createGuideline = (coord: Coord, color: string) => {
-		setGuides((prevGuides) => [...prevGuides, { coord: coord, color: color }]);
 	};
 
 	/**
@@ -627,17 +615,6 @@ const Puzzle: React.FC = () => {
 							/>
 						</div>
 					</div>
-					{/* {guides.map((guide, i) => (
-						<div
-							className="absolute w-4 h-4 "
-							style={{
-								top: guide.coord.y + "px",
-								left: guide.coord.x + "px",
-								backgroundColor: guide.color,
-							}}
-							key={i}
-						></div>
-					))} */}
 					<AnimatePresence>
 						{successMessage && <SuccessScreen text={successMessage} />}
 					</AnimatePresence>

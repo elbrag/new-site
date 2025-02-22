@@ -378,6 +378,7 @@ const GameContextProvider = ({ children }: GameContextProviderProps) => {
 				const nrOfCompletedRounds = puzzleGameProgress.filter(
 					(p) => p.completed
 				)?.length;
+				console.log("nrOfCompletedRounds", nrOfCompletedRounds);
 
 				return nrOfCompletedRounds === puzzlePieces.length;
 		}

@@ -36,8 +36,8 @@ const usePuzzleFunctions = () => {
 			width: 300,
 			height: 134,
 			steeringCoords: {
-				bottomLeft: { x: 300, y: 133.5 },
-				topRight: { x: 600, y: 0 },
+				bottomLeft: { x: 299.5, y: 133.5 },
+				topRight: { x: 599.5, y: 0 },
 			},
 		},
 		{
@@ -67,8 +67,8 @@ const usePuzzleFunctions = () => {
 			width: 246,
 			height: 69,
 			steeringCoords: {
-				bottomLeft: { x: 354, y: 214 },
-				topRight: { x: 600, y: 145 },
+				bottomLeft: { x: 351, y: 214 },
+				topRight: { x: 597, y: 145 },
 			},
 		},
 	];

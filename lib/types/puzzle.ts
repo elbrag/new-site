@@ -10,11 +10,6 @@ export interface SteeringCoords {
 	topRight: Coord;
 }
 
-export interface Guide {
-	coord: Coord;
-	color: string;
-}
-
 export interface PuzzlePiece {
 	id: number;
 	url: string;
