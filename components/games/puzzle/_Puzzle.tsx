@@ -33,6 +33,7 @@ import SuccessScreen from "@/components/ui/SuccessScreen";
 import useInfoMessage from "@/hooks/useInfoMessage";
 import { puzzleInitMessages } from "@/lib/helpers/messages";
 import BackButton from "@/components/ui/BackButton";
+import { ProgressRoundProps } from "@/lib/types/progress";
 
 const Puzzle: React.FC = () => {
 	// Refs
@@ -298,15 +299,12 @@ const Puzzle: React.FC = () => {
 	const addPuzzlePieces = useCallback(
 		async (
 			world: World,
+			gameProgress: ProgressRoundProps[],
 			imageStartX: number,
 			imageStartY: number,
 			sizeScale?: number
 		) => {
 			const scale = sizeScale ?? 1;
-			const gameProgress = await getGameProgress(
-				GameName.Puzzle,
-				progressRef.current
-			);
 			// If there has been any progress since before, allow reset
 			if (gameProgress.some((p) => p.completed)) {
 				setAllowReset(true);
@@ -436,6 +434,11 @@ const Puzzle: React.FC = () => {
 	 */
 	const initGame = useCallback(async () => {
 		setAllMatched(false);
+		const gameProgress = await getGameProgress(
+			GameName.Puzzle,
+			progressRef.current
+		);
+
 		// Define canvas, reference image and engine and check that they exist
 		const refImg = refImageRef.current;
 		const canvas = canvasRef.current;
@@ -472,21 +475,24 @@ const Puzzle: React.FC = () => {
 
 		// Elements
 		addWalls(world, canvasWidth, canvasHeight);
-		addPuzzlePieces(world, imageStartX, imageStartY, sizeScale);
+		addPuzzlePieces(world, gameProgress, imageStartX, imageStartY, sizeScale);
 
 		// Initial state (pieces in place)
 		setInitialState(engine);
 
 		// Interactive state (gravity activated, pieces fall down)
 		let removeDragEvent: (() => void) | undefined;
-		setTimeout(async () => {
-			const interactiveStateResult = await setInteractiveState(
-				canvas,
-				engine,
-				world
-			);
-			removeDragEvent = interactiveStateResult.removeEvent;
-		}, 1500);
+
+		if (gameProgress.some((p) => !p.completed)) {
+			setTimeout(async () => {
+				const interactiveStateResult = await setInteractiveState(
+					canvas,
+					engine,
+					world
+				);
+				removeDragEvent = interactiveStateResult.removeEvent;
+			}, 1500);
+		}
 
 		// Run the engine and render
 		Render.run(render);
