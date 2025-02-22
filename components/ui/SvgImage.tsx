@@ -46,6 +46,7 @@ interface SvgImageProps {
 	mediumScaleFactor?: number;
 	largeScaleFactor?: number;
 	suffix?: "vw" | "px" | "%";
+	className?: string;
 }
 
 const SvgImage: React.FC<SvgImageProps> = ({
@@ -57,6 +58,7 @@ const SvgImage: React.FC<SvgImageProps> = ({
 	mediumScaleFactor,
 	largeScaleFactor,
 	suffix = "px",
+	className,
 }) => {
 	const SvgImageElement = svgImages[image];
 
@@ -68,7 +70,7 @@ const SvgImage: React.FC<SvgImageProps> = ({
 			$smallScaleFactor={smallScaleFactor}
 			$mediumScaleFactor={mediumScaleFactor}
 			$largeScaleFactor={largeScaleFactor}
-			className={`svg-image flex items-center justify-center transition-size duration-500 ease-bouncy-1 max-w-full max-h-fit`}
+			className={`svg-image flex items-center justify-center transition-size duration-500 ease-bouncy-1 max-w-full max-h-fit ${className}`}
 		>
 			<SvgImageElement className={`text-${color} w-full h-full`} />
 		</StyledSvgImage>

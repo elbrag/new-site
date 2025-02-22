@@ -222,7 +222,13 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		}
 	};
 
-	if (finalResult) return <FactsList facts={finalResult} />;
+	if (finalResult)
+		return (
+			<div>
+				<BackButton className={`mb-6 lg:mb-8`} />
+				<FactsList facts={finalResult} />;
+			</div>
+		);
 
 	return (
 		<div className="hangman min-h-[80vh] flex flex-col justify-center w-full">
