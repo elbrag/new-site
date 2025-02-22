@@ -51,13 +51,13 @@ const GameCard: React.FC<GameCardProps> = ({ slug, locked = false, index }) => {
 		switch (slug) {
 			case GameName.Hangman:
 				classes +=
-					"w-[152%] h-[152%] md:w-[130%] md:h-[130%] lg:w-[170%] lg:h-[170%] xl:w-[200%] xl:h-[200%] -translate-y-1/3";
+					"w-[152%] h-[152%] md:w-[130%] md:h-[130%] lg:w-[170%] lg:h-[170%] 2xl:w-[200%] 2xl:h-[200%] -translate-y-1/3";
 				break;
 			case GameName.Memory:
 				classes += "w-[115%] h-[115%]";
 				break;
 			case GameName.Puzzle:
-				classes += "w-[180%] xl:w-[150%] max-h-full";
+				classes += "w-[180%] xl:w-[160%] max-h-full";
 				break;
 			case GameName.SendResults:
 				classes += " w-[105%] h-[105%]";
