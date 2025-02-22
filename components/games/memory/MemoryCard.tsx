@@ -47,7 +47,7 @@ const MemoryCard: React.FC<MemoryCardProps> = ({
 						{cardData?.images?.length && (
 							<Image
 								priority={true}
-								className="min-h-full object-cover"
+								className="min-h-full object-cover w-full h-full max-w-none"
 								src={`/static/images/memory/${cardData.images[0].url}.webp`}
 								alt=""
 								width={500}
