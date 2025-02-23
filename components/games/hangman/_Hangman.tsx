@@ -226,7 +226,7 @@ const Hangman: React.FC<HangmanProps> = ({ gameData }) => {
 		return (
 			<div>
 				<BackButton className={`mb-6 lg:mb-8`} />
-				<FactsList facts={finalResult} />;
+				<FactsList facts={finalResult} />
 			</div>
 		);
 

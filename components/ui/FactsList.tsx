@@ -1,12 +1,17 @@
 import { wellDoneHeading } from "@/lib/helpers/messages";
 import { HangmanRevealedRoundProps } from "@/lib/types/rounds";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 interface FactsListProps {
 	facts: HangmanRevealedRoundProps[];
 }
 
 const FactsList: React.FC<FactsListProps> = ({ facts }) => {
+	useEffect(() => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	}, []);
+
 	return (
 		<div className="flex flex-col items-center text-center">
 			{facts.length ? (
