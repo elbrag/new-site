@@ -47,6 +47,7 @@ interface SvgImageProps {
 	largeScaleFactor?: number;
 	suffix?: "vw" | "px" | "%";
 	className?: string;
+	enforceFitContentHeight?: boolean;
 }
 
 const SvgImage: React.FC<SvgImageProps> = ({
@@ -59,6 +60,7 @@ const SvgImage: React.FC<SvgImageProps> = ({
 	largeScaleFactor,
 	suffix = "px",
 	className,
+	enforceFitContentHeight = false,
 }) => {
 	const SvgImageElement = svgImages[image];
 
@@ -70,6 +72,7 @@ const SvgImage: React.FC<SvgImageProps> = ({
 			$smallScaleFactor={smallScaleFactor}
 			$mediumScaleFactor={mediumScaleFactor}
 			$largeScaleFactor={largeScaleFactor}
+			$enforceFitContentHeight={enforceFitContentHeight}
 			className={`svg-image flex items-center justify-center transition-size duration-500 ease-bouncy-1 max-w-full max-h-fit ${className}`}
 		>
 			<SvgImageElement className={`text-${color} w-full h-full`} />
@@ -86,25 +89,35 @@ const StyledSvgImage = styled.div<{
 	$smallScaleFactor?: number;
 	$mediumScaleFactor?: number;
 	$largeScaleFactor?: number;
+	$enforceFitContentHeight: boolean;
 }>`
 	width: ${(props) => `${props.$width}${props.$suffix}`};
-	height: ${(props) => `${props.$height}${props.$suffix}`};
+	height: ${(props) =>
+		props.$enforceFitContentHeight
+			? "fit-content"
+			: `${props.$height}${props.$suffix}`};
 	@media (max-width: ${tailwindConfig.theme.screens.lg}) {
 		width: ${(props) =>
 			`${props.$width * (props.$largeScaleFactor || 1)}${props.$suffix}`};
 		height: ${(props) =>
-			`${props.$height * (props.$largeScaleFactor || 1)}${props.$suffix}`};
+			props.$enforceFitContentHeight
+				? "fit-content"
+				: `${props.$height * (props.$largeScaleFactor || 1)}${props.$suffix}`};
 	}
 	@media (max-width: ${tailwindConfig.theme.screens.md}) {
 		width: ${(props) =>
 			`${props.$width * (props.$mediumScaleFactor || 1)}${props.$suffix}`};
 		height: ${(props) =>
-			`${props.$height * (props.$mediumScaleFactor || 1)}${props.$suffix}`};
+			props.$enforceFitContentHeight
+				? "fit-content"
+				: `${props.$height * (props.$mediumScaleFactor || 1)}${props.$suffix}`};
 	}
 	@media (max-width: 480px) {
 		width: ${(props) =>
 			`${props.$width * (props.$smallScaleFactor || 1)}${props.$suffix}`};
 		height: ${(props) =>
-			`${props.$height * (props.$smallScaleFactor || 1)}${props.$suffix}`};
+			props.$enforceFitContentHeight
+				? "fit-content"
+				: `${props.$height * (props.$smallScaleFactor || 1)}${props.$suffix}`};
 	}
 `;

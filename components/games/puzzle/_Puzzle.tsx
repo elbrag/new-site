@@ -633,6 +633,7 @@ const Puzzle: React.FC = () => {
 								image={SvgImageMotifs.FullLogo}
 								width={refImgOriginalWidth}
 								height={refImgOriginalHeight}
+								enforceFitContentHeight={true}
 							/>
 						</div>
 					</div>
