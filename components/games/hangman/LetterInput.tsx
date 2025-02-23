@@ -66,7 +66,7 @@ const LetterInput: React.FC<LetterInputProps> = ({ onClick }) => {
 				ref={input}
 				id="letter"
 				type="text"
-				className="text-lg sm:text-xl lg:text-2xl text-center p-2 sm:p-1.5 lg:p-2 focus:outline-none active:outline-none w-16 md:w-20 uppercase border-military border-2 bg-paper"
+				className="text-lg sm:text-xl lg:text-2xl text-center p-1.5 lg:p-2 focus:outline-none active:outline-none w-16 md:w-20 uppercase border-military border-2 bg-paper"
 				maxLength={1}
 				onChange={(e) => handleInputChange(e)}
 				onKeyDown={handleKeyDown}

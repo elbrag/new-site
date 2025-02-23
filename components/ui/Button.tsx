@@ -51,7 +51,7 @@ const Button: React.FC<ButtonProps> = ({
 
 	const disabledClasses = disabled ? "grayscale-70 cursor-not-allowed" : "";
 
-	const buttonClasses = `inline-block px-6 py-3 uppercase lg:text-lg border-2 rounded-lg shadow-button 
+	const buttonClasses = `inline-block px-4 py-2 md:px-6 md:py-3 uppercase md:text-lg border-2 rounded-lg shadow-button 
 	transition-all origin-left bg-lime text-military ease-bouncy-2 ${_hoverButtonClasses.join(
 		" "
 	)} ${_activeButtonClasses.join(" ")} ${disabledClasses}`;

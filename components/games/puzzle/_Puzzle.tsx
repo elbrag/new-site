@@ -580,7 +580,22 @@ const Puzzle: React.FC = () => {
 
 	return (
 		<div className="md:px-6 lg:px-12">
-			<BackButton className={`mb-6 lg:mb-8`} />
+			<div className="flex justify-between min-h-12 mb-6 lg:mb-8">
+				<BackButton />
+				<AnimatePresence>
+					{gameInited.current && allowReset && (
+						<motion.div
+							className="flex gap-4 md:gap-6 items-center"
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							transition={{ duration: 0.4 }}
+						>
+							<Button label="Reset" onClick={resetPieces} />
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</div>
 			<div className="h-60vh sm:h-70vh lg:h-80vh mb-24">
 				<div className="relative z-0 h-full bg-paper border border-line1 rounded-xl overflow-hidden">
 					<AnimatePresence>
@@ -636,21 +651,6 @@ const Puzzle: React.FC = () => {
 						)}
 					</AnimatePresence>
 				</div>
-			</div>
-			<div className="flex justify-center min-h-12 mt-6 md:mt-10 fixed bottom-20 sm:bottom-18 md:bottom-18 right-8">
-				<AnimatePresence>
-					{gameInited.current && allowReset && (
-						<motion.div
-							className="flex gap-4 md:gap-6 items-center"
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							transition={{ duration: 0.4 }}
-						>
-							<Button label="Reset" onClick={resetPieces} />
-						</motion.div>
-					)}
-				</AnimatePresence>
 			</div>
 		</div>
 	);
