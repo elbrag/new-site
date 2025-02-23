@@ -6,7 +6,7 @@ const InstructionText: React.FC<{ className?: string; text: string }> = ({
 }) => {
 	return (
 		<motion.div
-			className={`instruction-text max-w-40 md:max-w-none origin-bottom-right ${className}`}
+			className={`instruction-text max-w-40 transform -mr-6 sm:mr-0 md:max-w-none origin-bottom-right ${className}`}
 			initial={{ rotate: -100, scale: 0 }}
 			animate={{ rotate: 0, scale: 1 }}
 			transition={{

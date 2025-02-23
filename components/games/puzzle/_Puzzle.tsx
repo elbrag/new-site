@@ -483,7 +483,7 @@ const Puzzle: React.FC = () => {
 		// Interactive state (gravity activated, pieces fall down)
 		let removeDragEvent: (() => void) | undefined;
 
-		if (gameProgress.some((p) => !p.completed)) {
+		if (!gameProgress.length || gameProgress.some((p) => !p.completed)) {
 			setTimeout(async () => {
 				const interactiveStateResult = await setInteractiveState(
 					canvas,
