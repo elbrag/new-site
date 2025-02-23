@@ -1,22 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url("https://fonts.googleapis.com/css2?family=Blaka&family=My+Soul&family=Rock+3D&family=Rubik+Beastly&family=Rubik+Bubbles&family=Rubik+Distressed&family=Rubik+Glitch&family=Rubik+Microbe&display=swap");
 
 :root {
-	--foreground-rgb: 0, 0, 0;
-	--background-start-rgb: 214, 219, 220;
-	--background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-	:root {
-		--foreground-rgb: 255, 255, 255;
-		--background-start-rgb: 0, 0, 0;
-		--background-end-rgb: 0, 0, 0;
-		--line-color-1: #e2e2e2;
-		--line-color-2: #e8e8e8;
-	}
+	--line-color-1: #e2e2e2;
+	--line-color-2: #e8e8e8;
 }
 
 body,
