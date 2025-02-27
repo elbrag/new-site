@@ -42,6 +42,7 @@ const Puzzle: React.FC = () => {
 	const renderRef = useRef<Render | null>(null);
 	const refImageRef = useRef<HTMLDivElement>(null);
 	const gameInited = useRef(false);
+	const windowWidth = useRef(0);
 
 	// States
 	const [matchingPieceId, setMatchingPieceId] = useState<number | null>(null);
@@ -424,7 +425,10 @@ const Puzzle: React.FC = () => {
 	 * Resize handler for the canvas
 	 */
 	const resizeHandler = () => {
+		// Avoid resize event getting fired falsely on ios
+		if (window.innerWidth === windowWidth.current) return;
 		resetGameBoard();
+		windowWidth.current = window.innerWidth;
 	};
 	// Debounced resize function
 	const debouncedResizeRef = useRef(debounce(resizeHandler, 2000));
@@ -434,6 +438,7 @@ const Puzzle: React.FC = () => {
 	 */
 	const initGame = useCallback(async () => {
 		setAllMatched(false);
+		windowWidth.current = window.innerWidth;
 		const gameProgress = await getGameProgress(
 			GameName.Puzzle,
 			progressRef.current
