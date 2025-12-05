@@ -16,79 +16,79 @@ import InfoContextProvider from "@/context/InfoContext";
 import IntroModal from "@/components/IntroModal";
 
 const delaGothicOne = Dela_Gothic_One({
-	weight: "400",
-	subsets: ["latin"],
-	variable: "--font-dela",
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-dela",
 });
 
 const alegreya = Alegreya({
-	weight: ["400", "500", "700"],
-	subsets: ["latin"],
-	variable: "--font-alegreya",
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  variable: "--font-alegreya",
 });
 
 export const FontList = {
-	alegreya: alegreya.variable,
-	dela: delaGothicOne.variable,
+  alegreya: alegreya.variable,
+  dela: delaGothicOne.variable,
 };
 
 function MyApp({ Component, pageProps }: AppProps) {
-	const router = useRouter();
-	const [title, setTitle] = useState("");
+  const router = useRouter();
+  const [title, setTitle] = useState("");
 
-	const fonts = Object.keys(FontList).map(
-		(key) => FontList[key as keyof typeof FontList]
-	);
-	const isHome = router.asPath === "/";
+  const fonts = Object.keys(FontList).map(
+    (key) => FontList[key as keyof typeof FontList]
+  );
+  const isHome = router.asPath === "/";
 
-	/**
-	 * Keep page title updated
-	 */
-	useEffect(() => {
-		const getTitle = () => {
-			if (isHome) return "Pick a game!";
-			const path = router.asPath.split("/")[1];
-			if (path === "login") return "Login";
-			const gamePathMatch = gamesData.find((game) => game.slug === path);
-			if (gamePathMatch) return gamePathMatch.title;
-			return "";
-		};
-		setTitle(getTitle());
-	}, [router.asPath, isHome]);
+  /**
+   * Keep page title updated
+   */
+  useEffect(() => {
+    const getTitle = () => {
+      if (isHome) return "Pick a game!";
+      const path = router.asPath.split("/")[1];
+      if (path === "login") return "Login";
+      const gamePathMatch = gamesData.find((game) => game.slug === path);
+      if (gamePathMatch) return gamePathMatch.title;
+      return "";
+    };
+    setTitle(getTitle());
+  }, [router.asPath, isHome]);
 
-	return (
-		<>
-			<Head>
-				<title>{`EB ${title.length ? `| ${title}` : title}`}</title>
-				<link rel="icon" href="/favicon.png" sizes="any" />
-				<meta name="theme-color" content="#3c4d39" />
-			</Head>
-			<main
-				className={`min-h-screen flex flex-col  text-military font-dela ${
-					isHome ? "md:h-screen" : ""
-				} ${fonts.join(" ")}`}
-			>
-				<InfoContextProvider>
-					<ErrorContextProvider>
-						<ProgressContextProvider>
-							<RoundContextProvider>
-								<FirebaseContextProvider>
-									<GameContextProvider>
-										<Navigation />
-										<div className="page-content flex-grow h-full flex flex-col justify-center mx-3 sm:mx-5 mt-18 sm:mt-16 lg:mt-18 xl:mt-20 2xl:mt-22 mb-14">
-											<Component {...pageProps} />
-										</div>
-										<Footer />
-										<IntroModal />
-									</GameContextProvider>
-								</FirebaseContextProvider>
-							</RoundContextProvider>
-						</ProgressContextProvider>
-					</ErrorContextProvider>
-				</InfoContextProvider>
-			</main>
-		</>
-	);
+  return (
+    <>
+      <Head>
+        <title>{`EB ${title.length ? `| ${title}` : title}`}</title>
+        <link rel="icon" href="/favicon.png" sizes="any" />
+        <meta name="theme-color" content="#3c4d39" />
+      </Head>
+      <main
+        className={`min-h-screen flex flex-col  text-military font-dela ${
+          isHome ? "md:h-screen" : ""
+        } ${fonts.join(" ")}`}
+      >
+        <InfoContextProvider>
+          <ErrorContextProvider>
+            <ProgressContextProvider>
+              <RoundContextProvider>
+                <FirebaseContextProvider>
+                  <GameContextProvider>
+                    <Navigation />
+                    <div className="page-content flex-grow h-full flex flex-col justify-center mx-3 sm:mx-5 mt-18 sm:mt-16 lg:mt-18 xl:mt-20 2xl:mt-22 mb-14">
+                      <Component {...pageProps} />
+                    </div>
+                    <Footer />
+                    <IntroModal />
+                  </GameContextProvider>
+                </FirebaseContextProvider>
+              </RoundContextProvider>
+            </ProgressContextProvider>
+          </ErrorContextProvider>
+        </InfoContextProvider>
+      </main>
+    </>
+  );
 }
 
 export default MyApp;
